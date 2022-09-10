@@ -9,12 +9,15 @@ class LinkWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: onPressed,
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
-          color: Theme.of(context).colorScheme.secondary,
-          decoration: TextDecoration.underline,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 15),
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+            color: Theme.of(context).colorScheme.secondary,
+            decoration: TextDecoration.underline,
+          ),
         ),
       ),
     );

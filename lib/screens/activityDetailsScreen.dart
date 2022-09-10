@@ -166,7 +166,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                                 )
                               ],
                               borderRadius: BorderRadius.circular(50),
-                              color: Colors.white),
+                              color: Colors.white60),
                           child: IconButton(
                         
                             icon: const Icon(Icons.arrow_back, size: 28),
@@ -333,8 +333,8 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                 ),
               ),
               Divider(
-                thickness: 2,
-                color: ColorsHelper.blue.shade400,
+                thickness: 1,
+                // color: ColorsHelper.blue.shade400,
               ),
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 10),
@@ -380,7 +380,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                           print('Button pressed ...');
                         },
                         style: OutlinedButton.styleFrom(
-                            primary: ColorsHelper.green,
+                            // primary: ColorsHelper.green,
                             padding: EdgeInsets.symmetric(
                                 vertical: 10, horizontal: 30),
                             side:
@@ -395,8 +395,8 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                 ),
               ),
               Divider(
-                thickness: 2,
-                color: ColorsHelper.blue.shade400,
+                thickness: 1,
+                // color: ColorsHelper.blue.shade400,
               ),
               Container(
                 margin: EdgeInsets.symmetric(vertical: 10),

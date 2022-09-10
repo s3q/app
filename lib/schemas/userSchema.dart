@@ -12,12 +12,15 @@ class UserSchema {
   String? phoneNumber;
   Map<String, dynamic>? deviceInfo;
   String? displaySizes;
-  int? age;
+  int? dateOfBirth;
+  bool proAccount;
   String? gender;
   String ip;
   List? chatList;
-
+  String? profileImagePath;
   int? profileColor;
+  String? city;
+
   static List colors = [
     0xFFFFE082,
     0xFF90CAF9,
@@ -37,11 +40,14 @@ class UserSchema {
     this.phoneNumber,
     this.deviceInfo,
     this.displaySizes,
-    this.age,
+    this.dateOfBirth,
+    this.proAccount = false,
     this.gender,
     this.chatList,
     required this.ip,
     this.profileColor,
+    this.profileImagePath,
+    this.city,
   });
 
   Map<String, dynamic> toMap() {
@@ -55,11 +61,14 @@ class UserSchema {
       "phoneNumber": phoneNumber,
       "deviceInfo": deviceInfo,
       "displaySizes": displaySizes,
-      "age": age,
+      "dateOfBirth": dateOfBirth,
+      "proAccount": proAccount,
       "gender": gender,
       "chatList": chatList,
       "ip": ip,
-      "profileColor": colors[Random().nextInt(colors.length)]
+      "profileColor": colors[Random().nextInt(colors.length)],
+      "profileImagePath": profileImagePath,
+      "city": city,
     };
   }
 }

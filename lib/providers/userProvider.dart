@@ -1,5 +1,6 @@
 import 'package:app/constants/constants.dart';
 import 'package:app/helpers/errorsHelper.dart';
+import 'package:app/schemas/proUserSchema.dart';
 import 'package:app/schemas/userSchema.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -14,6 +15,7 @@ import 'package:dart_ipify/dart_ipify.dart';
 class UserProvider with ChangeNotifier {
   User? credentialUser;
   UserSchema? currentUser;
+  ProUserSchema? proCurrentUser;
   static String collection = CollectionsConstants.users;
   static final auth = FirebaseAuth.instance;
   static final store = FirebaseFirestore.instance;
@@ -47,7 +49,7 @@ class UserProvider with ChangeNotifier {
 
   Future<UserCredential?> signInWithGoogle(BuildContext context) async {
     try {
-        print("DDDone 00");
+      print("DDDone 00");
       final GoogleSignInAccount? googleUser = await googleSignin.signIn();
       print("DDDone 11");
       if (googleUser != null) {
@@ -93,7 +95,44 @@ class UserProvider with ChangeNotifier {
         backgroundColor: Theme.of(context).errorColor,
         content: Text(err.toString()),
       ));
-       return null;
+      return null;
+    }
+  }
+
+  Future switchToProAccount({
+    required BuildContext context,
+    required ProUserSchema proUserData,
+    required String email,
+    required String phoneNumber,
+    required String dateOfBirth,
+    required String name,
+  }) async {
+    if (currentUser != null && credentialUser != null && islogin()) {
+      try {
+        assert(currentUser!.Id != null);
+        CollectionReference pro_usersCollection =
+            store.collection(CollectionsConstants.pro_users);
+        CollectionReference usersCollection =
+            store.collection(CollectionsConstants.users);
+
+        pro_usersCollection.add(proUserData.toMap());
+
+        QuerySnapshot<Object?> query =
+            await usersCollection.where("Id", isEqualTo: currentUser!.Id).get();
+
+        Map<String, Object?> userData = {
+          "email": email,
+          "phoneNumber": phoneNumber,
+          "dateOfBirth": dateOfBirth,
+          "name": name,
+          "proAccount": true,
+        };
+
+        assert(query.docs.length == 1);
+        query.docs.single.reference.update(userData);
+      } catch (err) {
+        print(err);
+      }
     }
   }
 
@@ -126,7 +165,7 @@ class UserProvider with ChangeNotifier {
 
       currentUser = UserSchema(
         email: userData.email,
-        name: userData.displayName ?? "new user",
+        name: userData.displayName ?? "",
         lastLogin: DateTime.now().millisecondsSinceEpoch,
         createdAt: DateTime.now().millisecondsSinceEpoch,
         Id: userData.uid,
@@ -135,7 +174,7 @@ class UserProvider with ChangeNotifier {
         deviceInfo: deviceInfo.toMap(),
         displaySizes:
             "${MediaQuery.of(context).size.width} ${MediaQuery.of(context).size.height}",
-        age: null,
+        dateOfBirth: null,
         gender: null,
         chatList: [],
         ip: ipv4,
@@ -158,11 +197,13 @@ class UserProvider with ChangeNotifier {
             query.docs[0]["phoneNumber"] == userData.phoneNumber) &&
         query.docs[0]["Id"] == userData.uid &&
         !sginup) {
+
       await query.docs.single.reference
           .update({"lastLogin": DateTime.now().millisecondsSinceEpoch});
 
       Map userQueryData = query.docs.single.data() as Map;
       print(userQueryData);
+      
       currentUser = UserSchema(
         email: userQueryData["email"],
         name: userQueryData["name"],
@@ -173,11 +214,15 @@ class UserProvider with ChangeNotifier {
         phoneNumber: userQueryData["phoneNumber"],
         deviceInfo: userQueryData["deviceInfo"],
         displaySizes: userQueryData["displaySizes"],
-        age: userQueryData["age"],
+        dateOfBirth: userQueryData["dateOfBirth"],
+        proAccount: userQueryData["proAccount"],
         gender: userQueryData["gender"],
         chatList: userQueryData["chatList"],
         ip: userQueryData["ip"],
+        profileColor: userQueryData["profileColor"],
+        profileImagePath: userQueryData["profileImagePath"],
       );
+      
       currentUser!.lastLogin = DateTime.now().millisecondsSinceEpoch;
       notifyListeners();
     }

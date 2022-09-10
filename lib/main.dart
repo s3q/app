@@ -6,15 +6,20 @@ import 'package:app/providers/settingsProvider.dart';
 import 'package:app/providers/userProvider.dart';
 import 'package:app/schemas/userSchema.dart';
 import 'package:app/screens/activityDetailsScreen.dart';
+import 'package:app/screens/editProfileScreen.dart';
 import 'package:app/screens/getStartedScreen.dart';
 import 'package:app/screens/homeScreen.dart';
 import 'package:app/screens/mapScreen.dart';
 import 'package:app/screens/massagesScreen.dart';
 import 'package:app/screens/overViewScreen.dart';
 import 'package:app/screens/policyAndPrivacyScreen.dart';
+import 'package:app/screens/proAccount/switchToProAccountScreen.dart';
+import 'package:app/screens/profileScreen.dart';
+import 'package:app/screens/searchScreen.dart';
 import 'package:app/screens/signinPhoneNumberScreen.dart';
 import 'package:app/screens/signinScreen.dart';
 import 'package:app/screens/termsAndConditionsScreen.dart';
+import 'package:app/screens/updateProfileDataScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -156,21 +161,89 @@ class MMApp extends StatelessWidget {
           // colorScheme: const ColorScheme.light(
           //   secondary: Colors.amber,
           // ),
-          colorScheme: ColorScheme(
+
+
+        //   colorScheme: ColorScheme(
+        //     brightness: Brightness.light,
+        //     primary: ColorsHelper.yellow,
+        //     onPrimary: Colors.black,
+        //     secondary: Colors.black,
+        //     // secondary: ColorsHelper.green,
+        //     onSecondary: Colors.black,
+        //     error: ColorsHelper.red,
+        //     onError: Colors.black,
+        //     background: Colors.white,
+        //     onBackground: Colors.black38,
+        //     surface: Colors.white,
+        //     onSurface: Colors.black54,
+        //   ),
+
+                    colorScheme: ColorScheme(
             brightness: Brightness.light,
+            // primary: Colors.black,
             primary: ColorsHelper.yellow,
             onPrimary: Colors.black,
-            secondary: ColorsHelper.green,
+            secondary: Colors.black,
+            // secondary: ColorsHelper.green,
             onSecondary: Colors.black,
             error: ColorsHelper.red,
             onError: Colors.black,
             background: Colors.white,
-            onBackground: Colors.black38,
+            onBackground: Color(0xEE000000),
             surface: Colors.white,
-            onSurface: Colors.black54,
+            onSurface: Color(0xEE000000),
           ),
           backgroundColor: Theme.of(context).hintColor,
-          textTheme: const TextTheme(
+        //   textTheme: const TextTheme(
+        //     displayLarge: TextStyle(
+        //       fontSize: 45,
+        //     ),
+        //     displayMedium: TextStyle(
+        //       fontSize: 35,
+        //     ),
+        //     displaySmall: TextStyle(
+        //       fontSize: 30,
+        //     ),
+        //     headlineSmall: TextStyle(
+        //       fontWeight: FontWeight.bold,
+        //       color: Colors.black87,
+        //     ),
+        //     headlineMedium: TextStyle(
+        //       fontWeight: FontWeight.bold,
+        //       fontSize: 25,
+        //       color: Colors.black87,
+        //     ),
+        //     headlineLarge: TextStyle(
+        //       fontWeight: FontWeight.bold,
+        //       color: Colors.black87,
+        //     ),
+        //     bodyLarge: TextStyle(
+        //       fontSize: 22,
+        //       color: Color(0xFF424242),
+        //     ),
+        //     bodyMedium: TextStyle(
+        //       fontSize: 16,
+        //       color: Color(0xFF424242),
+        //     ),
+        //     bodySmall: TextStyle(
+        //       fontSize: 12,
+        //       color: Color(0xFF424242),
+        //     ),
+        //     titleLarge: TextStyle(
+        //       fontSize: 25,
+        //       color: Color(0xFF424242), // Colors.gray[800]
+        //     ),
+        //     titleMedium: TextStyle(
+        //       fontWeight: FontWeight.bold,
+        //       fontSize: 20,
+        //       color: Color(0xFF424242), // Colors.gray[800]
+        //     ),
+        //     titleSmall: TextStyle(
+        //       fontSize: 18,
+        //       color: Color(0xFF424242), // Colors.gray[800]
+        //     ),
+        //   ),
+        textTheme: const TextTheme(
             displayLarge: TextStyle(
               fontSize: 45,
             ),
@@ -182,47 +255,48 @@ class MMApp extends StatelessWidget {
             ),
             headlineSmall: TextStyle(
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: Color(0xEE000000),
             ),
             headlineMedium: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 25,
-              color: Colors.black87,
+              color: Color(0xEE000000),
             ),
             headlineLarge: TextStyle(
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: Color(0xEE000000),
             ),
             bodyLarge: TextStyle(
               fontSize: 22,
-              color: Color(0xFF424242),
+              color: Colors.black, // Colors.gray[800]
             ),
             bodyMedium: TextStyle(
-              fontSize: 17,
-              color: Color(0xFF424242),
+              fontSize: 16,
+              color: Colors.black, // Colors.gray[800]
             ),
             bodySmall: TextStyle(
               fontSize: 12,
-              color: Color(0xFF424242),
+              color: Colors.black, // Colors.gray[800]
             ),
             titleLarge: TextStyle(
               fontSize: 25,
-              color: Color(0xFF424242), // Colors.gray[800]
+              color: Colors.black, // Colors.gray[800]
             ),
             titleMedium: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20,
-              color: Color(0xFF424242), // Colors.gray[800]
+              color: Colors.black, // Colors.gray[800]
             ),
             titleSmall: TextStyle(
               fontSize: 18,
-              color: Color(0xFF424242), // Colors.gray[800]
+              color: Colors.black, // Colors.gray[800]
             ),
           ),
           textButtonTheme: TextButtonThemeData(
             style: TextButton.styleFrom(
                 elevation: 0,
-                primary: ColorsHelper.blue,
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
                 textStyle: TextStyle(
                     fontSize: 18,
                 )
@@ -257,8 +331,8 @@ class MMApp extends StatelessWidget {
             style: ButtonStyle(
               elevation: MaterialStateProperty.all(0),
               textStyle: MaterialStateProperty.all(const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                // fontWeight: FontWeight.bold,
               )),
               shape: MaterialStateProperty.all(
                 RoundedRectangleBorder(
@@ -284,7 +358,11 @@ class MMApp extends StatelessWidget {
           MapScreen.router: (context) => MapScreen(),
           SigninPhoneNumberScreen.router: (context) => SigninPhoneNumberScreen(),
           MassagesScreen.router: (context) => MassagesScreen(),
-           
+          SearchScreen.router: (context) => SearchScreen(), 
+           ProfileScreen.router: (context) => ProfileScreen(),
+           EditProfileScreen.router: (context) => EditProfileScreen(),
+           UpdateProfileDataScreen.router: (context) => UpdateProfileDataScreen(),
+           SwitchToProAccountScreen.router: (context) => SwitchToProAccountScreen(),
         },
         debugShowCheckedModeBanner: false,
       ),

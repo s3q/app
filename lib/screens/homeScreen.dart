@@ -7,6 +7,7 @@ import 'package:app/screens/chatScreen.dart';
 import 'package:app/screens/discoverScreen.dart';
 import 'package:app/screens/getStartedScreen.dart';
 import 'package:app/screens/overViewScreen.dart';
+import 'package:app/screens/profileScreen.dart';
 import 'package:app/screens/wishlistScreen.dart';
 import 'package:app/widgets/SafeScreen.dart';
 import 'package:app/widgets/activityCardWidget.dart';
@@ -99,7 +100,6 @@ class _HomeScreenState extends State<HomeScreen> {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: Colors.white,
-          
           leading: TextButton(
             onPressed: () {},
             style: ButtonStyle(
@@ -129,6 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 size: 30,
               ),
               onPressed: () {
+                Navigator.pushNamed(context, ProfileScreen.router);
                 print('IconButton pressed ...');
               },
             ),
@@ -137,11 +138,9 @@ class _HomeScreenState extends State<HomeScreen> {
           elevation: 0,
         ),
         body: Container(
-            color: Colors.white,
+          color: Colors.white,
           child: PageView(
-              
             controller: _pageController,
-            
             onPageChanged: (i) {
               FocusScope.of(context).unfocus();
               setState(() {
@@ -189,13 +188,19 @@ class _HomeScreenState extends State<HomeScreen> {
             //   curve: Curves.ease,
             // );
           },
-          //   unselectedLabelStyle: TextStyle(color: Colors.black),
           showUnselectedLabels: true,
-          selectedFontSize: 14,
+          selectedFontSize: 15,
           unselectedFontSize: 14,
           backgroundColor: Colors.white,
-          unselectedItemColor: Colors.black54,
-          selectedItemColor: Color(0xFFE4605E),
+          unselectedItemColor: Colors.black45,
+          selectedItemColor: Colors.black,
+
+        //             showUnselectedLabels: true,
+        //   selectedFontSize: 14,
+        //   unselectedFontSize: 14,
+        //   backgroundColor: Colors.white,
+        //   unselectedItemColor: Colors.black54,
+        //   selectedItemColor: Color(0xFFE4605E),
         ),
       );
     });

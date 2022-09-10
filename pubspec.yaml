@@ -70,6 +70,9 @@ dependencies:
   timeago: ^3.3.0
   firebase_app_check: ^0.0.7
   scrollable_positioned_list: ^0.3.2
+  date_field: ^3.0.0
+  searchfield: ^0.7.0
+
 
 dev_dependencies:
   flutter_test:

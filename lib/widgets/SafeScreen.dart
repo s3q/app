@@ -10,7 +10,8 @@ class SafeScreen extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: Container(
-            color: Colors.white,
+            width: double.infinity,
+          color: Colors.white,
           padding: EdgeInsets.all(padding ?? 10),
           child: child,
         ),
