@@ -168,14 +168,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                               borderRadius: BorderRadius.circular(50),
                               color: Colors.white),
                           child: IconButton(
-                            style: IconButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(0),
-                              topRight: Radius.circular(2),
-                              bottomLeft: Radius.circular(3),
-                              bottomRight: Radius.circular(2),
-                            ))),
+                        
                             icon: const Icon(Icons.arrow_back, size: 28),
                             onPressed: () {
                               Navigator.pop(context);
