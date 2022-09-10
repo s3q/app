@@ -296,7 +296,7 @@ class MMApp extends StatelessWidget {
             style: TextButton.styleFrom(
                 elevation: 0,
                 backgroundColor: Colors.white,
-                foregroundColor: Colors.black,
+                // foregroundColor: Colors.black, // !!!!!!!!!
                 textStyle: TextStyle(
                     fontSize: 18,
                 )

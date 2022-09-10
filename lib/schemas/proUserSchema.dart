@@ -3,7 +3,6 @@ class ProUserSchema {
   String userId;
   String lat;
   String lan;
-  String description;
   String publicPhoneNumber;
   bool activationStatus;
   String? publicEmail;
@@ -11,7 +10,6 @@ class ProUserSchema {
   ProUserSchema({
     required this.createdAt,
     required this.userId,
-    required this.description,
     required this.lat,
     required this.lan,
     required this.publicPhoneNumber,
@@ -23,7 +21,6 @@ class ProUserSchema {
     return {
       "createdAt": createdAt,
       "userId": userId,
-      "description": description,
       "lat": lat,
       "lan": lan,
       "publicPhoneNumber": publicPhoneNumber,

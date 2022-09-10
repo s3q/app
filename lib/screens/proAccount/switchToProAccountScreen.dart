@@ -22,13 +22,15 @@ class SwitchToProAccountScreen extends StatefulWidget {
 }
 
 class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
-  final _formKey = GlobalKey<FormState>();
-  TextEditingController _firstNameInput = TextEditingController();
-  TextEditingController _secondNameInput = TextEditingController();
+  final _formKey1 = GlobalKey<FormState>();
+  final _formKey2 = GlobalKey<FormState>();
+  TextEditingController _nameInput = TextEditingController();
   TextEditingController _emailInput = TextEditingController();
   TextEditingController _phoneNumberInput = TextEditingController();
   TextEditingController _cityInput = TextEditingController();
 
+  TextEditingController _publicEmailInput = TextEditingController();
+  TextEditingController _publicPhoneNumber = TextEditingController();
   Map data = {};
 
   int indexOverView = 0;
@@ -47,15 +49,28 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
     }
   }
 
+  Future _submit() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    bool validation1 = _formKey1.currentState!.validate();
+    bool validation2 = _formKey2.currentState!.validate();
+    bool done = false;
+
+    if (validation2 && validation1) {
+      _formKey1.currentState!.save();
+      _formKey2.currentState!.save();
+      print(data);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final settingsProvider = Provider.of<SettingsProvider>(context);
     UserProvider userProvider = Provider.of<UserProvider>(context);
-    _firstNameInput.text = userProvider.currentUser!.name.split(" ")[0];
-    _secondNameInput.text = userProvider.currentUser!.name.split(" ")[1];
+    _nameInput.text = userProvider.currentUser!.name;
     _emailInput.text = userProvider.currentUser!.email!;
     _phoneNumberInput.text = userProvider.currentUser!.phoneNumber ?? "";
     _cityInput.text = userProvider.currentUser!.city ?? "";
+
     List _citiesOfOman = ["muscate", "smail", "nazwa"];
 
     List overViewDescription = [
@@ -91,20 +106,21 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
             padding: const EdgeInsets.all(10),
             child: Text(
               "Update Your",
-              style: Theme.of(context).textTheme.displaySmall,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
           SizedBox(
             height: 20,
           ),
           Form(
-            key: _formKey,
+            key: _formKey1,
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
+                  Text("Full Name"),
                   TextFormField(
-                    controller: _firstNameInput,
+                    controller: _nameInput,
                     keyboardType: TextInputType.name,
                     autofocus: true,
                     obscureText: false,
@@ -147,15 +163,16 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                   SizedBox(
                     height: 10,
                   ),
+                  Text("Date of Birth"),
                   DateTimeFormField(
-                    decoration:  InputDecoration(
+                    decoration: InputDecoration(
                         border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(16),
                           borderSide:
                               BorderSide(color: Colors.black45, width: 1),
                         ),
                         suffixIcon: Icon(Icons.event_note),
-                        hintText: "Date of Birth"),
+                        labelText: "Date of Birth"),
                     mode: DateTimeFieldPickerMode.date,
                     autovalidateMode: AutovalidateMode.always,
                     validator: (value) {
@@ -169,48 +186,48 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                   SizedBox(
                     height: 10,
                   ),
-                   
-                 SearchField(
-                   suggestions: _citiesOfOman
-                       .map((e) => SearchFieldListItem(e))
-                       .toList(),
-                   suggestionState: Suggestion.expand,
-                   textInputAction: TextInputAction.next,
-                   hint: 'City',
-                   hasOverlay: false,
-                   searchStyle: const TextStyle(
-                     fontSize: 18,
-                     color: Colors.black,
-                   ),
-                   validator: (x) {
-                     if (!_citiesOfOman.contains(x) || x!.isEmpty) {
-                       return 'Please Enter a valid city';
-                     }
-                     return null;
-                   },
-                   onSubmit: (p0) {
-                     print(p0);
-                   },
-                   searchInputDecoration:  InputDecoration(
-                     focusedBorder: OutlineInputBorder(
-                       borderSide: BorderSide(
-                         color: Colors.black45,
-                         
-                       ),
-                                              borderRadius: BorderRadius.circular(16),
-
-                     ),
-                     border: OutlineInputBorder(
-                       borderSide: BorderSide(color: Colors.black45),
-                       borderRadius: BorderRadius.circular(16),
-                     ),
-                     
-                   ),
-                   maxSuggestionsInViewPort: 6,
-                   itemHeight: 50,
-                   // onTap: (x) {},
-                 ),
-                 SizedBox(height: 10,),
+                  Text("City"),
+                  SearchField(
+                    suggestions: _citiesOfOman
+                        .map((e) => SearchFieldListItem(e))
+                        .toList(),
+                    suggestionState: Suggestion.expand,
+                    textInputAction: TextInputAction.next,
+                    hint: 'City',
+                    hasOverlay: false,
+                    searchStyle: const TextStyle(
+                      fontSize: 18,
+                      color: Colors.black,
+                    ),
+                    validator: (x) {
+                      if (!_citiesOfOman.contains(x) || x!.isEmpty) {
+                        return 'Please Enter a valid city';
+                      }
+                      return null;
+                    },
+                    onSubmit: (p0) {
+                      print(p0);
+                    },
+                    searchInputDecoration: InputDecoration(
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.black45,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black45),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    maxSuggestionsInViewPort: 6,
+                    itemHeight: 50,
+                    // onTap: (x) {},
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text("Email"),
                   TextFormField(
                     controller: _emailInput,
                     keyboardType: TextInputType.name,
@@ -252,13 +269,15 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                   SizedBox(
                     height: 10,
                   ),
+                  Text("Phone Number"),
                   TextFormField(
                     controller: _phoneNumberInput,
                     keyboardType: TextInputType.name,
                     autofocus: true,
                     obscureText: false,
                     decoration: const InputDecoration(
-                      suffixText: "Phone Number",
+                      //   suffixText: ,
+                      helperText: "Phone Number",
                       filled: true,
                       fillColor: Colors.white,
                       prefixIcon: Icon(
@@ -296,9 +315,7 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                     },
                     onSaved: (val) async {
                       data["phoneNumber"] = await PhoneNumberUtil().format(
-                          "+" +
-                              region.prefix.toString() +
-                              (val?.trim() ?? ""),
+                          "+" + region.prefix.toString() + (val?.trim() ?? ""),
                           region.code);
                       print("iiiiiiiii");
                       print(data["phoneNumber"]);
@@ -307,13 +324,14 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                   SizedBox(
                     height: 10,
                   ),
-             
                 ],
               ),
             ),
           ),
         ],
       ),
+
+      //!fddfkkdf */
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -321,9 +339,119 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
             height: 20,
           ),
           Text(
-            "",
-            style: Theme.of(context).textTheme.displaySmall,
+            "Register to Profissional Account",
+            style: Theme.of(context).textTheme.titleMedium,
           ),
+          Form(
+            key: _formKey2,
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  Text("Public Email"),
+                  TextFormField(
+                    controller: _emailInput,
+                    keyboardType: TextInputType.name,
+                    autofocus: true,
+                    obscureText: false,
+                    decoration: const InputDecoration(
+                      suffixText: "Public Email",
+                      filled: true,
+                      fillColor: Colors.white,
+                      prefixIcon: Icon(
+                        Icons.person,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.black45,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(16)),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.black45,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(16)),
+                      ),
+                    ),
+                    validator: (val) {
+                      if (val == null ||
+                          !EmailValidator.validate(val.trim(), true)) {
+                        return "invalid email address";
+                      }
+                      return null;
+                    },
+                    onSaved: (val) {
+                      data["publicEmail"] = val?.trim();
+                    },
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text("Public Phone Number"),
+                  TextFormField(
+                    controller: _phoneNumberInput,
+                    keyboardType: TextInputType.name,
+                    autofocus: true,
+                    obscureText: false,
+                    decoration: const InputDecoration(
+                      //   suffixText: ,
+                      helperText: "Public Phone Number",
+                      filled: true,
+                      fillColor: Colors.white,
+                      prefixIcon: Icon(
+                        Icons.person,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.black45,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(16)),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.black45,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(16)),
+                      ),
+                    ),
+                    validator: (val) {
+                      _checkPhoneValidation(context, val);
+                      if (val?.length != 8) {
+                        return "invalid phone number";
+                      }
+
+                      return null;
+                    },
+                    onChanged: (val) async {
+                      data["publicPhoneNumber"] = await PhoneNumberUtil()
+                          .format("+" + region.prefix.toString() + val.trim(),
+                              region.code);
+                      print("iiiiiiiii");
+                      print(data["publicPhoneNumber"]);
+                    },
+                    onSaved: (val) async {
+                      data["publicPhoneNumber"] = await PhoneNumberUtil()
+                          .format(
+                              "+" +
+                                  region.prefix.toString() +
+                                  (val?.trim() ?? ""),
+                              region.code);
+                      print("iiiiiiiii");
+                      print(data["publicPhoneNumber"]);
+                    },
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                ],
+              ),
+            ),
+          )
         ],
       ),
     ];
@@ -371,8 +499,7 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                               indexOverView += 1;
                             });
                           } else {
-                            Navigator.of(context)
-                                .pushReplacementNamed(HomeScreen.router);
+                            _submit();
                           }
                         },
                         style: ButtonStyle(
