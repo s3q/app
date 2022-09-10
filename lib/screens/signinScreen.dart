@@ -103,13 +103,13 @@ class _SigninScreenState extends State<SigninScreen> {
                                 decoration: const InputDecoration(
                                   hintText: "Fisrt Name",
                                   filled: true,
-                                  fillColor: Color(0xFFECF6FF),
+                                  fillColor: Colors.white,
                                   prefixIcon: Icon(
                                     Icons.person,
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
-                                      color: Color(0x00000000),
+                                      color: Colors.black45,
                                       width: 1,
                                     ),
                                     borderRadius:
@@ -117,7 +117,7 @@ class _SigninScreenState extends State<SigninScreen> {
                                   ),
                                   enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
-                                      color: Color(0x00000000),
+                                      color: Colors.black45,
                                       width: 1,
                                     ),
                                     borderRadius:
@@ -150,13 +150,13 @@ class _SigninScreenState extends State<SigninScreen> {
                                 decoration: const InputDecoration(
                                   hintText: "Second Name",
                                   filled: true,
-                                  fillColor: Color(0xFFECF6FF),
+                                  fillColor: Colors.white,
                                   prefixIcon: Icon(
                                     Icons.person,
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
-                                      color: Color(0x00000000),
+                                      color: Colors.black45,
                                       width: 1,
                                     ),
                                     borderRadius:
@@ -164,7 +164,7 @@ class _SigninScreenState extends State<SigninScreen> {
                                   ),
                                   enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
-                                      color: Color(0x00000000),
+                                      color: Colors.black45,
                                       width: 1,
                                     ),
                                     borderRadius:
@@ -201,20 +201,20 @@ class _SigninScreenState extends State<SigninScreen> {
                         decoration: const InputDecoration(
                           hintText: "Email",
                           filled: true,
-                          fillColor: Color(0xFFECF6FF),
+                          fillColor: Colors.white,
                           prefixIcon: Icon(
-                            Icons.person,
+                            Icons.email_rounded,
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: Color(0x00000000),
+                                      color: Colors.black45,
                               width: 1,
                             ),
                             borderRadius: BorderRadius.all(Radius.circular(16)),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: Color(0x00000000),
+                                      color: Colors.black45,
                               width: 1,
                             ),
                             borderRadius: BorderRadius.all(Radius.circular(16)),
@@ -240,20 +240,20 @@ class _SigninScreenState extends State<SigninScreen> {
                         decoration: const InputDecoration(
                           hintText: "Password",
                           filled: true,
-                          fillColor: Color(0xFFECF6FF),
+                          fillColor: Colors.white,
                           prefixIcon: Icon(
-                            Icons.person,
+                            Icons.key_rounded,
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: Color(0x00000000),
+                                      color: Colors.black45,
                               width: 1,
                             ),
                             borderRadius: BorderRadius.all(Radius.circular(16)),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: Color(0x00000000),
+                                      color: Colors.black45,
                               width: 1,
                             ),
                             borderRadius: BorderRadius.all(Radius.circular(16)),
@@ -296,13 +296,13 @@ class _SigninScreenState extends State<SigninScreen> {
                           decoration: const InputDecoration(
                             hintText: "confirm Password",
                             filled: true,
-                            fillColor: Color(0xFFECF6FF),
+                            fillColor: Colors.white,
                             prefixIcon: Icon(
-                              Icons.person,
+                              Icons.key_rounded,
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(
-                                color: Color(0x00000000),
+                                      color: Colors.black45,
                                 width: 1,
                               ),
                               borderRadius:
@@ -310,7 +310,7 @@ class _SigninScreenState extends State<SigninScreen> {
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
-                                color: Color(0x00000000),
+                                      color: Colors.black45,
                                 width: 1,
                               ),
                               borderRadius:

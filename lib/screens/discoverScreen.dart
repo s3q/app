@@ -3,6 +3,7 @@ import 'package:app/helpers/colorsHelper.dart';
 import 'package:app/schemas/activitySchema.dart';
 import 'package:app/screens/activityDetailsScreen.dart';
 import 'package:app/screens/overViewScreen.dart';
+import 'package:app/screens/searchScreen.dart';
 import 'package:app/widgets/activityCardWidget.dart';
 import 'package:app/widgets/categoryCardWidget.dart';
 import "package:flutter/material.dart";
@@ -39,14 +40,14 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
               Container(
                 padding: EdgeInsets.only(bottom: 30),
                 decoration: BoxDecoration(
-                    color: Colors.white,
-                //   boxShadow: const [
-                //     BoxShadow(
-                //       blurRadius: 4,
-                //       color: Color(0x33000000),
-                //       offset: Offset(0, 2),
-                //     )
-                //   ],
+                  color: Colors.white,
+                  //   boxShadow: const [
+                  //     BoxShadow(
+                  //       blurRadius: 4,
+                  //       color: Color(0x33000000),
+                  //       offset: Offset(0, 2),
+                  //     )
+                  //   ],
                   borderRadius: BorderRadius.circular(0),
                 ),
                 child: Stack(
@@ -117,33 +118,69 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       )
                     ],
                   ),
-                  child: TextFormField(
-                    controller: textController,
-                    obscureText: false,
-                    decoration: InputDecoration(
-                      hintText: 'Where to go?',
-                      fillColor: Color(0xFFECF6FF),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Color(0x00000000),
-                          width: 1,
+                  child: InkWell(
+                                          onTap: () async {
+                        await Navigator.pushNamed(context, SearchScreen.router);
+                      },
+                      focusColor: Colors.white12,
+                    child: Hero(
+                      tag: "search_box1",
+                      child: Container(
+                        // height: 50,
+                        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black45, width: 1),
+                          borderRadius: BorderRadius.circular(16),
+                          color: Colors.white,
                         ),
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Color(0x00000000),
-                          width: 1,
-                        ),
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      filled: true,
-                      prefixIcon: Icon(
-                        size: 30,
-                        Icons.search,
+                        child: Row(children: [
+                          Icon(
+                            Icons.search_rounded,
+                            size: 30,
+                            color: Colors.black45,
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text("Where to go?",
+                              style: TextStyle(
+                                  fontSize: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium!
+                                      .fontSize,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black54)),
+                        ]),
                       ),
                     ),
                   ),
+                  // child: TextFormField(
+                  //   controller: textController,
+                  //   obscureText: false,
+                  //   decoration: InputDecoration(
+                  //     hintText: 'Where to go?',
+                  //     fillColor: Colors.white,
+                  //     enabledBorder: UnderlineInputBorder(
+                  //       borderSide: BorderSide(
+                  //         color: Colors.black45,
+                  //         width: 1,
+                  //       ),
+                  //       borderRadius: BorderRadius.circular(24),
+                  //     ),
+                  //     focusedBorder: UnderlineInputBorder(
+                  //       borderSide: BorderSide(
+                  //         color: Colors.black45,
+                  //         width: 1,
+                  //       ),
+                  //       borderRadius: BorderRadius.circular(24),
+                  //     ),
+                  //     filled: true,
+                  //     prefixIcon: Icon(
+                  //       size: 30,
+                  //       Icons.search,
+                  //     ),
+                  //   ),
+                  // ),
                 ),
               ),
             ],
@@ -206,19 +243,19 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             title: "Hours riding experiance 1",
             onPressed: () {
               print("jjjjjjjjjjjjjjjjjjj");
-              Navigator.pushNamed(context, ActivityDetailsScreen.router,
-                  arguments: ActivitySchema(
-                    latitude: 23.58448526857199,
-                    longitude: 58.138527790149006,
-                    address: "وحدة أمن السلطاني",
-                    description: "وحدة أمن السلطاني",
-                    imagePath: "assets/images/categories/discover_all.jpg",
-                  ),
-
-                );
+              Navigator.pushNamed(
+                context,
+                ActivityDetailsScreen.router,
+                arguments: ActivitySchema(
+                  latitude: 23.58448526857199,
+                  longitude: 58.138527790149006,
+                  address: "وحدة أمن السلطاني",
+                  description: "وحدة أمن السلطاني",
+                  imagePath: "assets/images/categories/discover_all.jpg",
+                ),
+              );
             }),
 
-       
         TextButton(
           onPressed: () {
             Navigator.pushReplacementNamed(context, OverviewScreen.router);

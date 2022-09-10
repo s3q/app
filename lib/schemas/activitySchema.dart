@@ -4,6 +4,7 @@ class ActivitySchema {
   String address;
   String description;
   String imagePath;
+  int? price;
 
   ActivitySchema({
     required this.latitude,
@@ -11,5 +12,6 @@ class ActivitySchema {
     required this.address,
     required this.description,
     required this.imagePath,
+     this.price,
   });
 }
