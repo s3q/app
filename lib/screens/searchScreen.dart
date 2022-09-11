@@ -5,12 +5,14 @@ import 'package:app/helpers/colorsHelper.dart';
 import 'package:app/helpers/geolocateHelper.dart';
 import 'package:app/schemas/activitySchema.dart';
 import 'package:app/widgets/SafeScreen.dart';
+import 'package:app/widgets/loadingWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:loading_indicator/loading_indicator.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:uuid/uuid.dart';
 
@@ -27,6 +29,7 @@ class _SearchScreenState extends State<SearchScreen>
     with TickerProviderStateMixin {
   late TabController _tabController = TabController(length: 2, vsync: this);
   int _currentTab = 0;
+  bool _isLoading = true;
 
   final _initialCameraPosition = const CameraPosition(
     target: LatLng(23.244037241974922, 58.091192746314015),
@@ -67,6 +70,12 @@ class _SearchScreenState extends State<SearchScreen>
     // TODO: implement initState
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+
+    Future.delayed(Duration(milliseconds: 1000), () {
+      setState(() {
+        _isLoading = false;
+      });
+    });
   }
 
   @override
@@ -130,6 +139,10 @@ class _SearchScreenState extends State<SearchScreen>
         })
         .values
         .toList();
+
+    if (_isLoading) {
+      return const LoadingWidget();
+    }
 
     return SafeScreen(
       padding: 0,
@@ -261,7 +274,6 @@ class _SearchScreenState extends State<SearchScreen>
                                         rating: 2,
                                         itemSize: 20,
                                       ),
-
                                       Padding(
                                         padding: EdgeInsetsDirectional.fromSTEB(
                                             4, 0, 0, 0),
@@ -272,7 +284,6 @@ class _SearchScreenState extends State<SearchScreen>
                                               .bodySmall,
                                         ),
                                       ),
-    
                                     ],
                                   ),
                                 ),
@@ -378,7 +389,10 @@ class _SearchScreenState extends State<SearchScreen>
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      icon: Icon(Icons.arrow_back_rounded, size: 28,),
+                      icon: Icon(
+                        Icons.arrow_back_rounded,
+                        size: 28,
+                      ),
                     ),
                     Expanded(
                       child: Container(
@@ -400,7 +414,7 @@ class _SearchScreenState extends State<SearchScreen>
                               borderRadius:
                                   BorderRadius.all(Radius.circular(16)),
                             ),
-                            enabledBorder: OutlineInputBorder(
+                            border: OutlineInputBorder(
                               borderSide: BorderSide(
                                 color: Colors.black45,
                                 width: 1,

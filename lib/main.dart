@@ -155,7 +155,7 @@ class MMApp extends StatelessWidget {
 
       },
       child: MaterialApp(
-        title: 'Flutter Demo',
+        title: 'Flutter Demo', // !
         theme: ThemeData(
           primarySwatch: ColorsHelper.green,
           // colorScheme: const ColorScheme.light(
@@ -271,7 +271,7 @@ class MMApp extends StatelessWidget {
               color: Colors.black, // Colors.gray[800]
             ),
             bodyMedium: TextStyle(
-              fontSize: 16,
+              fontSize: 17,
               color: Colors.black, // Colors.gray[800]
             ),
             bodySmall: TextStyle(

@@ -8,6 +8,8 @@ import 'package:app/widgets/activityCardWidget.dart';
 import 'package:app/widgets/categoryCardWidget.dart';
 import "package:flutter/material.dart";
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 
 class DiscoverScreen extends StatefulWidget {
   static String router = "/discover";
@@ -119,15 +121,16 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                     ],
                   ),
                   child: InkWell(
-                                          onTap: () async {
-                        await Navigator.pushNamed(context, SearchScreen.router);
-                      },
-                      focusColor: Colors.white12,
+                    onTap: () async {
+                      await Navigator.pushNamed(context, SearchScreen.router);
+                    },
+                    focusColor: Colors.white12,
                     child: Hero(
                       tag: "search_box1",
                       child: Container(
                         // height: 50,
-                        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 15, horizontal: 10),
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.black45, width: 1),
                           borderRadius: BorderRadius.circular(16),
@@ -205,7 +208,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
           child: Text(
-            'Categories',
+            'cat'.tr(),
             style: Theme.of(context).textTheme.headlineMedium,
           ),
         ),

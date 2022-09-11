@@ -8,7 +8,6 @@ class AppBarWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-      margin: EdgeInsets.only(bottom: 30),
       child: Row(
         children: [
           IconButton(

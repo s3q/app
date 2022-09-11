@@ -274,22 +274,21 @@ class _MassagesScreenState extends State<MassagesScreen> {
                                         //   prefixIcon: Icon(
                                         //     Icons.person,
                                         //   ),
-                                        focusedBorder:const OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                            color: Colors.transparent,
-                                            width: 1,
-                                          ),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50)),
-                                        ),
-                                        enabledBorder: const OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                            color: Colors.transparent,
-                                            width: 1,
-                                          ),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50)),
-                                        ),
+                                     focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.black45,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(16)),
+                      ),
+                      
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.black45,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(16)),
+                      ),
                                       ),
                                     ),
                                   ),

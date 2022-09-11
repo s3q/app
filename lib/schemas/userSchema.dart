@@ -12,8 +12,9 @@ class UserSchema {
   String? phoneNumber;
   Map<String, dynamic>? deviceInfo;
   String? displaySizes;
+  Map<dynamic, dynamic>? proAccount;
   int? dateOfBirth;
-  bool proAccount;
+  bool isProAccount;
   String? gender;
   String ip;
   List? chatList;
@@ -41,7 +42,8 @@ class UserSchema {
     this.deviceInfo,
     this.displaySizes,
     this.dateOfBirth,
-    this.proAccount = false,
+    this.proAccount,
+    this.isProAccount = false,
     this.gender,
     this.chatList,
     required this.ip,
@@ -63,6 +65,7 @@ class UserSchema {
       "displaySizes": displaySizes,
       "dateOfBirth": dateOfBirth,
       "proAccount": proAccount,
+      "isProAccount": isProAccount,
       "gender": gender,
       "chatList": chatList,
       "ip": ip,

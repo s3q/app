@@ -107,22 +107,21 @@ class _SigninScreenState extends State<SigninScreen> {
                                   prefixIcon: Icon(
                                     Icons.person,
                                   ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Colors.black45,
-                                      width: 1,
-                                    ),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(16)),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Colors.black45,
-                                      width: 1,
-                                    ),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(16)),
-                                  ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.black45,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(16)),
+                      ),
+                      
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.black45,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(16)),
+                      ),
                                 ),
                                 validator: (val) {
                                   if (val == null)
@@ -154,22 +153,21 @@ class _SigninScreenState extends State<SigninScreen> {
                                   prefixIcon: Icon(
                                     Icons.person,
                                   ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Colors.black45,
-                                      width: 1,
-                                    ),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(16)),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Colors.black45,
-                                      width: 1,
-                                    ),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(16)),
-                                  ),
+                             focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.black45,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(16)),
+                      ),
+                      
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.black45,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(16)),
+                      ),
                                 ),
                                 validator: (val) {
                                   if (val == null)
@@ -205,20 +203,21 @@ class _SigninScreenState extends State<SigninScreen> {
                           prefixIcon: Icon(
                             Icons.email_rounded,
                           ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                      color: Colors.black45,
-                              width: 1,
-                            ),
-                            borderRadius: BorderRadius.all(Radius.circular(16)),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                      color: Colors.black45,
-                              width: 1,
-                            ),
-                            borderRadius: BorderRadius.all(Radius.circular(16)),
-                          ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.black45,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(16)),
+                      ),
+                      
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.black45,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(16)),
+                      ),
                         ),
                         validator: (val) {
                           if (val == null ||
@@ -244,20 +243,21 @@ class _SigninScreenState extends State<SigninScreen> {
                           prefixIcon: Icon(
                             Icons.key_rounded,
                           ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                      color: Colors.black45,
-                              width: 1,
-                            ),
-                            borderRadius: BorderRadius.all(Radius.circular(16)),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                      color: Colors.black45,
-                              width: 1,
-                            ),
-                            borderRadius: BorderRadius.all(Radius.circular(16)),
-                          ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.black45,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(16)),
+                      ),
+                      
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.black45,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(16)),
+                      ),
                         ),
                         validator: (val) {
                           if (val == null)
@@ -300,22 +300,21 @@ class _SigninScreenState extends State<SigninScreen> {
                             prefixIcon: Icon(
                               Icons.key_rounded,
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                      color: Colors.black45,
-                                width: 1,
-                              ),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(16)),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                      color: Colors.black45,
-                                width: 1,
-                              ),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(16)),
-                            ),
+                                            focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.black45,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(16)),
+                      ),
+                      
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.black45,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(16)),
+                      ),
                           ),
                           validator: (val) {
                             if (val == null) {

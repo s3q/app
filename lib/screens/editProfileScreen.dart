@@ -61,6 +61,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           Expanded(
             child: ListView(
               children: [
+                SizedBox(
+                  height: 30,
+                ),
                 Column(
                   children: [
                     Container(
@@ -91,7 +94,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(16)),
                                   ),
-                                  enabledBorder: OutlineInputBorder(
+                                  border: OutlineInputBorder(
                                     borderSide: BorderSide(
                                       color: Colors.black45,
                                       width: 1,
@@ -138,7 +141,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       borderRadius:
                                           BorderRadius.all(Radius.circular(16)),
                                     ),
-                                    enabledBorder: OutlineInputBorder(
+                                    border: OutlineInputBorder(
                                       borderSide: BorderSide(
                                         color: Colors.black45,
                                         width: 1,
@@ -169,74 +172,70 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                   ],
                 ),
-            
                 SizedBox(
-              height: 10,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Divider(
-                height: 1,
-              ),
-            ),
-            ListTile(
-              title: Text("Email"),
-              subtitle: Text(userProvider.currentUser!.email ?? ""),
-              trailing: LinkWidget(
-                text: userProvider.currentUser!.email == null
-                    ? "Add"
-                    : "Edit",
-                onPressed: () {},
-              ),
-              onTap: () {
-                print("dfdfdf");
-                Navigator.pushNamed(context, UpdateProfileDataScreen.router,
-                    arguments: true);
-              },
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Divider(
-                height: 1,
-              ),
-            ),
-            ListTile(
-              title: Text("Phone Number"),
-              subtitle: Text(userProvider.currentUser!.phoneNumber ?? ""),
-              trailing: LinkWidget(
-                text: userProvider.currentUser!.phoneNumber == null
-                    ? "Add"
-                    : "Edit",
-                onPressed: () {},
-              ),
-              onTap: () {
-                print("dfdfdf");
-                Navigator.pushNamed(context, UpdateProfileDataScreen.router,
-                    arguments: false);
-              },
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Divider(
-                height: 1,
-              ),
-            ),
-            
-                      Container(
-              decoration: BoxDecoration(
-                  // border: ,
+                  height: 10,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Divider(
+                    height: 1,
                   ),
-              padding: EdgeInsets.all(20),
-              child: ElevatedButton(
-                child: Text("save"),
-                onPressed: () {},
-              ),
-            ),
+                ),
+                ListTile(
+                  title: Text("Email"),
+                  subtitle: Text(userProvider.currentUser!.email ?? ""),
+                  trailing: LinkWidget(
+                    text: userProvider.currentUser!.email == null
+                        ? "Add"
+                        : "Edit",
+                    onPressed: () {},
+                  ),
+                  onTap: () {
+                    print("dfdfdf");
+                    Navigator.pushNamed(context, UpdateProfileDataScreen.router,
+                        arguments: true);
+                  },
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Divider(
+                    height: 1,
+                  ),
+                ),
+                ListTile(
+                  title: Text("Phone Number"),
+                  subtitle: Text(userProvider.currentUser!.phoneNumber ?? ""),
+                  trailing: LinkWidget(
+                    text: userProvider.currentUser!.phoneNumber == null
+                        ? "Add"
+                        : "Edit",
+                    onPressed: () {},
+                  ),
+                  onTap: () {
+                    print("dfdfdf");
+                    Navigator.pushNamed(context, UpdateProfileDataScreen.router,
+                        arguments: false);
+                  },
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Divider(
+                    height: 1,
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                      // border: ,
+                      ),
+                  padding: EdgeInsets.all(20),
+                  child: ElevatedButton(
+                    child: Text("save"),
+                    onPressed: () {},
+                  ),
+                ),
               ],
             ),
           ),
-          
-
         ],
       ),
     );

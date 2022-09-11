@@ -104,18 +104,18 @@ class UserProvider with ChangeNotifier {
     required ProUserSchema proUserData,
     required String email,
     required String phoneNumber,
-    required String dateOfBirth,
+    required int dateOfBirth,
     required String name,
   }) async {
     if (currentUser != null && credentialUser != null && islogin()) {
       try {
         assert(currentUser!.Id != null);
-        CollectionReference pro_usersCollection =
-            store.collection(CollectionsConstants.pro_users);
+        // CollectionReference pro_usersCollection =
+        //     store.collection(CollectionsConstants.pro_users);
         CollectionReference usersCollection =
             store.collection(CollectionsConstants.users);
 
-        pro_usersCollection.add(proUserData.toMap());
+        // pro_usersCollection.add(proUserData.toMap());
 
         QuerySnapshot<Object?> query =
             await usersCollection.where("Id", isEqualTo: currentUser!.Id).get();
@@ -125,11 +125,15 @@ class UserProvider with ChangeNotifier {
           "phoneNumber": phoneNumber,
           "dateOfBirth": dateOfBirth,
           "name": name,
-          "proAccount": true,
+          "isProAccount": true,
+          "proAccount": proUserData.toMap(),
         };
 
         assert(query.docs.length == 1);
-        query.docs.single.reference.update(userData);
+
+        await query.docs.single.reference.update(userData);
+
+        proCurrentUser = proUserData;
       } catch (err) {
         print(err);
       }
@@ -172,6 +176,7 @@ class UserProvider with ChangeNotifier {
         providerId: userData.providerData[0].providerId,
         phoneNumber: userData.phoneNumber,
         deviceInfo: deviceInfo.toMap(),
+        proAccount: null,
         displaySizes:
             "${MediaQuery.of(context).size.width} ${MediaQuery.of(context).size.height}",
         dateOfBirth: null,
@@ -197,13 +202,12 @@ class UserProvider with ChangeNotifier {
             query.docs[0]["phoneNumber"] == userData.phoneNumber) &&
         query.docs[0]["Id"] == userData.uid &&
         !sginup) {
-
       await query.docs.single.reference
           .update({"lastLogin": DateTime.now().millisecondsSinceEpoch});
 
       Map userQueryData = query.docs.single.data() as Map;
       print(userQueryData);
-      
+
       currentUser = UserSchema(
         email: userQueryData["email"],
         name: userQueryData["name"],
@@ -216,13 +220,24 @@ class UserProvider with ChangeNotifier {
         displaySizes: userQueryData["displaySizes"],
         dateOfBirth: userQueryData["dateOfBirth"],
         proAccount: userQueryData["proAccount"],
+        isProAccount: userQueryData["isProAccount"],
         gender: userQueryData["gender"],
         chatList: userQueryData["chatList"],
         ip: userQueryData["ip"],
         profileColor: userQueryData["profileColor"],
         profileImagePath: userQueryData["profileImagePath"],
       );
-      
+
+      if (currentUser!.isProAccount == true &&
+          currentUser!.proAccount != null) {
+        Map proUserQueryData = currentUser!.proAccount!;
+        proCurrentUser = ProUserSchema(
+            createdAt: proUserQueryData["createdAt"],
+            userId: proUserQueryData["userId"],
+            publicPhoneNumber: proUserQueryData["publicPhoneNumber"],
+            publicEmail: proUserQueryData["publicEmail"]);
+      }
+
       currentUser!.lastLogin = DateTime.now().millisecondsSinceEpoch;
       notifyListeners();
     }
