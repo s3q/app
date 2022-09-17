@@ -4,6 +4,7 @@ import 'package:app/helpers/colorsHelper.dart';
 import 'package:app/providers/settingsProvider.dart';
 import 'package:app/screens/getStartedScreen.dart';
 import 'package:app/screens/signinScreen.dart';
+import 'package:app/widgets/LinkWidget.dart';
 import 'package:app/widgets/SafeScreen.dart';
 import "package:flutter/material.dart";
 import "package:localization/localization.dart";
@@ -37,14 +38,14 @@ class _OverviewScreenState extends State<OverviewScreen> {
         children: [
           Text(
             "overviewHeader1".tr(),
-            style: Theme.of(context).textTheme.displayMedium,
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
           SizedBox(
-            height: 20,
+            height: 100,
           ),
           Text(
             "overviewText1".tr(),
-            style: Theme.of(context).textTheme.displaySmall,
+            style: TextStyle(fontSize: Theme.of(context).textTheme.headlineMedium!.fontSize,),
           ),
         ],
       ),
@@ -59,7 +60,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
           ),
           Text(
             "overviewHeader2".tr(),
-            style: Theme.of(context).textTheme.displayMedium,
+            style: TextStyle(fontSize: Theme.of(context).textTheme.headlineMedium!.fontSize,),
           ),
         ],
       ),
@@ -72,7 +73,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
           ),
           Text(
             "overviewHeader3".tr(),
-            style: Theme.of(context).textTheme.displaySmall,
+            style: TextStyle(fontSize: Theme.of(context).textTheme.headlineMedium!.fontSize,),
           ),
         ],
       ),
@@ -156,11 +157,12 @@ class _OverviewScreenState extends State<OverviewScreen> {
             ],
           ),
           Positioned(
-            bottom: 10,
+            bottom: 30,
             right: 50,
             child: Column(
               children: [
                 ElevatedButton(
+    
                   onPressed: () {
                     if (indexOverView != 2) {
                       setState(() {
@@ -172,21 +174,20 @@ class _OverviewScreenState extends State<OverviewScreen> {
                     }
                   },
                   style: ButtonStyle(
+                    
                     padding: MaterialStateProperty.all(
-                      const EdgeInsets.symmetric(horizontal: 60, vertical: 20),
+                      const EdgeInsets.symmetric(horizontal: 80, vertical: 20),
                     ),
+                    
                   ),
-                  child: indexOverView == 2
-                      ? const Text("Get Started")
-                      : const Text("Next"),
+                  child: indexOverView == 2 /// !!!!!!!!!!!!!!!!!!!
+                      ? const Text("Get Started", style: TextStyle(fontSize: 18),)
+                      :  Text("Next", style: TextStyle(fontSize: 18),),
                 ),
-                TextButton(
-                  onPressed: () {
+
+                LinkWidget(text: "sign up or login", onPressed:  () {
                     Navigator.pushNamed(context, GetStartedScreen.router);
-                  },
-                  style: TextButton.styleFrom(primary: Colors.blueGrey),
-                  child: const Text("sign up or login"),
-                ),
+                  }),
               ],
             ),
           ),

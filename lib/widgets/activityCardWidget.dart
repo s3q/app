@@ -1,17 +1,12 @@
 import 'package:app/helpers/colorsHelper.dart';
+import 'package:app/schemas/activitySchema.dart';
 import "package:flutter/material.dart";
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ActivityCardWidget extends StatefulWidget {
-  String imagePath;
-  String title;
   Function() onPressed;
-  ActivityCardWidget(
-      {Key? key,
-      required this.imagePath,
-      required this.title,
-      required this.onPressed})
-      : super(key: key);
+  ActivitySchema activity;
+  ActivityCardWidget({Key? key, required this.activity, required this.onPressed}) : super(key: key);
 
   @override
   State<ActivityCardWidget> createState() => _ActivityCardWidgetState();
@@ -45,9 +40,9 @@ class _ActivityCardWidgetState extends State<ActivityCardWidget> {
                     child: Stack(
                       children: [
                         Hero(
-                          tag: widget.imagePath,
+                          tag: widget.activity.images[0],
                           child: Image.asset(
-                            widget.imagePath,
+                            widget.activity.images[0],
                             width: MediaQuery.of(context).size.width,
                             height: 170,
                             fit: BoxFit.cover,
@@ -63,7 +58,7 @@ class _ActivityCardWidgetState extends State<ActivityCardWidget> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.title,
+                          widget.activity.title,
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
@@ -114,7 +109,7 @@ class _ActivityCardWidgetState extends State<ActivityCardWidget> {
                             Row(
                               mainAxisSize: MainAxisSize.max,
                               children: [
-                                Icon(
+                                const Icon(
                                   Icons.star_rounded,
                                   color: Color(0xFFFFA130),
                                   size: 25,
@@ -160,7 +155,7 @@ class _ActivityCardWidgetState extends State<ActivityCardWidget> {
                                     mainAxisSize: MainAxisSize.max,
                                     children: [
                                       Text(
-                                        '50',
+                                        widget.activity.priceStartFrom.toString(),
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodyLarge,

@@ -2,6 +2,7 @@ import 'package:app/helpers/appHelper.dart';
 import 'package:app/helpers/colorsHelper.dart';
 import 'package:app/schemas/activitySchema.dart';
 import 'package:app/screens/activityDetailsScreen.dart';
+import 'package:app/screens/addActivityScreen.dart';
 import 'package:app/screens/overViewScreen.dart';
 import 'package:app/screens/searchScreen.dart';
 import 'package:app/widgets/activityCardWidget.dart';
@@ -9,7 +10,6 @@ import 'package:app/widgets/categoryCardWidget.dart';
 import "package:flutter/material.dart";
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:easy_localization/easy_localization.dart';
-
 
 class DiscoverScreen extends StatefulWidget {
   static String router = "/discover";
@@ -122,7 +122,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                   ),
                   child: InkWell(
                     onTap: () async {
-                      await Navigator.pushNamed(context, SearchScreen.router);
+                      await Navigator.pushNamed(context, SearchScreen.router, arguments: AppHelper.Activities[0]);
                     },
                     focusColor: Colors.white12,
                     child: Hero(
@@ -242,20 +242,13 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         ),
 
         ActivityCardWidget(
-            imagePath: "assets/images/categories/discover_all.jpg",
-            title: "Hours riding experiance 1",
+            activity: AppHelper.Activities[0],
             onPressed: () {
               print("jjjjjjjjjjjjjjjjjjj");
               Navigator.pushNamed(
                 context,
                 ActivityDetailsScreen.router,
-                arguments: ActivitySchema(
-                  latitude: 23.58448526857199,
-                  longitude: 58.138527790149006,
-                  address: "وحدة أمن السلطاني",
-                  description: "وحدة أمن السلطاني",
-                  imagePath: "assets/images/categories/discover_all.jpg",
-                ),
+                arguments:AppHelper.Activities[0],
               );
             }),
 
@@ -264,7 +257,13 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             Navigator.pushReplacementNamed(context, OverviewScreen.router);
           },
           child: Text("signout"),
-        )
+        ),
+
+        TextButton(
+            onPressed: () {
+              Navigator.pushNamed(context, AddActivityScreen.router);
+            },
+            child: Text("add activity"))
       ],
     );
   }

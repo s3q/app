@@ -1,5 +1,4 @@
 import 'package:app/constants/constants.dart';
-import 'package:app/helpers/userHelper.dart';
 import 'package:app/providers/userProvider.dart';
 import 'package:app/schemas/chatSchema.dart';
 import 'package:app/schemas/massageSchema.dart';
@@ -27,8 +26,6 @@ class ChatProvider with ChangeNotifier {
       required BuildContext context}) async {
     // List users = e["users"]
     Map<String, dynamic> users = {};
-    UsersHelperProvider usersHelperProvider =
-        Provider.of<UsersHelperProvider>(context, listen: false);
     UserProvider userProvider =
         Provider.of<UserProvider>(context, listen: false);
 
@@ -68,7 +65,7 @@ class ChatProvider with ChangeNotifier {
 
       //   }
 
-      await usersHelperProvider.fetchUserData(userId: userId2);
+      await userProvider.fetchUserData(userId: userId2);
       //   users[docs[i].id] = [usersHelperProvider.users[userId2]];
 
       //   print(users[docs[i].id]);
@@ -257,8 +254,7 @@ class ChatProvider with ChangeNotifier {
       /* ####################  add users to temporary storage #################### */
       print([auth.currentUser!.uid, userId]);
       print(checkingQuery.docs.toList());
-      UsersHelperProvider usersHelperProvider =
-          Provider.of<UsersHelperProvider>(context, listen: false);
+     
       UserProvider userProvider =
           Provider.of<UserProvider>(context, listen: false);
 
@@ -276,7 +272,7 @@ class ChatProvider with ChangeNotifier {
       //   );
       // }
 
-      usersHelperProvider.fetchUserData(userId: userId);
+      userProvider.fetchUserData(userId: userId);
       /* #################### */
 
       if (checkingQuery.docs.isEmpty) {

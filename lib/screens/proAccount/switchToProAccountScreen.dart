@@ -80,6 +80,7 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
           context: context,
           proUserData: proUserData,
           email: data["email"],
+          city: data["city"],
           phoneNumber: data["phoneNumber"],
           dateOfBirth: data["dateOfBirth"],
           name: data["name"]);
@@ -92,7 +93,8 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
     UserProvider userProvider = Provider.of<UserProvider>(context);
     _nameInput.text = userProvider.currentUser!.name ?? data["name"] ?? "";
     _emailInput.text = userProvider.currentUser!.email ?? data["email"] ?? "";
-    _phoneNumberInput.text = userProvider.currentUser!.phoneNumber ?? data["phoneNumber"] ?? "";
+    _phoneNumberInput.text =
+        userProvider.currentUser!.phoneNumber ?? data["phoneNumber"] ?? "";
     _cityInput.text = userProvider.currentUser!.city ?? data["city"] ?? "";
 
     List _citiesOfOman = ["muscate", "smail", "nazwa"];
@@ -236,14 +238,15 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                     height: 15,
                   ),
                   SearchField(
-                    initialValue: SearchFieldListItem(userProvider.currentUser?.city ?? _citiesOfOman[0]),
+                    initialValue: SearchFieldListItem(
+                        userProvider.currentUser?.city ?? _citiesOfOman[0]),
                     suggestions: _citiesOfOman
                         .map((e) => SearchFieldListItem(e))
                         .toList(),
                     suggestionState: Suggestion.expand,
                     textInputAction: TextInputAction.next,
                     hint: 'City',
-                    hasOverlay: false,
+                    hasOverlay: true,
                     searchStyle: const TextStyle(
                       fontSize: 18,
                       color: Colors.black,
@@ -271,7 +274,9 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                     ),
                     maxSuggestionsInViewPort: 6,
                     itemHeight: 40,
-                    // onTap: (x) {},
+                    onSuggestionTap: (x) {
+                      data["city"] = x;
+                    },
                   ),
                   SizedBox(
                     height: 15,
@@ -487,7 +492,6 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                       data["publicPhoneNumber"] = await PhoneNumberUtil()
                           .format("+" + region.prefix.toString() + val.trim(),
                               region.code);
-        
                     },
                     onSaved: (val) async {
                       data["publicPhoneNumber"] = await PhoneNumberUtil()
@@ -496,7 +500,6 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                                   region.prefix.toString() +
                                   (val?.trim() ?? ""),
                               region.code);
-                      
                     },
                   ),
                   SizedBox(

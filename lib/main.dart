@@ -1,17 +1,17 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:app/helpers/colorsHelper.dart';
-import 'package:app/helpers/userHelper.dart';
 import 'package:app/providers/chatProvider.dart';
 import 'package:app/providers/settingsProvider.dart';
 import 'package:app/providers/userProvider.dart';
 import 'package:app/schemas/userSchema.dart';
 import 'package:app/screens/activityDetailsScreen.dart';
+import 'package:app/screens/addActivityScreen.dart';
 import 'package:app/screens/editProfileScreen.dart';
 import 'package:app/screens/getStartedScreen.dart';
 import 'package:app/screens/homeScreen.dart';
-import 'package:app/screens/mapScreen.dart';
 import 'package:app/screens/massagesScreen.dart';
 import 'package:app/screens/overViewScreen.dart';
+import 'package:app/screens/pickLocationScreen.dart';
 import 'package:app/screens/policyAndPrivacyScreen.dart';
 import 'package:app/screens/proAccount/switchToProAccountScreen.dart';
 import 'package:app/screens/profileScreen.dart';
@@ -70,7 +70,6 @@ class MainApp extends StatelessWidget {
     return MultiProvider(providers: [
       ChangeNotifierProvider.value(value: SettingsProvider()),
       ChangeNotifierProvider.value(value: UserProvider()),
-      ChangeNotifierProvider.value(value: UsersHelperProvider()),
       ChangeNotifierProvider.value(value: ChatProvider()),
     ], child: const MApp()
 
@@ -243,6 +242,17 @@ class MMApp extends StatelessWidget {
         //       color: Color(0xFF424242), // Colors.gray[800]
         //     ),
         //   ),
+
+
+        /*
+
+        buttons: 
+        font: 14, 18
+
+        link:
+        font: 16, underline
+
+         */
         textTheme: const TextTheme(
             displayLarge: TextStyle(
               fontSize: 45,
@@ -254,16 +264,17 @@ class MMApp extends StatelessWidget {
               fontSize: 30,
             ),
             headlineSmall: TextStyle(
+                fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Color(0xEE000000),
             ),
             headlineMedium: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 25,
+              fontSize: 22,
               color: Color(0xEE000000),
             ),
             headlineLarge: TextStyle(
-              fontWeight: FontWeight.bold,
+            //   fontWeight: FontWeight.bold,
               color: Color(0xEE000000),
             ),
             bodyLarge: TextStyle(
@@ -283,7 +294,7 @@ class MMApp extends StatelessWidget {
               color: Colors.black, // Colors.gray[800]
             ),
             titleMedium: TextStyle(
-              fontWeight: FontWeight.bold,
+            //   fontWeight: FontWeight.bold,
               fontSize: 20,
               color: Colors.black, // Colors.gray[800]
             ),
@@ -298,7 +309,7 @@ class MMApp extends StatelessWidget {
                 backgroundColor: Colors.white,
                 // foregroundColor: Colors.black, // !!!!!!!!!
                 textStyle: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                 )
             )
             // style: ButtonStyle(
@@ -315,7 +326,7 @@ class MMApp extends StatelessWidget {
             style: ButtonStyle(
               elevation: MaterialStateProperty.all(0),
               textStyle: MaterialStateProperty.all(const TextStyle(
-                fontSize: 18,
+                fontSize: 14,
               )),
               shape: MaterialStateProperty.all(
                 RoundedRectangleBorder(
@@ -341,6 +352,8 @@ class MMApp extends StatelessWidget {
               ),
             ),
           ),
+
+          
         ),
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,
@@ -355,14 +368,15 @@ class MMApp extends StatelessWidget {
           TermsAndConditionsScreen.router: (_) =>
               const TermsAndConditionsScreen(),
           ActivityDetailsScreen.router: (_) => ActivityDetailsScreen(),
-          MapScreen.router: (context) => MapScreen(),
           SigninPhoneNumberScreen.router: (context) => SigninPhoneNumberScreen(),
           MassagesScreen.router: (context) => MassagesScreen(),
-          SearchScreen.router: (context) => SearchScreen(), 
+          SearchScreen.router: (context) => SearchScreen(),
            ProfileScreen.router: (context) => ProfileScreen(),
            EditProfileScreen.router: (context) => EditProfileScreen(),
            UpdateProfileDataScreen.router: (context) => UpdateProfileDataScreen(),
            SwitchToProAccountScreen.router: (context) => SwitchToProAccountScreen(),
+           AddActivityScreen.router: (context) => AddActivityScreen(),
+           PickLocationSceen.router: (context) => PickLocationSceen(),
         },
         debugShowCheckedModeBanner: false,
       ),

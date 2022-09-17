@@ -1,5 +1,5 @@
-import 'package:app/helpers/userHelper.dart';
 import 'package:app/providers/chatProvider.dart';
+import 'package:app/providers/userProvider.dart';
 import 'package:app/schemas/chatSchema.dart';
 import 'package:app/schemas/userSchema.dart';
 import 'package:app/screens/massagesScreen.dart';
@@ -12,12 +12,11 @@ class ChatBoxWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UsersHelperProvider usersHelperProvider =
-        Provider.of<UsersHelperProvider>(context);
     print(chat.users[0]);
     ChatProvider chatprovider =
         Provider.of<ChatProvider>(context, listen: false);
-    UserSchema user = usersHelperProvider.users[chat.users[0]]!;
+        UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
+    UserSchema user = userProvider.users[chat.users[0]]!;
 
     return InkWell(
       onTap: () async {

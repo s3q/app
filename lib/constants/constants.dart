@@ -7,4 +7,5 @@ class CollectionsConstants {
   static String massages = "massages";
   static String users = "users";
   static String pro_users = "pro_users";
+  static String activities = "activites";
 }

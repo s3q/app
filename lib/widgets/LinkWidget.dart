@@ -14,7 +14,7 @@ class LinkWidget extends StatelessWidget {
         child: Text(
           text,
           style: TextStyle(
-            fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+            fontSize: 16,
             color: Theme.of(context).colorScheme.secondary,
             decoration: TextDecoration.underline,
           ),

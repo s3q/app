@@ -1,6 +1,5 @@
 import 'package:app/constants/constants.dart';
 import 'package:app/helpers/colorsHelper.dart';
-import 'package:app/helpers/userHelper.dart';
 import 'package:app/providers/chatProvider.dart';
 import 'package:app/providers/userProvider.dart';
 import 'package:app/schemas/chatSchema.dart';
@@ -74,22 +73,20 @@ class _MassagesScreenState extends State<MassagesScreen> {
     final args = ModalRoute.of(context)?.settings.arguments as ChatSchema;
     UserProvider userProvider = Provider.of<UserProvider>(context);
     ChatProvider chatProvider = Provider.of<ChatProvider>(context);
-    UsersHelperProvider usersHelperProvider =
-        Provider.of<UsersHelperProvider>(context);
 
     args.users.remove(userProvider.credentialUser?.uid);
     String userId = args.users[0];
-    UserSchema user = usersHelperProvider.users[userId]!;
+    UserSchema user = userProvider.users[userId]!;
 
     return FutureBuilder(
-        future: usersHelperProvider.fetchUserData(userId: userId),
+        future: userProvider.fetchUserData(userId: userId),
         builder: (BuildContext context, AsyncSnapshot<Object?> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
               child: CircularProgressIndicator(),
             );
           }
-          if (usersHelperProvider.users[userId] == null) {
+          if (userProvider.users[userId] == null) {
             Navigator.pop(context);
           }
 

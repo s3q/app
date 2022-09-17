@@ -1,4 +1,3 @@
-import 'package:app/helpers/userHelper.dart';
 import 'package:app/providers/chatProvider.dart';
 import 'package:app/providers/userProvider.dart';
 import 'package:app/schemas/userSchema.dart';
@@ -19,8 +18,6 @@ class ChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final ChatProvider chatProvider =
         Provider.of<ChatProvider>(context, listen: false);
-    final UsersHelperProvider usersHelperProvider =
-        Provider.of<UsersHelperProvider>(context);
 
     return Builder(builder: (context) {
       if (auth.currentUser == null) {

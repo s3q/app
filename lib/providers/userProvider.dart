@@ -15,6 +15,8 @@ import 'package:dart_ipify/dart_ipify.dart';
 class UserProvider with ChangeNotifier {
   User? credentialUser;
   UserSchema? currentUser;
+    Map<String, UserSchema> users = {};
+
   ProUserSchema? proCurrentUser;
   static String collection = CollectionsConstants.users;
   static final auth = FirebaseAuth.instance;
@@ -45,6 +47,24 @@ class UserProvider with ChangeNotifier {
     } catch (err) {
       return false;
     }
+  }
+
+  
+  Future fetchUserData({required String userId}) async {
+    if (users[userId] == null) {
+      QuerySnapshot<Map<String, dynamic>> u = await store
+          .collection(UserProvider.collection)
+          .where("Id", isEqualTo: userId)
+          .get();
+      Map<String, dynamic> user = u.docs.single.data();
+      users[userId] = UserSchema(
+        name: user["name"],
+        Id: user["Id"],
+        ip: user["ip"],
+        profileColor: user["profileColor"],
+      );
+    }
+    return users[userId];
   }
 
   Future<UserCredential?> signInWithGoogle(BuildContext context) async {
@@ -103,6 +123,7 @@ class UserProvider with ChangeNotifier {
     required BuildContext context,
     required ProUserSchema proUserData,
     required String email,
+    required String city,
     required String phoneNumber,
     required int dateOfBirth,
     required String name,
@@ -126,6 +147,7 @@ class UserProvider with ChangeNotifier {
           "dateOfBirth": dateOfBirth,
           "name": name,
           "isProAccount": true,
+          "city": city,
           "proAccount": proUserData.toMap(),
         };
 

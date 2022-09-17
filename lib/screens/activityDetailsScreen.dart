@@ -5,8 +5,8 @@ import 'package:app/helpers/colorsHelper.dart';
 import 'package:app/providers/chatProvider.dart';
 import 'package:app/providers/userProvider.dart';
 import 'package:app/schemas/activitySchema.dart';
-import 'package:app/screens/mapScreen.dart';
 import 'package:app/screens/massagesScreen.dart';
+import 'package:app/widgets/googlemapDescWidget.dart';
 import 'package:app/widgets/ratingBarWidget.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:badges/badges.dart';
@@ -107,22 +107,22 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                   child: Stack(
                     children: [
                       Hero(
-                        tag: args.imagePath,
+                        tag: args.images[0],
                         child: PageView(
                           controller: pageViewController,
                           children: [
                             Image.asset(
-                              args.imagePath,
+                              args.images[0],
                               height: 200,
                               fit: BoxFit.cover,
                             ),
                             Image.asset(
-                              args.imagePath,
+                              args.images[0],
                               height: 200,
                               fit: BoxFit.cover,
                             ),
                             Image.asset(
-                              args.imagePath,
+                              args.images[0],
                               height: 200,
                               fit: BoxFit.cover,
                             ),
@@ -168,7 +168,6 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                               borderRadius: BorderRadius.circular(50),
                               color: Colors.white60),
                           child: IconButton(
-                        
                             icon: const Icon(Icons.arrow_back, size: 28),
                             onPressed: () {
                               Navigator.pop(context);
@@ -185,7 +184,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                 child: Column(
                   children: [
                     Text(
-                      "Dolphin watching and snorking Muscat ",
+                      args.title,
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     SizedBox(
@@ -201,7 +200,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                         Padding(
                           padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
                           child: Text(
-                            '20',
+                            args.priceStartFrom.toString(),
                             style: Theme.of(context)
                                 .textTheme
                                 .copyWith(
@@ -261,7 +260,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                         Padding(
                           padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
                           child: Text(
-                            'smail, adldakilia',
+                            args.address,
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ),
@@ -276,22 +275,21 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
               Stack(
                 children: [
                   Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: 250,
-                    child: MapSample(
-                      latitude: 23.58448526857199,
-                      longitude: 58.138527790149006,
-                      address: "وحدة أمن السلطاني",
-                      description: "وحدة أمن السلطاني",
-                    ),
-                  ),
+                      width: MediaQuery.of(context).size.width,
+                      height: 250,
+                      child: GooglemapDescWidget(
+                        latlan: LatLng(args.lat, args.lng),
+                        onChanged: () {},
+                      )),
                   CupertinoButton(
                     color: ColorsHelper.red,
                     padding: EdgeInsets.all(10),
                     borderRadius: BorderRadius.zero,
                     onPressed: () {
-                      Navigator.pushNamed(context, MapScreen.router,
-                          arguments: args);
+                    //   Navigator.pushNamed(context, MapScreen.router,
+                    //       arguments: args);
+
+                    // !!!!!!!!!!!!!!!!!!!!!!!!
                     },
                     child: Icon(
                       Icons.open_in_full_rounded,
@@ -447,7 +445,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                             _gotoChat(
                               context: context,
                               userProvider: userProvider,
-                              userId: "mw1nzK98cHUm14emdFoWsoRlVPD2",
+                              userId: args.userId,
                             );
                           },
                           child: Text("Contact Owner"),

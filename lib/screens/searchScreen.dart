@@ -31,6 +31,8 @@ class _SearchScreenState extends State<SearchScreen>
   int _currentTab = 0;
   bool _isLoading = true;
 
+  List<ActivitySchema> activitiesList = AppHelper.Activities;
+
   final _initialCameraPosition = const CameraPosition(
     target: LatLng(23.244037241974922, 58.091192746314015),
     zoom: 20,
@@ -80,39 +82,16 @@ class _SearchScreenState extends State<SearchScreen>
 
   @override
   Widget build(BuildContext context) {
-    List<ActivitySchema> activitiesList = [
-      ActivitySchema(
-        latitude: 23.58448526857199,
-        longitude: 58.138527790149006,
-        address: "AAAAA",
-        description: "description",
-        price: 16,
-        imagePath: "assets/images/categories/discover_all.jpg",
-      ),
-      ActivitySchema(
-        latitude: 22.995735366806212,
-        longitude: 58.13756972877766,
-        address: "AAAAA",
-        description: "description",
-        price: 23,
-        imagePath: "assets/images/categories/discover_all.jpg",
-      ),
-      ActivitySchema(
-        latitude: 23.244037241974922,
-        longitude: 58.091192746314015,
-        address: "AAAAA",
-        price: 58,
-        description: "description",
-        imagePath: "assets/images/categories/discover_all.jpg",
-      ),
-    ];
+    final args = ModalRoute.of(context)?.settings.arguments as ActivitySchema;
+
+    if (args != null) activitiesList.add(args);
 
     Marker _marker = Marker(
       markerId: MarkerId(Uuid().v4()),
-      position: LatLng(activitiesList[0].latitude, activitiesList[0].longitude),
+      position: LatLng(activitiesList[0].lat, activitiesList[0].lng),
       infoWindow: InfoWindow(
-          title: activitiesList[0].address,
-          snippet: activitiesList[0].description),
+        title: activitiesList[0].address,
+      ),
     );
 
     List<Marker> _markers = activitiesList
@@ -123,10 +102,10 @@ class _SearchScreenState extends State<SearchScreen>
               Marker(
                 flat: true,
                 markerId: MarkerId(Uuid().v4()),
-                position: LatLng(e.latitude, e.longitude),
+                position: LatLng(activitiesList[0].lat, activitiesList[0].lng),
                 infoWindow: InfoWindow(
                   title: e.address,
-                  snippet: (e.price.toString() + "\$"),
+                  snippet: (e.priceStartFrom.toString() + "\$"),
                 ),
                 icon: BitmapDescriptor.defaultMarkerWithHue(
                     BitmapDescriptor.hueRose),
@@ -239,7 +218,7 @@ class _SearchScreenState extends State<SearchScreen>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Image.asset(
-                                  activitiesList[index].imagePath,
+                                  activitiesList[index].images[0],
                                   fit: BoxFit.cover,
                                   height: 100,
                                   width: 100,
@@ -301,7 +280,9 @@ class _SearchScreenState extends State<SearchScreen>
                                   icon: Icon(Icons.assistant_navigation),
                                 ),
                                 Text(
-                                  activitiesList[index].price.toString() +
+                                  activitiesList[index]
+                                          .priceStartFrom
+                                          .toString() +
                                       " \$",
                                 )
                               ],
