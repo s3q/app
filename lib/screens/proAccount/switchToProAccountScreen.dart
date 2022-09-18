@@ -97,6 +97,8 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
         userProvider.currentUser!.phoneNumber ?? data["phoneNumber"] ?? "";
     _cityInput.text = userProvider.currentUser!.city ?? data["city"] ?? "";
 
+    data["city"] = _cityInput.text;
+
     List _citiesOfOman = ["muscate", "smail", "nazwa"];
 
     List overViewDescription = [
@@ -357,17 +359,10 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
 
                       return null;
                     },
-                    onChanged: (val) async {
-                      data["phoneNumber"] = await PhoneNumberUtil().format(
-                          "+" + region.prefix.toString() + val.trim(),
-                          region.code);
-                      print("iiiiiiiii");
-                      print(data["phoneNumber"]);
-                    },
+                    onChanged: (val) async {},
                     onSaved: (val) async {
-                      data["phoneNumber"] = await PhoneNumberUtil().format(
-                          "+" + region.prefix.toString() + (val?.trim() ?? ""),
-                          region.code);
+                      data["phoneNumber"] = val?.trim();
+
                       print("iiiiiiiii");
                       print(data["phoneNumber"]);
                     },
@@ -488,18 +483,8 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
 
                       return null;
                     },
-                    onChanged: (val) async {
-                      data["publicPhoneNumber"] = await PhoneNumberUtil()
-                          .format("+" + region.prefix.toString() + val.trim(),
-                              region.code);
-                    },
                     onSaved: (val) async {
-                      data["publicPhoneNumber"] = await PhoneNumberUtil()
-                          .format(
-                              "+" +
-                                  region.prefix.toString() +
-                                  (val?.trim() ?? ""),
-                              region.code);
+                      data["publicPhoneNumber"] = val?.trim();
                     },
                   ),
                   SizedBox(

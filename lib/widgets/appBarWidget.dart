@@ -20,7 +20,7 @@ class AppBarWidget extends StatelessWidget {
               )),
           Text(
             title,
-            style: Theme.of(context).textTheme.headlineSmall,
+            style: Theme.of(context).textTheme.titleLarge,
           ),
         ],
       ),

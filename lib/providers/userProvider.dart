@@ -166,7 +166,8 @@ class UserProvider with ChangeNotifier {
     BuildContext context,
     User userData, {
     bool sginup = true,
-    bool signinWithPhoneNumber = false,
+    String name = "",
+        bool signinWithPhoneNumber = false,
   }) async {
     print(userData);
     CollectionReference usersCollection =
@@ -191,7 +192,7 @@ class UserProvider with ChangeNotifier {
 
       currentUser = UserSchema(
         email: userData.email,
-        name: userData.displayName ?? "",
+        name: userData.displayName ?? name,
         lastLogin: DateTime.now().millisecondsSinceEpoch,
         createdAt: DateTime.now().millisecondsSinceEpoch,
         Id: userData.uid,
@@ -279,6 +280,7 @@ class UserProvider with ChangeNotifier {
           context,
           _credentialUser.user!,
           sginup: true,
+          name: name,
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(

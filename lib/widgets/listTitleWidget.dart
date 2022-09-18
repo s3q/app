@@ -30,7 +30,7 @@ class ListTitleWidget extends StatelessWidget {
                 onTap: onTap,
               title: Text(
                 title,
-                style: Theme.of(context).textTheme.titleSmall,
+                style: Theme.of(context).textTheme.titleMedium,
               ),
               leading: Icon(
                 icon,

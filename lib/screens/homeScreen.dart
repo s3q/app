@@ -118,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           title: Text(
             "Oman Trippoint",
-            style: Theme.of(context).textTheme.headlineSmall,
+            style: Theme.of(context).textTheme.titleLarge,
           ),
           actions: [
             TextButton.icon(

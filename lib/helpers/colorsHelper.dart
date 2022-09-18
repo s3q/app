@@ -130,6 +130,19 @@ class ColorsHelper {
     800: Color(0xFFE0E3E7),
     900: Color(0xFFE0E3E7),
   });
+
+      static MaterialColor purple = const MaterialColor(0xFF8C27B0, <int, Color>{
+    50: Color(0xFF8C27B0),
+    100: Color(0xFF8C27B0),
+    200: Color(0xFF8C27B0),
+    300: Color(0xFF8C27B0),
+    400: Color(0xFF8C27B0),
+    500: Color(0xFF8C27B0),
+    600: Color(0xFF8C27B0),
+    700: Color(0xFF8C27B0),
+    800: Color(0xFF8C27B0),
+    900: Color(0xFF8C27B0),
+  });
 }
 
 final i = Color(0xFFE0E3E7);

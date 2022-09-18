@@ -57,7 +57,7 @@ class AppHelper {
         phoneNumberCall: "79377174",
         description:
             "new activity, for drop from sky with beutifil view you havn't seen before",
-        images: ["/assets/images/categories/discover_all.jpg"],
+        images: ["assets/images/categories/discover_all.jpg"],
         importantInformation: "this is importaint information to read",
         instagramAccount: "s3q.x",
         cCall: true,

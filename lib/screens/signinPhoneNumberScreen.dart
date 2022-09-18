@@ -56,7 +56,7 @@ class _SigninPhoneNumberScreenState extends State<SigninPhoneNumberScreen> {
       if (data != {}) {
         await auth.verifyPhoneNumber(
           phoneNumber: data["phoneNumber"],
-        //   timeout: const Duration(seconds: 60),
+          //   timeout: const Duration(seconds: 60),
           verificationCompleted: (PhoneAuthCredential credential) {},
           verificationFailed: (FirebaseAuthException e) {},
           codeSent: (String verificationId, int? resendToken) async {
@@ -66,7 +66,7 @@ class _SigninPhoneNumberScreenState extends State<SigninPhoneNumberScreen> {
             data["verificationId"] = verificationId;
           },
           codeAutoRetrievalTimeout: (String verificationId) {
-                        setState(() {
+            setState(() {
               _issent = true;
             });
             data["verificationId"] = verificationId;
@@ -95,10 +95,10 @@ class _SigninPhoneNumberScreenState extends State<SigninPhoneNumberScreen> {
         signinWithPhoneNumber: true,
       );
 
-       await Navigator.pushNamedAndRemoveUntil(context, HomeScreen.router,
-              (route) {
-            return false;
-          });
+      await Navigator.pushNamedAndRemoveUntil(context, HomeScreen.router,
+          (route) {
+        return false;
+      });
     } catch (err) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         backgroundColor: Theme.of(context).errorColor,
@@ -184,7 +184,7 @@ class _SigninPhoneNumberScreenState extends State<SigninPhoneNumberScreen> {
                       ),
                       if (_issent)
                         TextFormField(
-                            keyboardType: TextInputType.number,
+                          keyboardType: TextInputType.number,
                           autofocus: true,
                           obscureText: false,
                           decoration: const InputDecoration(

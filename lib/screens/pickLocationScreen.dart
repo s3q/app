@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:searchfield/searchfield.dart';
+import 'package:uuid/uuid.dart';
 
 class PickLocationSceen extends StatefulWidget {
   static String router = "pick_location";
@@ -21,7 +22,9 @@ class _PickLocationSceenState extends State<PickLocationSceen> {
 
   bool _selected = false;
   List _places = [];
-  LatLng latlan = LatLng(23.601010, 58.313955);
+  LatLng? latlan;
+
+  Set _markers = {};
 
   int page = 0;
   PageController pageController =
@@ -44,7 +47,7 @@ class _PickLocationSceenState extends State<PickLocationSceen> {
   @override
   Widget build(BuildContext context) {
     CameraPosition _initialCameraPosition = CameraPosition(
-      target: LatLng(latlan.latitude, latlan.longitude),
+      target: LatLng(23.601010, 58.313955),
       zoom: 20,
     );
 
@@ -52,14 +55,12 @@ class _PickLocationSceenState extends State<PickLocationSceen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _getCurrentLocation();
-          setState(() {
-            _selected = !_selected;
-          });
         },
-        child: const ClipOval(
-          child: SizedBox(
+        child:  ClipOval(
+          child: Container(
             width: 60,
             height: 60,
+            color: Colors.white,
             child: Icon(
               Icons.my_location,
               size: 35,
@@ -78,15 +79,28 @@ class _PickLocationSceenState extends State<PickLocationSceen> {
               myLocationEnabled: true,
               myLocationButtonEnabled: true,
               mapType: MapType.normal,
+              markers: {..._markers},
               onTap: (_latlng) {
-                FocusScope.of(context).unfocus();
-                latlan = _latlng;
+                // FocusScope.of(context).unfocus();
+                print(_latlng);
+
+                setState(() {
+                  latlan = _latlng;
+
+                  _markers = {
+                    Marker(
+                      markerId: MarkerId(Uuid().v4()),
+                      position: _latlng,
+                    )
+                  };
+                });
               },
             ),
             Positioned(
               top: 0,
               child: Container(
                 width: MediaQuery.of(context).size.width,
+                color: Colors.white,
                 child: Column(
                   children: [
                     Row(
@@ -156,7 +170,7 @@ class _PickLocationSceenState extends State<PickLocationSceen> {
                 ),
               ),
             ),
-            if (_selected)
+            if (latlan != null)
               Align(
                 alignment: AlignmentDirectional(0, .7),
                 child: Container(
@@ -214,6 +228,8 @@ class _PickLocationSceenState extends State<PickLocationSceen> {
                 ),
               ),
             ));
+
+        latlan = LatLng(position.latitude, position.longitude);
       });
     }).catchError((error, stackTrace) => null);
   }

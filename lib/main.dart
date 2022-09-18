@@ -42,7 +42,6 @@ Future<void> main() async {
   await EasyLocalization.ensureInitialized();
   await Firebase.initializeApp();
 
-
 //   FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance();
 //         firebaseAppCheck.installAppCheckProviderFactory(
 //         SafetyNetAppCheckProviderFactory.getInstance());
@@ -122,7 +121,7 @@ class MApp extends StatelessWidget {
     //         child: Center(
     //           child: CircularProgressIndicator(),
     //         ),
-    //       ),31 
+    //       ),31
     //     ),
     //   );
     //     });
@@ -149,9 +148,7 @@ class MMApp extends StatelessWidget {
     ];
     return GestureDetector(
       onTap: () {
-
-           FocusScope.of(context).unfocus();
-
+        FocusScope.of(context).unfocus();
       },
       child: MaterialApp(
         title: 'Flutter Demo', // !
@@ -161,23 +158,22 @@ class MMApp extends StatelessWidget {
           //   secondary: Colors.amber,
           // ),
 
+          //   colorScheme: ColorScheme(
+          //     brightness: Brightness.light,
+          //     primary: ColorsHelper.yellow,
+          //     onPrimary: Colors.black,
+          //     secondary: Colors.black,
+          //     // secondary: ColorsHelper.green,
+          //     onSecondary: Colors.black,
+          //     error: ColorsHelper.red,
+          //     onError: Colors.black,
+          //     background: Colors.white,
+          //     onBackground: Colors.black38,
+          //     surface: Colors.white,
+          //     onSurface: Colors.black54,
+          //   ),
 
-        //   colorScheme: ColorScheme(
-        //     brightness: Brightness.light,
-        //     primary: ColorsHelper.yellow,
-        //     onPrimary: Colors.black,
-        //     secondary: Colors.black,
-        //     // secondary: ColorsHelper.green,
-        //     onSecondary: Colors.black,
-        //     error: ColorsHelper.red,
-        //     onError: Colors.black,
-        //     background: Colors.white,
-        //     onBackground: Colors.black38,
-        //     surface: Colors.white,
-        //     onSurface: Colors.black54,
-        //   ),
-
-                    colorScheme: ColorScheme(
+          colorScheme: ColorScheme(
             brightness: Brightness.light,
             // primary: Colors.black,
             primary: ColorsHelper.yellow,
@@ -193,58 +189,57 @@ class MMApp extends StatelessWidget {
             onSurface: Color(0xEE000000),
           ),
           backgroundColor: Theme.of(context).hintColor,
-        //   textTheme: const TextTheme(
-        //     displayLarge: TextStyle(
-        //       fontSize: 45,
-        //     ),
-        //     displayMedium: TextStyle(
-        //       fontSize: 35,
-        //     ),
-        //     displaySmall: TextStyle(
-        //       fontSize: 30,
-        //     ),
-        //     headlineSmall: TextStyle(
-        //       fontWeight: FontWeight.bold,
-        //       color: Colors.black87,
-        //     ),
-        //     headlineMedium: TextStyle(
-        //       fontWeight: FontWeight.bold,
-        //       fontSize: 25,
-        //       color: Colors.black87,
-        //     ),
-        //     headlineLarge: TextStyle(
-        //       fontWeight: FontWeight.bold,
-        //       color: Colors.black87,
-        //     ),
-        //     bodyLarge: TextStyle(
-        //       fontSize: 22,
-        //       color: Color(0xFF424242),
-        //     ),
-        //     bodyMedium: TextStyle(
-        //       fontSize: 16,
-        //       color: Color(0xFF424242),
-        //     ),
-        //     bodySmall: TextStyle(
-        //       fontSize: 12,
-        //       color: Color(0xFF424242),
-        //     ),
-        //     titleLarge: TextStyle(
-        //       fontSize: 25,
-        //       color: Color(0xFF424242), // Colors.gray[800]
-        //     ),
-        //     titleMedium: TextStyle(
-        //       fontWeight: FontWeight.bold,
-        //       fontSize: 20,
-        //       color: Color(0xFF424242), // Colors.gray[800]
-        //     ),
-        //     titleSmall: TextStyle(
-        //       fontSize: 18,
-        //       color: Color(0xFF424242), // Colors.gray[800]
-        //     ),
-        //   ),
+          //   textTheme: const TextTheme(
+          //     displayLarge: TextStyle(
+          //       fontSize: 45,
+          //     ),
+          //     displayMedium: TextStyle(
+          //       fontSize: 35,
+          //     ),
+          //     displaySmall: TextStyle(
+          //       fontSize: 30,
+          //     ),
+          //     headlineSmall: TextStyle(
+          //       fontWeight: FontWeight.bold,
+          //       color: Colors.black87,
+          //     ),
+          //     headlineMedium: TextStyle(
+          //       fontWeight: FontWeight.bold,
+          //       fontSize: 25,
+          //       color: Colors.black87,
+          //     ),
+          //     headlineLarge: TextStyle(
+          //       fontWeight: FontWeight.bold,
+          //       color: Colors.black87,
+          //     ),
+          //     bodyLarge: TextStyle(
+          //       fontSize: 22,
+          //       color: Color(0xFF424242),
+          //     ),
+          //     bodyMedium: TextStyle(
+          //       fontSize: 16,
+          //       color: Color(0xFF424242),
+          //     ),
+          //     bodySmall: TextStyle(
+          //       fontSize: 12,
+          //       color: Color(0xFF424242),
+          //     ),
+          //     titleLarge: TextStyle(
+          //       fontSize: 25,
+          //       color: Color(0xFF424242), // Colors.gray[800]
+          //     ),
+          //     titleMedium: TextStyle(
+          //       fontWeight: FontWeight.bold,
+          //       fontSize: 20,
+          //       color: Color(0xFF424242), // Colors.gray[800]
+          //     ),
+          //     titleSmall: TextStyle(
+          //       fontSize: 18,
+          //       color: Color(0xFF424242), // Colors.gray[800]
+          //     ),
+          //   ),
 
-
-        /*
+          /*
 
         buttons: 
         font: 14, 18
@@ -253,18 +248,18 @@ class MMApp extends StatelessWidget {
         font: 16, underline
 
          */
-        textTheme: const TextTheme(
+          textTheme: const TextTheme(
             displayLarge: TextStyle(
-              fontSize: 45,
+              fontSize: 34,
             ),
             displayMedium: TextStyle(
-              fontSize: 35,
+              fontSize: 28,
             ),
             displaySmall: TextStyle(
-              fontSize: 30,
+              fontSize: 20,
             ),
             headlineSmall: TextStyle(
-                fontSize: 20,
+              fontSize: 17,
               fontWeight: FontWeight.bold,
               color: Color(0xEE000000),
             ),
@@ -274,59 +269,57 @@ class MMApp extends StatelessWidget {
               color: Color(0xEE000000),
             ),
             headlineLarge: TextStyle(
-            //   fontWeight: FontWeight.bold,
+              //   fontWeight: FontWeight.bold,
               color: Color(0xEE000000),
             ),
             bodyLarge: TextStyle(
-              fontSize: 22,
-              color: Colors.black, // Colors.gray[800]
-            ),
-            bodyMedium: TextStyle(
-              fontSize: 17,
-              color: Colors.black, // Colors.gray[800]
-            ),
-            bodySmall: TextStyle(
-              fontSize: 12,
-              color: Colors.black, // Colors.gray[800]
-            ),
-            titleLarge: TextStyle(
-              fontSize: 25,
-              color: Colors.black, // Colors.gray[800]
-            ),
-            titleMedium: TextStyle(
-            //   fontWeight: FontWeight.bold,
               fontSize: 20,
               color: Colors.black, // Colors.gray[800]
             ),
+            bodyMedium: TextStyle(
+              fontSize: 16,
+              color: Colors.black, // Colors.gray[800]
+            ),
+            bodySmall: TextStyle(
+              fontSize: 14,
+              color: Colors.black, // Colors.gray[800]
+            ),
+            titleLarge: TextStyle(
+              fontSize: 20,
+              color: Colors.black, // Colors.gray[800]
+            ),
+            titleMedium: TextStyle(
+              //   fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: Colors.black, // Colors.gray[800]
+            ),
             titleSmall: TextStyle(
-              fontSize: 18,
+              fontSize: 14,
               color: Colors.black, // Colors.gray[800]
             ),
           ),
           textButtonTheme: TextButtonThemeData(
-            style: TextButton.styleFrom(
-                elevation: 0,
-                backgroundColor: Colors.white,
-                // foregroundColor: Colors.black, // !!!!!!!!!
-                textStyle: TextStyle(
+              style: TextButton.styleFrom(
+                  elevation: 0,
+                  backgroundColor: Colors.white,
+                  // foregroundColor: Colors.black, // !!!!!!!!!
+                  textStyle: TextStyle(
                     fontSize: 16,
-                )
-            )
-            // style: ButtonStyle(
-            //   elevation: MaterialStateProperty.all(0),
-            //   textStyle: MaterialStateProperty.all(
-            //     const TextStyle(
-            //       fontSize: 18,
-            //     ),
-              
-            
-          ),
+                  ))
+              // style: ButtonStyle(
+              //   elevation: MaterialStateProperty.all(0),
+              //   textStyle: MaterialStateProperty.all(
+              //     const TextStyle(
+              //       fontSize: 18,
+              //     ),
+
+              ),
 
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ButtonStyle(
               elevation: MaterialStateProperty.all(0),
               textStyle: MaterialStateProperty.all(const TextStyle(
-                fontSize: 14,
+                fontSize: 16,
               )),
               shape: MaterialStateProperty.all(
                 RoundedRectangleBorder(
@@ -335,8 +328,6 @@ class MMApp extends StatelessWidget {
               ),
             ),
           ),
-
-    
 
           outlinedButtonTheme: OutlinedButtonThemeData(
             style: ButtonStyle(
@@ -352,8 +343,6 @@ class MMApp extends StatelessWidget {
               ),
             ),
           ),
-
-          
         ),
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,
@@ -368,15 +357,18 @@ class MMApp extends StatelessWidget {
           TermsAndConditionsScreen.router: (_) =>
               const TermsAndConditionsScreen(),
           ActivityDetailsScreen.router: (_) => ActivityDetailsScreen(),
-          SigninPhoneNumberScreen.router: (context) => SigninPhoneNumberScreen(),
+          SigninPhoneNumberScreen.router: (context) =>
+              SigninPhoneNumberScreen(),
           MassagesScreen.router: (context) => MassagesScreen(),
           SearchScreen.router: (context) => SearchScreen(),
-           ProfileScreen.router: (context) => ProfileScreen(),
-           EditProfileScreen.router: (context) => EditProfileScreen(),
-           UpdateProfileDataScreen.router: (context) => UpdateProfileDataScreen(),
-           SwitchToProAccountScreen.router: (context) => SwitchToProAccountScreen(),
-           AddActivityScreen.router: (context) => AddActivityScreen(),
-           PickLocationSceen.router: (context) => PickLocationSceen(),
+          ProfileScreen.router: (context) => ProfileScreen(),
+          EditProfileScreen.router: (context) => EditProfileScreen(),
+          UpdateProfileDataScreen.router: (context) =>
+              UpdateProfileDataScreen(),
+          SwitchToProAccountScreen.router: (context) =>
+              SwitchToProAccountScreen(),
+          AddActivityScreen.router: (context) => AddActivityScreen(),
+          PickLocationSceen.router: (context) => PickLocationSceen(),
         },
         debugShowCheckedModeBanner: false,
       ),
