@@ -41,7 +41,7 @@ class _SigninPhoneNumberScreenState extends State<SigninPhoneNumberScreen> {
     if (!isValid) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         backgroundColor: Theme.of(context).errorColor,
-        content: const Text("invalid phone number, try again, +986 only"),
+        content: const Text("invalid phone number, try again"),
       ));
     }
   }

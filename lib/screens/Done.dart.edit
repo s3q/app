@@ -1,0 +1,56 @@
+import 'package:app/widgets/SafeScreen.dart';
+import 'package:app/widgets/appBarWidget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/src/widgets/container.dart';
+import 'package:flutter/src/widgets/framework.dart';
+
+class VertifyEmailScreen extends StatefulWidget {
+  const VertifyEmailScreen({super.key});
+
+  @override
+  State<VertifyEmailScreen> createState() => _VertifyEmailScreenState();
+}
+
+class _VertifyEmailScreenState extends State<VertifyEmailScreen> {
+  final auth = FirebaseAuth.instance;
+  @override
+  Widget build(BuildContext context) {
+    return SafeScreen(
+      padding: 0,
+      child: Column(
+        children: [
+          AppBarWidget(title: "Vertify Email", backArrow: false,),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.done_all_rounded,
+                    size: 50,
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text("Your Email has been Vertifying"),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                        //
+                    },
+                    child: Text("Home Page"),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

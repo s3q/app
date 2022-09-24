@@ -73,6 +73,9 @@ class _HomeScreenState extends State<HomeScreen> {
     final userProvider = Provider.of<UserProvider>(context);
 
     userProvider.credentialUser = auth.currentUser;
+
+    print(auth.currentUser?.emailVerified);
+
     print(userProvider.credentialUser);
     return Builder(builder: (context) {
       if (userProvider.currentUser == null &&
@@ -121,17 +124,30 @@ class _HomeScreenState extends State<HomeScreen> {
             style: Theme.of(context).textTheme.titleLarge,
           ),
           actions: [
-            TextButton.icon(
-              label: Text(""),
-              icon: const Icon(
-                Icons.person,
-                color: Colors.black,
-                size: 30,
-              ),
+            TextButton(
               onPressed: () {
                 Navigator.pushNamed(context, ProfileScreen.router);
-                print('IconButton pressed ...');
               },
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Colors.transparent),
+              ),
+              child: Badge(
+                badgeContent: auth.currentUser != null
+                    ? (auth.currentUser!.emailVerified
+                        ? null
+                        : const Icon(
+                            Icons.error_outline_rounded,
+                            size: 10,
+                          ))
+                    : null,
+                badgeColor: ColorsHelper.orange,
+                elevation: 1,
+                child: const Icon(
+                  Icons.person,
+                  color: Colors.black,
+                  size: 30,
+                ),
+              ),
             ),
           ],
           centerTitle: true,
@@ -147,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 _currentTab = i;
               });
             },
-            children: [
+            children: const [
               DiscoverScreen(),
               ChatScreen(),
               BookingScreen(),
@@ -195,12 +211,12 @@ class _HomeScreenState extends State<HomeScreen> {
           unselectedItemColor: Colors.black45,
           selectedItemColor: Colors.black,
 
-        //             showUnselectedLabels: true,
-        //   selectedFontSize: 14,
-        //   unselectedFontSize: 14,
-        //   backgroundColor: Colors.white,
-        //   unselectedItemColor: Colors.black54,
-        //   selectedItemColor: Color(0xFFE4605E),
+          //             showUnselectedLabels: true,
+          //   selectedFontSize: 14,
+          //   unselectedFontSize: 14,
+          //   backgroundColor: Colors.white,
+          //   unselectedItemColor: Colors.black54,
+          //   selectedItemColor: Color(0xFFE4605E),
         ),
       );
     });

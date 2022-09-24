@@ -12,18 +12,16 @@ class ActivityProvider with ChangeNotifier {
   static final auth = FirebaseAuth.instance;
   static final store = FirebaseFirestore.instance;
 
-
-
   Future fetchUserActivities(BuildContext context, userId) async {
     try {
-      UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
+      UserProvider userProvider =
+          Provider.of<UserProvider>(context, listen: false);
       QuerySnapshot<Map<String, dynamic>> userActivitiesQuery = await store
           .collection(CollectionsConstants.activities)
           .where("userId", isEqualTo: userId)
           .get();
 
-
-          userProvider.fetchUserData(userId: userId);
+      userProvider.fetchUserData(userId: userId);
 
       userActivitiesQuery.docs.forEach((element) {
         Map act = element.data();
@@ -42,9 +40,9 @@ class ActivityProvider with ChangeNotifier {
             images: act["images"],
             importantInformation: act["importantInformation"],
             instagramAccount: act["instagramAccount"],
-            cCall: act["cCall"],
-            cTrippointChat: act["cTrippointChat"],
-            cWhatsapp: act["cWhatsapp"],
+            // cCall: act["cCall"],
+            // cTrippointChat: act["cTrippointChat"],
+            // cWhatsapp: act["cWhatsapp"],
             category: act["category"],
             priceStartFrom: act["priceStartFrom"],
             pricesDescription: act["pricesDescription"],
@@ -62,12 +60,17 @@ class ActivityProvider with ChangeNotifier {
       UserProvider userProvider =
           Provider.of<UserProvider>(context, listen: false);
 
+      print("TRRRRRRRRRR");
       assert(userProvider.islogin());
       assert(userProvider.currentUser!.isProAccount == true);
-      assert(userProvider.currentUser!.proAccount != null);
+      assert(userProvider.proCurrentUser != null);
+      assert(userProvider.proCurrentUser!.activationStatus == true);
 
       CollectionReference activityCollection = store.collection(collection);
+      print(activityData.toMap());
       await activityCollection.add(activityData.toMap());
-    } catch (err) {}
+    } catch (err) {
+      print(err);
+    }
   }
 }

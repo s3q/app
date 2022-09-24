@@ -1,4 +1,6 @@
 import 'package:app/providers/userProvider.dart';
+import 'package:app/screens/VertifyEmailScreen.dart';
+import 'package:app/screens/deleteAccountScreen.dart';
 import 'package:app/screens/editProfileScreen.dart';
 import 'package:app/screens/getStartedScreen.dart';
 import 'package:app/screens/proAccount/switchToProAccountScreen.dart';
@@ -6,6 +8,7 @@ import 'package:app/widgets/LinkWidget.dart';
 import 'package:app/widgets/SafeScreen.dart';
 import 'package:app/widgets/appBarWidget.dart';
 import 'package:app/widgets/listTitleWidget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/material.dart";
 import 'package:provider/provider.dart';
 
@@ -16,6 +19,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     UserProvider userProvider = Provider.of<UserProvider>(context);
+    final auth = FirebaseAuth.instance;
     bool _isLogin = userProvider.islogin();
     return SafeScreen(
         padding: 0,
@@ -70,7 +74,7 @@ class ProfileScreen extends StatelessWidget {
                                   Navigator.pushNamed(
                                       context, GetStartedScreen.router);
                                 },
-                                child: Text("Login"))
+                                child: const Text("Login")),
                       ],
                     ),
                   ),
@@ -87,31 +91,43 @@ class ProfileScreen extends StatelessWidget {
                   const SizedBox(
                     height: 10,
                   ),
-                  _isLogin &&
-                          userProvider.currentUser?.isProAccount == false &&
-                          userProvider.proCurrentUser == null
-                      ? ListTitleWidget(
-                          title: "Switch to Professional Account",
-                          icon: Icons.local_police_rounded,
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, SwitchToProAccountScreen.router);
-                          },
-                        )
-                      : ListTitleWidget(
-                          title: "Edit Your Professional Account",
-                          icon: Icons.local_police_rounded,
-                          onTap: () {},
-                        ),
+                  if (_isLogin && auth.currentUser?.emailVerified == true)
+                    ListTitleWidget(
+                      title: "Verify Email",
+                      icon: Icons.verified,
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          VertifyEmailScreen.router,
+                        );
+                      },
+                    ),
+                  if (_isLogin)
+                    userProvider.currentUser?.isProAccount == false &&
+                            userProvider.proCurrentUser == null
+                        ? ListTitleWidget(
+                            title: "Switch to Professional Account",
+                            icon: Icons.local_police_rounded,
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, SwitchToProAccountScreen.router);
+                            },
+                          )
+                        : ListTitleWidget(
+                            title: "Edit Your Professional Account",
+                            icon: Icons.local_police_rounded,
+                            onTap: () {},
+                          ),
                   ListTitleWidget(
                     title: "Language",
                     icon: Icons.language,
                     onTap: () {},
                   ),
                   ListTitleWidget(
-                      title: "Notification",
-                      icon: Icons.notifications_active_outlined,
-                      onTap: () {}),
+                    title: "Notification",
+                    icon: Icons.notifications_active_outlined,
+                    onTap: () {},
+                  ),
                   SizedBox(
                     height: 20,
                   ),
@@ -147,7 +163,7 @@ class ProfileScreen extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   ListTitleWidget(
@@ -158,10 +174,26 @@ class ProfileScreen extends StatelessWidget {
                       title: "Terms of Service",
                       icon: Icons.contact_support_outlined,
                       onTap: () {}),
+                  const SizedBox(
+                    height: 40,
+                  ),
+                  if (_isLogin)
+                    ListTitleWidget(
+                      title: "Delete Account",
+                      icon: Icons.delete_forever_rounded,
+                      dang: true,
+                      onTap: () {
+                        Navigator.pushNamed(
+                            context, DeleteAccountScreen.router);
+                      },
+                    ),
                   SizedBox(
                     height: 40,
                   ),
-                  LinkWidget(text: "Log out", onPressed: () {})
+                  LinkWidget(
+                    text: "Log out",
+                    onPressed: () {},
+                  ),
                 ],
               ),
             ),

@@ -13,15 +13,15 @@ class ActivitySchema {
   String userId;
   String pricesDescription;
   String phoneNumberCall;
-  String phoneNumberWhatsapp;
+  String? phoneNumberWhatsapp;
   String description;
   String importantInformation;
   String address;
   int? priceStartFrom;
-  bool cTrippointChat;
-  bool cWhatsapp;
-  bool cCall;
-  String instagramAccount;
+//   bool cTrippointChat;
+//   bool cWhatsapp;
+//   bool cCall;
+  String? instagramAccount;
   bool op_SFC;
   bool op_GOA;
   bool op_SCT;
@@ -34,15 +34,15 @@ class ActivitySchema {
     required this.lat,
     required this.lng,
     required this.address,
-    required this.phoneNumberWhatsapp,
+     this.phoneNumberWhatsapp,
     required this.phoneNumberCall,
     required this.description,
     required this.images,
     required this.importantInformation,
-    required this.instagramAccount,
-    required this.cCall,
-    required this.cTrippointChat,
-    required this.cWhatsapp,
+     this.instagramAccount,
+    // required this.cCall,
+    // required this.cTrippointChat,
+    // required this.cWhatsapp,
     required this.category,
     required this.priceStartFrom,
     required this.pricesDescription,
@@ -52,7 +52,7 @@ class ActivitySchema {
     required this.title,
   });
 
-  Map toMap() {
+  Map<String, dynamic> toMap() {
     return {
       "Id": Id,
       "viewCount": viewCount,
@@ -60,23 +60,23 @@ class ActivitySchema {
       "userId": userId,
       "lat": lat,
       "lng": lng,
-      "address": this.address,
+      "address": address,
       "phoneNumberCall": phoneNumberCall,
       "phoneNumberWhatsapp": phoneNumberWhatsapp,
-      "description": this.description,
-      "images": this.images,
-      "importantInformation": this.importantInformation,
-      "instagramAccount": this.instagramAccount,
-      "cCall": this.cCall,
-      "cTrippointChat": this.cTrippointChat,
-      "cWhatsapp": this.cWhatsapp,
-      "category": this.category,
-      "priceStartFrom": this.priceStartFrom,
-      "pricesDescription": this.pricesDescription,
-      "op_GOA": this.op_GOA,
-      "op_SCT": this.op_SCT,
-      "op_SFC": this.op_SFC,
-      "title": this.title,
+      "description": description,
+      "images": images,
+      "importantInformation": importantInformation,
+      "instagramAccount": instagramAccount,
+    //   "cCall": this.cCall,
+    //   "cTrippointChat": this.cTrippointChat,
+    //   "cWhatsapp": this.cWhatsapp,
+      "category": category,
+      "priceStartFrom": priceStartFrom,
+      "pricesDescription": pricesDescription,
+      "op_GOA": op_GOA,
+      "op_SCT": op_SCT,
+      "op_SFC": op_SFC,
+      "title": title,
     };
   }
 }

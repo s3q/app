@@ -1,14 +1,16 @@
+import 'package:app/helpers/colorsHelper.dart';
 import 'package:flutter/material.dart';
 
 class ListTitleWidget extends StatelessWidget {
   String title;
   IconData icon;
+  bool dang;
   Function() onTap;
   ListTitleWidget(
       {super.key,
       required this.title,
       required this.icon,
-      required this.onTap});
+      required this.onTap, this.dang = false});
 
   @override
   Widget build(BuildContext context) {
@@ -24,21 +26,22 @@ class ListTitleWidget extends StatelessWidget {
         Material(
           color: Colors.white,
           child: InkWell(
-        
-            splashColor: Colors.white12,
+            splashColor: dang ? Color(0x30F44336) : Colors.white12,
             child: ListTile(
-                onTap: onTap,
+              onTap: onTap,
               title: Text(
                 title,
-                style: Theme.of(context).textTheme.titleMedium,
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    color: dang ? ColorsHelper.red : Colors.black,
+                ),
               ),
               leading: Icon(
                 icon,
-                color: Colors.black,
+                color: dang ? ColorsHelper.red : Colors.black,
               ),
-              trailing: const Icon(
+              trailing:  Icon(
                 Icons.arrow_forward_ios_rounded,
-                color: Colors.black,
+                color: dang ? ColorsHelper.red : Colors.black,
               ),
             ),
           ),

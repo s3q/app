@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
-class InputTextFieldWidget extends StatelessWidget {
+class InputTextFieldWidget extends StatefulWidget {
+  String? text;
   String? labelText;
   String? helperText;
   String? hintText;
   IconData? prefixIcon;
+
+  bool? enabled;
+
+  int? maxLines;
+  int? minLines;
+  int? maxLength;
 
   TextInputType? keyboardType;
 
@@ -16,10 +24,15 @@ class InputTextFieldWidget extends StatelessWidget {
   Function? onChanged;
   InputTextFieldWidget({
     super.key,
-
+    this.enabled,
+    this.text,
+    this.maxLength,
+    this.maxLines,
+    this.minLines,
     this.keyboardType,
     this.labelText,
     this.hintText,
+    this.helperText,
     this.onSaved,
     this.onChanged,
     this.prefixIcon,
@@ -29,20 +42,36 @@ class InputTextFieldWidget extends StatelessWidget {
   });
 
   @override
+  State<InputTextFieldWidget> createState() => _InputTextFieldWidgetState();
+}
+
+class _InputTextFieldWidgetState extends State<InputTextFieldWidget> {
+  final TextEditingController _controller = TextEditingController();
+
+  @override
   Widget build(BuildContext context) {
+    _controller.text = widget.text ?? "";
     return TextFormField(
-      keyboardType: keyboardType ?? TextInputType.name,
-      autofocus: autofocus ?? false,
-      obscureText: obscureText ?? false,
+      key: Key(Uuid().v4()),
+      enabled: widget.enabled,
+      controller: _controller,
+      keyboardType: widget.keyboardType ?? TextInputType.name,
+      autofocus: widget.autofocus ?? false,
+      obscureText: widget.obscureText ?? false,
+      minLines: widget.minLines,
+      maxLength: widget.maxLength,
+      maxLines: widget.maxLines,
       decoration: InputDecoration(
-        hintText: hintText,
-        helperText: helperText,
-        labelText: labelText,
+        hintText: widget.hintText,
+        helperText: widget.helperText,
+        labelText: widget.labelText,
         filled: true,
         fillColor: Colors.white,
-        prefixIcon: Icon(
-          prefixIcon,
-        ),
+        prefixIcon: widget.prefixIcon != null
+            ? Icon(
+                widget.prefixIcon,
+              )
+            : null,
         focusedBorder: const OutlineInputBorder(
           borderSide: BorderSide(
             color: Colors.black45,
@@ -59,20 +88,20 @@ class InputTextFieldWidget extends StatelessWidget {
         ),
       ),
       validator: (val) {
-        if (validator != null) {
-          return validator!(val);
+        if (widget.validator != null) {
+          return widget.validator!(val);
         }
 
         return null;
       },
       onChanged: (val) {
-        if (onChanged != null) {
-          onChanged!(val);
+        if (widget.onChanged != null) {
+          widget.onChanged!(val);
         }
       },
       onSaved: (val) {
-        if (onSaved != null) {
-          onSaved!(val);
+        if (widget.onSaved != null) {
+          widget.onSaved!(val);
         }
       },
     );

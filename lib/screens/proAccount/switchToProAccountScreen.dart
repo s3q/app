@@ -3,6 +3,7 @@ import 'package:app/providers/userProvider.dart';
 import 'package:app/schemas/proUserSchema.dart';
 import 'package:app/screens/getStartedScreen.dart';
 import 'package:app/screens/homeScreen.dart';
+import 'package:app/screens/profileScreen.dart';
 import 'package:app/widgets/LinkWidget.dart';
 import 'package:app/widgets/SafeScreen.dart';
 import 'package:app/widgets/appBarWidget.dart';
@@ -52,38 +53,31 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
     }
   }
 
-  bool saveUpdateDataForm() {
-    bool validation1 = _formKey1.currentState!.validate();
-    if (validation1) {
-      _formKey1.currentState!.save();
-      return true;
-    }
-    return false;
-  }
-
   Future _submit(BuildContext context) async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    bool validation2 = _formKey2.currentState!.validate();
+    bool validation = _formKey2.currentState!.validate();
     bool done = false;
 
-    if (validation2) {
-      _formKey2.currentState!.save();
+    if (validation) {
+      _formKey1.currentState!.save();
       print(data);
 
       ProUserSchema proUserData = ProUserSchema(
-          createdAt: DateTime.now().millisecondsSinceEpoch,
-          userId: userProvider.currentUser!.Id,
-          publicPhoneNumber: data["publicPhoneNumber"],
-          publicEmail: data["pulicEmail"]);
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+        userId: userProvider.currentUser!.Id,
+        publicPhoneNumber: data["publicPhoneNumber"],
+        publicEmail: data["publicEmail"],
+      );
 
       await userProvider.switchToProAccount(
-          context: context,
-          proUserData: proUserData,
-          email: data["email"],
-          city: data["city"],
-          phoneNumber: data["phoneNumber"],
-          dateOfBirth: data["dateOfBirth"],
-          name: data["name"]);
+        context: context,
+        proUserData: proUserData,
+        city: data["city"],
+        dateOfBirth: data["dateOfBirth"],
+        name: data["name"],
+      );
+
+      Navigator.pushNamed(context, ProfileScreen.router);
     }
   }
 
@@ -92,9 +86,11 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
     final settingsProvider = Provider.of<SettingsProvider>(context);
     UserProvider userProvider = Provider.of<UserProvider>(context);
     _nameInput.text = userProvider.currentUser!.name ?? data["name"] ?? "";
-    _emailInput.text = userProvider.currentUser!.email ?? data["email"] ?? "";
-    _phoneNumberInput.text =
-        userProvider.currentUser!.phoneNumber ?? data["phoneNumber"] ?? "";
+    _emailInput.text =
+        userProvider.proCurrentUser?.publicEmail ?? data["email"] ?? "";
+    _phoneNumberInput.text = userProvider.proCurrentUser?.publicPhoneNumber ??
+        data["phoneNumber"] ??
+        "";
     _cityInput.text = userProvider.currentUser!.city ?? data["city"] ?? "";
 
     data["city"] = _cityInput.text;
@@ -286,126 +282,6 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                   TextFormField(
                     controller: _emailInput,
                     keyboardType: TextInputType.name,
-                    obscureText: false,
-                    decoration: const InputDecoration(
-                      labelText: "Email",
-                      filled: true,
-                      fillColor: Colors.white,
-                      prefixIcon: Icon(
-                        Icons.email_rounded,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.black45,
-                          width: 1,
-                        ),
-                        borderRadius: BorderRadius.all(Radius.circular(16)),
-                      ),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.black45,
-                          width: 1,
-                        ),
-                        borderRadius: BorderRadius.all(Radius.circular(16)),
-                      ),
-                    ),
-                    validator: (val) {
-                      if (val == null ||
-                          !EmailValidator.validate(val.trim(), true)) {
-                        return "invalid email address";
-                      }
-                      return null;
-                    },
-                    onSaved: (val) {
-                      data["email"] = val?.trim();
-                    },
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  TextFormField(
-                    controller: _phoneNumberInput,
-                    keyboardType: TextInputType.name,
-                    obscureText: false,
-                    decoration: const InputDecoration(
-                      //   suffixText: ,
-                      labelText: "Phone Number",
-                      filled: true,
-                      fillColor: Colors.white,
-                      prefixIcon: Icon(
-                        Icons.phone,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.black45,
-                          width: 1,
-                        ),
-                        borderRadius: BorderRadius.all(Radius.circular(16)),
-                      ),
-
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.black45,
-                          width: 1,
-                        ),
-                        borderRadius: BorderRadius.all(Radius.circular(16)),
-                      ),
-                    ),
-                    validator: (val) {
-                      _checkPhoneValidation(context, val);
-                      if (val?.length != 8) {
-                        return "invalid phone number";
-                      }
-
-                      return null;
-                    },
-                    onChanged: (val) async {},
-                    onSaved: (val) async {
-                      data["phoneNumber"] = val?.trim();
-
-                      print("iiiiiiiii");
-                      print(data["phoneNumber"]);
-                    },
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-
-      //!fddfkkdf */
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Text(
-                  "Register to Profissional Account \n",
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                Text(
-                    " Please make sure that this information is correct because it will appear to customers, These means of communication will be used in the tourism activities you add"),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          Form(
-            key: _formKey2,
-            child: Padding(
-              padding: EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  TextFormField(
-                    controller: _emailInput,
-                    keyboardType: TextInputType.name,
                     autofocus: true,
                     obscureText: false,
                     decoration: const InputDecoration(
@@ -490,26 +366,22 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                   SizedBox(
                     height: 30,
                   ),
-                  Row(
-                    children: [
-                      Checkbox(
-                        checkColor: Colors.white,
-                        fillColor: MaterialStateProperty.all(Colors.blue),
-                        value: isCheckedCheckbox,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            isCheckedCheckbox = value!;
-                          });
-                        },
-                      ),
-                      Text("Agree to"),
-                      LinkWidget(text: "terms and condition", onPressed: () {})
-                    ],
-                  )
+                  Checkbox(
+                    checkColor: Colors.white,
+                    fillColor: MaterialStateProperty.all(Colors.blue),
+                    value: isCheckedCheckbox,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        isCheckedCheckbox = value!;
+                      });
+                    },
+                  ),
+                  Text("Agree to"),
+                  LinkWidget(text: "terms and condition", onPressed: () {})
                 ],
               ),
             ),
-          )
+          ),
         ],
       ),
     ];
@@ -554,12 +426,9 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                           : SizedBox(),
                       ElevatedButton(
                         onPressed: () async {
-                          if (indexOverView != 2) {
+                          if (indexOverView == 0) {
                             //!!!!!!!!!
-                            if (indexOverView == 1) {
-                              bool validation = saveUpdateDataForm();
-                              if (!validation) return;
-                            }
+
                             setState(() {
                               indexOverView += 1;
                             });
@@ -573,7 +442,7 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                                 horizontal: 60, vertical: 20),
                           ),
                         ),
-                        child: indexOverView == 2
+                        child: indexOverView == 1
                             ? const Text("Get Started")
                             : const Text("Next"),
                       ),

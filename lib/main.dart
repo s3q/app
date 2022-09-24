@@ -1,11 +1,14 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:app/helpers/colorsHelper.dart';
+import 'package:app/providers/activityProvider.dart';
 import 'package:app/providers/chatProvider.dart';
 import 'package:app/providers/settingsProvider.dart';
 import 'package:app/providers/userProvider.dart';
 import 'package:app/schemas/userSchema.dart';
+import 'package:app/screens/VertifyEmailScreen.dart';
 import 'package:app/screens/activityDetailsScreen.dart';
 import 'package:app/screens/addActivityScreen.dart';
+import 'package:app/screens/deleteAccountScreen.dart';
 import 'package:app/screens/editProfileScreen.dart';
 import 'package:app/screens/getStartedScreen.dart';
 import 'package:app/screens/homeScreen.dart';
@@ -20,6 +23,7 @@ import 'package:app/screens/signinPhoneNumberScreen.dart';
 import 'package:app/screens/signinScreen.dart';
 import 'package:app/screens/termsAndConditionsScreen.dart';
 import 'package:app/screens/updateProfileDataScreen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -70,6 +74,7 @@ class MainApp extends StatelessWidget {
       ChangeNotifierProvider.value(value: SettingsProvider()),
       ChangeNotifierProvider.value(value: UserProvider()),
       ChangeNotifierProvider.value(value: ChatProvider()),
+      ChangeNotifierProvider.value(value: ActivityProvider()),
     ], child: const MApp()
 
         //   AnimatedSplashScreen(splash: const MaterialApp(
@@ -98,7 +103,10 @@ class MApp extends StatelessWidget {
       path:
           'assets/translations', // <-- change the path of the translation files
       fallbackLocale: settingsProvider.setting["language"],
-      child: const MMApp(),
+      child: StreamBuilder(
+        stream: FirebaseAuth.instance.userChanges(),
+        builder: (context, future)=> const MMApp(),
+        ),
     );
 
     // return FutureBuilder(
@@ -358,17 +366,19 @@ class MMApp extends StatelessWidget {
               const TermsAndConditionsScreen(),
           ActivityDetailsScreen.router: (_) => ActivityDetailsScreen(),
           SigninPhoneNumberScreen.router: (context) =>
-              SigninPhoneNumberScreen(),
-          MassagesScreen.router: (context) => MassagesScreen(),
-          SearchScreen.router: (context) => SearchScreen(),
-          ProfileScreen.router: (context) => ProfileScreen(),
-          EditProfileScreen.router: (context) => EditProfileScreen(),
+               SigninPhoneNumberScreen(),
+          MassagesScreen.router: (context) => const MassagesScreen(),
+          SearchScreen.router: (context) => const SearchScreen(),
+          ProfileScreen.router: (context) => const ProfileScreen(),
+          EditProfileScreen.router: (context) => const EditProfileScreen(),
           UpdateProfileDataScreen.router: (context) =>
               UpdateProfileDataScreen(),
           SwitchToProAccountScreen.router: (context) =>
-              SwitchToProAccountScreen(),
-          AddActivityScreen.router: (context) => AddActivityScreen(),
-          PickLocationSceen.router: (context) => PickLocationSceen(),
+              const SwitchToProAccountScreen(),
+          AddActivityScreen.router: (context) => const AddActivityScreen(),
+          PickLocationSceen.router: (context) => const PickLocationSceen(),
+          VertifyEmailScreen.router: (context) => const VertifyEmailScreen(),
+          DeleteAccountScreen.router: (context) => const DeleteAccountScreen(),
         },
         debugShowCheckedModeBanner: false,
       ),

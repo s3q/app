@@ -1,6 +1,9 @@
 import 'package:app/schemas/activitySchema.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:localization/colored_print/print_color.dart';
+import 'package:phone_number/phone_number.dart';
 import 'package:uuid/uuid.dart';
 
 class AppHelper {
@@ -60,9 +63,9 @@ class AppHelper {
         images: ["assets/images/categories/discover_all.jpg"],
         importantInformation: "this is importaint information to read",
         instagramAccount: "s3q.x",
-        cCall: true,
-        cTrippointChat: true,
-        cWhatsapp: true,
+        // cCall: true,
+        // cTrippointChat: true,
+        // cWhatsapp: true,
         category: categories[1]["title"],
         priceStartFrom: 43,
         pricesDescription: "price description 1\$ for every children",
@@ -71,4 +74,16 @@ class AppHelper {
         op_SFC: true,
         title: "Dolphin watching and snorking Muscat"),
   ];
+
+  static final PhoneNumberUtil phoneNumber = PhoneNumberUtil();
+  static RegionInfo region =
+      const RegionInfo(name: "Oman", code: "OM", prefix: 968);
+
+  static checkPhoneValidation(BuildContext context, val) async {
+    bool isValid = await phoneNumber.validate(val, region.code);
+
+    if (!isValid) {
+      print("invalid phone number");
+    }
+  }
 }

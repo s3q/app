@@ -1,5 +1,3 @@
-
-
 import 'dart:io';
 
 import 'package:app/helpers/appHelper.dart';
@@ -10,6 +8,7 @@ import 'package:app/screens/pickLocationScreen.dart';
 import 'package:app/widgets/SafeScreen.dart';
 import 'package:app/widgets/appBarWidget.dart';
 import 'package:app/widgets/checkboxWidget.dart';
+import 'package:app/widgets/inputTextFieldWidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -18,6 +17,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:searchfield/searchfield.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:uuid/uuid.dart';
 
 class AddActivityScreen extends StatefulWidget {
@@ -38,17 +38,14 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
   PageController pageViewController = PageController(initialPage: 0);
 
   bool _checkboxChatT = true;
-  bool _checkboxChatW = false;
-  bool _checkboxChatC = true;
-  bool _instagramCheck = false;
+  final _checkboxChatW = ValueNotifier<bool>(false);
+  final _checkboxChatC = ValueNotifier<bool>(true);
+  final _instagramCheck = ValueNotifier<bool>(false);
   bool _checkboxOp_SFC = true;
   bool _checkboxOp_GOA = true;
   bool _checkboxOp_SCT = false;
-  List _uploadedImages = [
-    UploadContainer(),
-  ];
 
-  List<String> _uploadedImagesPath = [];
+  final _uploadedImagesPath = ValueNotifier<List<String>>([]);
 
   String? errorInUploadImages;
 
@@ -60,23 +57,8 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
     final List<XFile>? images = await _picker.pickMultiImage();
 
     if (images != null) {
-      if (images.isNotEmpty) {
-        _uploadedImages.remove(UploadContainer());
-      }
       images.forEach((e) {
-        data["images"] = [
-          if (data["images"] != null) ...data["images"],
-          e.path
-        ];
-        setState(() {
-          
-        _uploadedImagesPath.add(e.path);
-        });
-        _uploadedImages.add(Image.asset(
-          e.path,
-          height: 200,
-          //   width: MediaQuery.of(context).size.width,
-        ));
+        _uploadedImagesPath.value = [e.path, ..._uploadedImagesPath.value];
       });
     }
   }
@@ -88,30 +70,32 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
         Provider.of<UserProvider>(context, listen: false);
     bool validation = _formKey.currentState!.validate();
 
-    if (validation && _uploadedImages.length > 4) {
+    if (validation && _uploadedImagesPath.value.length > 4) {
+      _formKey.currentState!.save();
       ActivitySchema activityData = ActivitySchema(
           userId: userProvider.currentUser!.Id,
           Id: Uuid().v4(),
           lat: data["lat"],
           lng: data["lng"],
           address: data["address"],
-          phoneNumberWhatsapp: data["phoneNumberWhatsapp"],
+          phoneNumberWhatsapp: data["phoneNumberWhatsapp"] ?? "",
           phoneNumberCall: data["phoneNumberCall"],
           description: data["description"],
-          images: _uploadedImagesPath,
+          images: _uploadedImagesPath.value,
           importantInformation: data["importantInformation"],
-          instagramAccount: data["instagramAccount"],
-          cCall: data["cCall"],
-          cTrippointChat: data["cTrippointChat"],
-          cWhatsapp: data["cWhatsapp"],
+          instagramAccount: data["instagramAccount"] ?? "",
+          //   cCall: data["cCall"],
+          //   cTrippointChat: data["cTrippointChat"],
+          //   cWhatsapp: data["cWhatsapp"],
           category: data["category"],
-          priceStartFrom: data["priceStartFrom"],
+          priceStartFrom:  int.parse(data["priceStartFrom"]),
           pricesDescription: data["pricesDescription"],
           op_GOA: _checkboxOp_GOA,
           op_SCT: _checkboxOp_SCT,
           op_SFC: _checkboxOp_SFC,
-          title: data["title"]);
-      activityProvider.createActivity(context, activityData);
+          title: data["title"],);
+      print(activityData.toMap());
+      await activityProvider.createActivity(context, activityData);
     }
   }
 
@@ -138,6 +122,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
         userProvider.proCurrentUser!.publicPhoneNumber;
 
     return SafeScreen(
+      padding: 0,
       child: Column(
         children: [
           AppBarWidget(
@@ -153,565 +138,421 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      TextButton(
-                        child: const Text("Add photos"),
+                      OutlinedButton.icon(
+                        icon: Icon(Icons.photo_camera_back_outlined),
+                        label: const Text("Add photos"),
                         onPressed: () async {
                           setState(() {
                             errorInUploadImages = null;
                           });
-            
+
                           _pickImage();
                         },
                       ),
                       if (errorInUploadImages != null)
                         Text(errorInUploadImages!),
-                    // PageView(
-                    //       controller: pageViewController,
-                    //       scrollDirection: Axis.horizontal,
-                    //       children: [..._uploadedImages],
-                    //     ),
+                      Container(
+                        height: 200,
+                        child: ValueListenableBuilder(
+                          valueListenable: _uploadedImagesPath,
+                          builder: (context, value, child) {
+                            return Stack(
+                              children: [
+                                PageView(
+                                  controller: pageViewController,
+                                  scrollDirection: Axis.horizontal,
+                                  children: (value as List<String>)
+                                      .map((e) => Image.file(
+                                            File(e),
+                                            height: 200,
+                                            fit: BoxFit.cover,
+                                          ))
+                                      .toList(),
+                                ),
+                                if (value.length > 1)
+                                  Align(
+                                    alignment:
+                                        const AlignmentDirectional(.7, .9),
+                                    child: SmoothPageIndicator(
+                                      controller: pageViewController,
+                                      count: value.length,
+                                      axisDirection: Axis.horizontal,
+                                      onDotClicked: (i) {
+                                        pageViewController.animateToPage(
+                                          i,
+                                          duration:
+                                              const Duration(milliseconds: 500),
+                                          curve: Curves.ease,
+                                        );
+                                      },
+                                      effect: const ExpandingDotsEffect(
+                                        expansionFactor: 1.5,
+                                        spacing: 6,
+                                        radius: 16,
+                                        dotWidth: 12,
+                                        dotHeight: 12,
+                                        dotColor: Color(0xFF9E9E9E),
+                                        activeDotColor: Color(0xFF3F51B5),
+                                        paintStyle: PaintingStyle.fill,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          children: [
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            InputTextFieldWidget(
+                              text: data["title"],
+                              labelText: "Title",
+                              helperText: "Give your activity title.",
+                              validator: (val) {
+                                if (val == null)
+                                  return "Use 3 characters or more for a title";
+                                if (val.trim() == "" || val.length < 3)
+                                  return "Use 3 characters or more for a title";
+                                //   if (val.contains(r'[A-Za-z]')) {
+                                //     return "The name should only consist of letters";
+                                //   }
+                                return null;
+                              },
+                              onSaved: (val) {
+                                data["title"] = val?.trim();
+                              },
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            SearchField(
+                              suggestions: _categories
+                                  .map((e) => SearchFieldListItem(e))
+                                  .toList(),
+                              suggestionState: Suggestion.expand,
+                              textInputAction: TextInputAction.next,
+                              hint: 'Choose category',
+                              hasOverlay: true,
+                              searchStyle: const TextStyle(
+                                fontSize: 18,
+                                color: Colors.black,
+                              ),
+                              validator: (x) {
+                                if (!_categories.contains(x) || x!.isEmpty) {
+                                  return 'Please Enter a valid Category';
+                                }
+                              },
+                              onSubmit: (p0) {
+                                print(p0);
+                              },
+                              searchInputDecoration: InputDecoration(
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: Colors.black45,
+                                  ),
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.black45),
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                              maxSuggestionsInViewPort: 6,
+                              itemHeight: 40,
+                              initialValue: data["categories"],
+                              onSuggestionTap: (x) {
+                                data["category"] = x.searchKey;
+                              },
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            InputTextFieldWidget(
+                              text: data["pricesDescription"],
+                              labelText: "Prices",
+                              minLines: 4,
+                              helperText: "Add the prices for your activity.",
+                              validator: (val) {
+                                if (val == null)
+                                  return "Use 25 characters or more for a prices Description";
+                                if (val.trim() == "" || val.length < 25)
+                                  return "Use 25 characters or more for a prices Description";
+                                //   if (val.contains(r'[A-Za-z]')) {
+                                //     return "The name should only consist of letters";
+                                //   }
+                                return null;
+                              },
+                              onSaved: (val) {
+                                data["pricesDescription"] = val?.trim();
+                              },
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            InputTextFieldWidget(
+                              text: data["priceStartFrom"],
+                              labelText: "start from",
+                              helperText: "the price start from",
+                              validator: (val) {
+                                // if (val == null)
+                                //   return "Use 40 characters or more for important information";
+                                // if (val.trim() == "" || val.length < 40)
+                                //   return "Use 40 characters or more for important information";
+                                // //   if (val.contains(r'[A-Za-z]')) {
+                                // //     return "The name should only consist of letters";
+                                // //   }
+                                return null;
+                              },
+                              onSaved: (val) {
+                                data["priceStartFrom"] = val?.trim();
+                              },
+                            ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            InputTextFieldWidget(
+                              text: data["description"],
+                              labelText: "Description",
+                              minLines: 4,
+                              helperText:
+                                  "Add more details about the activitiy",
+                              validator: (val) {
+                                if (val == null)
+                                  return "Use 40 characters or more for description";
+                                if (val.trim() == "" || val.length < 40)
+                                  return "Use 40 characters or more for description";
+                                //   if (val.contains(r'[A-Za-z]')) {
+                                //     return "The name should only consist of letters";
+                                //   }
+                                return null;
+                              },
+                              onSaved: (val) {
+                                data["description"] = val?.trim();
+                              },
+                            ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            InputTextFieldWidget(
+                              text: data["importantInformation"],
+                              labelText: "Important Information",
+                              minLines: 4,
+                              helperText: "Add important information",
+                              validator: (val) {
+                                if (val == null)
+                                  return "Use 40 characters or more for important information";
+                                if (val.trim() == "" || val.length < 40)
+                                  return "Use 40 characters or more for important information";
+                                //   if (val.contains(r'[A-Za-z]')) {
+                                //     return "The name should only consist of letters";
+                                //   }
+                                return null;
+                              },
+                              onSaved: (val) {
+                                data["importantInformation"] = val?.trim();
+                              },
+                            ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            InputTextFieldWidget(
+                              labelText: "address",
+                              text: data["address"],
+                              validator: (val) {
+                                if (val == null)
+                                  return "Use 2 characters or more for address";
+                                if (val.trim() == "" || val.length < 2)
+                                  return "Use 2 characters or more for address";
+                                //   if (val.contains(r'[A-Za-z]')) {
+                                //     return "The name should only consist of letters";
+                                //   }
+                                return null;
+                              },
+                              onSaved: (val) {
+                                print(val);
+                                data["address"] = val?.trim();
+                              },
+                            ),
 
-                    Row(
-                        children: [
-                            ..._uploadedImagesPath.map((e) => Image.file(File(e), width: 100, height: 100,)).toList(),
-                        ],
-                    ),
-                     
-                      SizedBox(
-                        height: 15,
-                      ),
-                      TextFormField(
-                        keyboardType: TextInputType.name,
-                        autofocus: true,
-                        obscureText: false,
-                        decoration: const InputDecoration(
-                          labelText: "Title",
-                          helperText: "Give your activity title.",
-                          filled: true,
-                          fillColor: Colors.white,
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black45,
-                              width: 1,
+                            SizedBox(
+                              height: 20,
                             ),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(16)),
-                          ),
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black45,
-                              width: 1,
+                            OutlinedButton.icon(
+                              icon: Icon(Icons.location_on_outlined),
+                              label: Text("Add the activity location"),
+                              onPressed: () async {
+                                final latlanArg = await Navigator.pushNamed(
+                                        context, PickLocationSceen.router)
+                                    as LatLng;
+                                print(latlanArg);
+                                print("EEEEEEEEEEEEEEEEEEEEEE");
+                                if (latlanArg != null) {
+                                  data["lat"] = latlanArg.latitude;
+                                  data["lng"] = latlanArg.longitude;
+                                }
+                              },
                             ),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(16)),
-                          ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Text(
+                              "Choose how you would like to be contacted by customers",
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            CheckboxWidget(
+                                label: "Trippoint Chat",
+                                isCheck: _checkboxChatT,
+                                onChanged: (isChecked) {
+                                  print(isChecked);
+                                  _checkboxChatT = !_checkboxChatT;
+                                }),
+                            CheckboxWidget(
+                                label: "Whatsapp",
+                                isCheck: _checkboxChatW.value,
+                                onChanged: (isChecked) {
+                                  print(isChecked);
+                                  _checkboxChatW.value = !_checkboxChatW.value;
+                                }),
+
+                            ValueListenableBuilder(
+                              valueListenable: _checkboxChatW,
+                              builder: (context, value, child) {
+                                return InputTextFieldWidget(
+                                  enabled: value as bool,
+                                  keyboardType: TextInputType.number,
+                                  text: data["phoneNumberWhatsapp"],
+                                  labelText: "Phone Number",
+                                  //   labelStyle:,
+                                  helperText:
+                                      "Add Your Phone Number to recive massages on whatsapp.",
+                                  validator: (val) {
+                                    // AppHelper.checkPhoneValidation(
+                                    //     context, val);
+                                    // if (val?.length != 8) {
+                                    //   return "invalid phone number";
+                                    // }
+                                  },
+                                  
+                                  onSaved: (val) {
+                                    data["phoneNumberWhatsapp"] = val?.trim();
+                                  },
+                                );
+                              },
+                            ),
+                            CheckboxWidget(
+                                label: "Call",
+                                isCheck: _checkboxChatC.value,
+                                onChanged: (isChecked) {
+                                  setState(() {
+                                    _checkboxChatC.value =
+                                        !_checkboxChatC.value;
+                                  });
+                                }),
+
+                            ValueListenableBuilder(
+                              valueListenable: _checkboxChatC,
+                              builder: (context, value, child) {
+                                return InputTextFieldWidget(
+                                  enabled: value as bool,
+                                  keyboardType: TextInputType.number,
+                                  text: data["phoneNumberCall"],
+                                  labelText: "Phone Number",
+                                  //   labelStyle:,
+                                  helperText:
+                                      "Add Your Phone Number to recive calls.",
+
+                                  validator: (val) {
+                                    AppHelper.checkPhoneValidation(
+                                        context, val);
+                                    if (val?.length != 8) {
+                                      return "invalid phone number";
+                                    }
+                                  },
+                                  onSaved: (val) {
+                                    data["phoneNumberCall"] = val?.trim();
+                                  },
+                                );
+                              },
+                            ),
+                            SizedBox(
+                              height: 15,
+                            ),
+
+                            CheckboxWidget(
+                                label:
+                                    "Would you like to add the activity Instagram page ?",
+                                isCheck: _instagramCheck.value,
+                                onChanged: (isChecked) {
+                                  print(isChecked);
+                                  _instagramCheck.value =
+                                      !_instagramCheck.value;
+                                }),
+                            // SizedBox(height: 5,),
+                            ValueListenableBuilder(
+                              valueListenable: _instagramCheck,
+                              builder: (context, value, child) {
+                                return InputTextFieldWidget(
+                                  enabled: value as bool,
+                                  keyboardType: TextInputType.number,
+
+                                  labelText: "instagram Account",
+                                  //   labelStyle:,
+                                  helperText: "Add Your instagram.",
+
+                                  validator: (val) {
+                                   
+                                  },
+                                  onSaved: (val) {
+                                    data["instagramAccount"] = val?.trim();
+                                  },
+                                );
+                              },
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            CheckboxWidget(
+                                label:
+                                    "Is the activity suitable for children ?",
+                                isCheck: _checkboxOp_SFC,
+                                onChanged: (isChecked) {
+                                  print(isChecked);
+                                  _checkboxOp_SFC = !_checkboxOp_SFC;
+                                }),
+                            CheckboxWidget(
+                                label: "Is private group option available ?",
+                                isCheck: _checkboxOp_GOA,
+                                onChanged: (isChecked) {
+                                  print(isChecked);
+                                  _checkboxOp_GOA = !_checkboxOp_GOA;
+                                }),
+                            CheckboxWidget(
+                                label:
+                                    "Is your activity requires any skills or tools that the customer should has ?",
+                                isCheck: _checkboxOp_SCT,
+                                onChanged: (isChecked) {
+                                  print(isChecked);
+                                  _checkboxOp_GOA = !_checkboxOp_GOA;
+                                }),
+
+                            SizedBox(
+                              height: 20,
+                            ),
+                            ElevatedButton(
+                                onPressed: () async {
+                                  await _submit(context);
+                                },
+                                child: const Text("Submit"),),
+                          ],
                         ),
-                        validator: (val) {
-                          if (val == null)
-                            return "Use 3 characters or more for your name";
-                          if (val.trim() == "" || val.length < 3)
-                            return "Use 3 characters or more for your name";
-                          //   if (val.contains(r'[A-Za-z]')) {
-                          //     return "The name should only consist of letters";
-                          //   }
-                          return null;
-                        },
-                        onSaved: (val) {
-                          data["pricesDescription"] = val?.trim();
-                        },
                       ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      SearchField(
-                        suggestions: _categories
-                            .map((e) => SearchFieldListItem(e))
-                            .toList(),
-                        suggestionState: Suggestion.expand,
-                        textInputAction: TextInputAction.next,
-                        hint: 'Choose category',
-                        hasOverlay: true,
-                        searchStyle: const TextStyle(
-                          fontSize: 18,
-                          color: Colors.black,
-                        ),
-                        validator: (x) {
-                          if (!_categories.contains(x) || x!.isEmpty) {
-                            return 'Please Enter a valid Category';
-                          }
-                        },
-                        onSubmit: (p0) {
-                          print(p0);
-                        },
-                        searchInputDecoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black45,
-                            ),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.black45),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        maxSuggestionsInViewPort: 6,
-                        itemHeight: 40,
-                        onSuggestionTap: (x) {
-                          data["categories"];
-                        },
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      TextFormField(
-                        keyboardType: TextInputType.name,
-                        autofocus: true,
-                        obscureText: false,
-                        minLines: 4,
-                        maxLines: 4,
-                        decoration: const InputDecoration(
-                          labelText: "Prices",
-                          helperText: "Add the prices for your activity.",
-                          filled: true,
-                          fillColor: Colors.white,
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black45,
-                              width: 1,
-                            ),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(16)),
-                          ),
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black45,
-                              width: 1,
-                            ),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(16)),
-                          ),
-                        ),
-                        validator: (val) {
-                          if (val == null)
-                            return "Use 3 characters or more for your name";
-                          if (val.trim() == "" || val.length < 3)
-                            return "Use 3 characters or more for your name";
-                          //   if (val.contains(r'[A-Za-z]')) {
-                          //     return "The name should only consist of letters";
-                          //   }
-                          return null;
-                        },
-                        onSaved: (val) {
-                          data["pricesDescription"] = val?.trim();
-                        },
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      TextFormField(
-                        keyboardType: TextInputType.name,
-                        autofocus: true,
-                        obscureText: false,
-                        minLines: 4,
-                        maxLines: 4,
-                        decoration: const InputDecoration(
-                          labelText: "start from",
-                          helperText: "the price start from",
-                          filled: true,
-                          fillColor: Colors.white,
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black45,
-                              width: 1,
-                            ),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(16)),
-                          ),
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black45,
-                              width: 1,
-                            ),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(16)),
-                          ),
-                        ),
-                        validator: (val) {
-                          // if (val == null)
-                          //   return "Use 40 characters or more for important information";
-                          // if (val.trim() == "" || val.length < 40)
-                          //   return "Use 40 characters or more for important information";
-                          // //   if (val.contains(r'[A-Za-z]')) {
-                          // //     return "The name should only consist of letters";
-                          // //   }
-                          return null;
-                        },
-                        onSaved: (val) {
-                          data["priceStartFrom"] = val?.trim();
-                        },
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      TextFormField(
-                        keyboardType: TextInputType.name,
-                        autofocus: true,
-                        obscureText: false,
-                        minLines: 4,
-                        maxLines: 4,
-                        decoration: const InputDecoration(
-                          labelText: "Description",
-                          helperText: "Add more details about the activitiy",
-                          filled: true,
-                          fillColor: Colors.white,
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black45,
-                              width: 1,
-                            ),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(16)),
-                          ),
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black45,
-                              width: 1,
-                            ),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(16)),
-                          ),
-                        ),
-                        validator: (val) {
-                          if (val == null)
-                            return "Use 40 characters or more for description";
-                          if (val.trim() == "" || val.length < 40)
-                            return "Use 40 characters or more for description";
-                          //   if (val.contains(r'[A-Za-z]')) {
-                          //     return "The name should only consist of letters";
-                          //   }
-                          return null;
-                        },
-                        onSaved: (val) {
-                          data["description"] = val?.trim();
-                        },
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      TextFormField(
-                        keyboardType: TextInputType.name,
-                        autofocus: true,
-                        obscureText: false,
-                        minLines: 4,
-                        maxLines: 4,
-                        decoration: const InputDecoration(
-                          labelText: "Important Information",
-                          helperText: "Add important information",
-                          filled: true,
-                          fillColor: Colors.white,
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black45,
-                              width: 1,
-                            ),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(16)),
-                          ),
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black45,
-                              width: 1,
-                            ),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(16)),
-                          ),
-                        ),
-                        validator: (val) {
-                          if (val == null)
-                            return "Use 40 characters or more for important information";
-                          if (val.trim() == "" || val.length < 40)
-                            return "Use 40 characters or more for important information";
-                          //   if (val.contains(r'[A-Za-z]')) {
-                          //     return "The name should only consist of letters";
-                          //   }
-                          return null;
-                        },
-                        onSaved: (val) {
-                          data["importantInformation"] = val?.trim();
-                        },
-                      ),
-            
-                      TextFormField(
-                        keyboardType: TextInputType.name,
-                        autofocus: true,
-                        obscureText: false,
-                        minLines: 4,
-                        maxLines: 4,
-                        decoration: const InputDecoration(
-                          labelText: "address",
-                          // helperText: "Add important information",
-                          filled: true,
-                          fillColor: Colors.white,
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black45,
-                              width: 1,
-                            ),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(16)),
-                          ),
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black45,
-                              width: 1,
-                            ),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(16)),
-                          ),
-                        ),
-                        validator: (val) {
-                          if (val == null)
-                            return "Use 2 characters or more for address";
-                          if (val.trim() == "" || val.length < 2)
-                            return "Use 2 characters or more for address";
-                          //   if (val.contains(r'[A-Za-z]')) {
-                          //     return "The name should only consist of letters";
-                          //   }
-                          return null;
-                        },
-                        onSaved: (val) {
-                          data["address"] = val?.trim();
-                        },
-                      ),
-                      TextButton(
-                        child: Text("Add the activity location"),
-                        onPressed: () async {
-                          final latlanArg = await Navigator.pushNamed(
-                              context, PickLocationSceen.router) as LatLng;
-                          print(latlanArg);
-                          print("EEEEEEEEEEEEEEEEEEEEEE");
-                          if (latlanArg != null) {
-                            data["lat"] = latlanArg.latitude;
-                            data["lng"] = latlanArg.longitude;
-                          }
-                          setState(() {});
-                        },
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Text(
-                        "Choose how you would like to be contacted by customers",
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      CheckboxWidget(
-                          label: "Trippoint Chat",
-                          isCheck: _checkboxChatT,
-                          onChanged: (isChecked) {
-                            print(isChecked);
-                          }),
-                      CheckboxWidget(
-                          label: "Whatsapp",
-                          isCheck: _checkboxChatW,
-                          onChanged: (isChecked) {
-                            print(isChecked);
-                            setState(() {
-                              _checkboxChatW = !_checkboxChatW;
-                            });
-                          }),
-            
-                      if (_checkboxChatW)
-                        TextFormField(
-                          keyboardType: TextInputType.name,
-                          autofocus: true,
-                          obscureText: false,
-                          minLines: 4,
-                          maxLines: 4,
-                          decoration: const InputDecoration(
-                            labelText: "Phone Number",
-                            //   labelStyle:,
-                            helperText:
-                                "Add Your Phone Number to recive massages on whatsapp.",
-                            filled: true,
-                            fillColor: Colors.white,
-            
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.black45,
-                                width: 1,
-                              ),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(16)),
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.black45,
-                                width: 1,
-                              ),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(16)),
-                            ),
-                          ),
-                          validator: (val) {
-                            if (val == null)
-                              return "Use 2 characters or more for instagram";
-                            if (val.trim() == "" || val.length < 2)
-                              return "Use 40 characters or more for instagram";
-                            //   if (val.contains(r'[A-Za-z]')) {
-                            //     return "The name should only consist of letters";
-                            //   }
-                            return null;
-                          },
-                          onSaved: (val) {
-                            data["phoneNumberWhatsapp"] = val?.trim();
-                          },
-                        ),
-                      CheckboxWidget(
-                          label: "Call",
-                          isCheck: _checkboxChatC,
-                          onChanged: (isChecked) {
-                            print(isChecked);
-                            setState(() {
-                              _checkboxChatC = !_checkboxChatC;
-                            });
-                          }),
-            
-                      if (_checkboxChatC)
-                        TextFormField(
-                          keyboardType: TextInputType.name,
-                          autofocus: true,
-                          obscureText: false,
-                          minLines: 4,
-                          maxLines: 4,
-                          decoration: const InputDecoration(
-                            labelText: "Phone Number",
-                            //   labelStyle:,
-                            helperText:
-                                "Add Your Phone Number to recive calls.",
-                            filled: true,
-                            fillColor: Colors.white,
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.black45,
-                                width: 1,
-                              ),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(16)),
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.black45,
-                                width: 1,
-                              ),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(16)),
-                            ),
-                          ),
-                          validator: (val) {
-                            if (val == null)
-                              return "Use 2 characters or more for instagram";
-                            if (val.trim() == "" || val.length < 2)
-                              return "Use 40 characters or more for instagram";
-                            //   if (val.contains(r'[A-Za-z]')) {
-                            //     return "The name should only consist of letters";
-                            //   }
-                            return null;
-                          },
-                          onSaved: (val) {
-                            data["phoneNumberCall"] = val?.trim();
-                          },
-                        ),
-                      SizedBox(
-                        height: 15,
-                      ),
-            
-                      CheckboxWidget(
-                          label:
-                              "Would you like to add the activity Instagram page ?",
-                          isCheck: _instagramCheck,
-                          onChanged: (isChecked) {
-                            print(isChecked);
-                          }),
-                      // SizedBox(height: 5,),
-                      if (_instagramCheck)
-                        TextFormField(
-                          keyboardType: TextInputType.name,
-                          autofocus: true,
-                          obscureText: false,
-                          minLines: 4,
-                          maxLines: 4,
-                          decoration: const InputDecoration(
-                            labelText: "instagram Account",
-                            //   labelStyle:,
-                            helperText: "Add Your instagram.",
-                            filled: true,
-                            fillColor: Colors.white,
-            
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.black45,
-                                width: 1,
-                              ),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(16)),
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.black45,
-                                width: 1,
-                              ),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(16)),
-                            ),
-                          ),
-                          validator: (val) {
-                            if (val == null)
-                              return "Use 2 characters or more for instagram";
-                            if (val.trim() == "" || val.length < 2)
-                              return "Use 40 characters or more for instagram";
-                            //   if (val.contains(r'[A-Za-z]')) {
-                            //     return "The name should only consist of letters";
-                            //   }
-                            return null;
-                          },
-                          onSaved: (val) {
-                            data["instagramAccount"] = val?.trim();
-                          },
-                        ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      CheckboxWidget(
-                          label: "Is the activity suitable for children ?",
-                          isCheck: _checkboxOp_SFC,
-                          onChanged: (isChecked) {
-                            print(isChecked);
-                          }),
-                      CheckboxWidget(
-                          label: "Is private group option available ?",
-                          isCheck: _checkboxOp_GOA,
-                          onChanged: (isChecked) {
-                            print(isChecked);
-                          }),
-                      CheckboxWidget(
-                          label:
-                              "Is your activity requires any skills or tools that the customer should has ?",
-                          isCheck: _checkboxOp_SCT,
-                          onChanged: (isChecked) {
-                            print(isChecked);
-                          }),
-            
-                      SizedBox(
-                        height: 20,
-                      ),
-                      ElevatedButton(
-                          onPressed: () async {
-                            //   await _submit();
-                          },
-                          child: Text("Submit")),
                     ],
                   ),
                 ),
@@ -732,6 +573,9 @@ class UploadContainer extends StatelessWidget {
     return Container(
       height: 200,
       width: MediaQuery.of(context).size.width,
+      child: Text(
+        "upload Image",
+      ),
     );
   }
 }

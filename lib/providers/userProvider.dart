@@ -11,11 +11,12 @@ import 'package:google_sign_in/google_sign_in.dart';
 import "package:firebase_auth/firebase_auth.dart";
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dart_ipify/dart_ipify.dart';
+import 'package:provider/provider.dart';
 
 class UserProvider with ChangeNotifier {
   User? credentialUser;
   UserSchema? currentUser;
-    Map<String, UserSchema> users = {};
+  Map<String, UserSchema> users = {};
 
   ProUserSchema? proCurrentUser;
   static String collection = CollectionsConstants.users;
@@ -49,7 +50,6 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  
   Future fetchUserData({required String userId}) async {
     if (users[userId] == null) {
       QuerySnapshot<Map<String, dynamic>> u = await store
@@ -62,9 +62,23 @@ class UserProvider with ChangeNotifier {
         Id: user["Id"],
         ip: user["ip"],
         profileColor: user["profileColor"],
+        profileImagePath: user["profileColor"],
       );
     }
     return users[userId];
+  }
+
+  Future<bool> checkEmailNotused(String email) async {
+    QuerySnapshot<Map<String, dynamic>> query = await store
+        .collection(collection)
+        .where("email", isEqualTo: email.trim())
+        .get();
+
+    if (query.docs.isNotEmpty) {
+      return false;
+    }
+
+    return true;
   }
 
   Future<UserCredential?> signInWithGoogle(BuildContext context) async {
@@ -73,36 +87,36 @@ class UserProvider with ChangeNotifier {
       final GoogleSignInAccount? googleUser = await googleSignin.signIn();
       print("DDDone 11");
       if (googleUser != null) {
-        final GoogleSignInAuthentication googleAuth =
-            await googleUser.authentication;
-        print("DDDone 22");
-        final credential = GoogleAuthProvider.credential(
-          idToken: googleAuth.idToken,
-          accessToken: googleAuth.accessToken,
-        );
-        print(credential.providerId);
+        bool _usedEmail = await checkEmailNotused(googleUser.email);
 
-        UserCredential _credentialUser =
-            await auth.signInWithCredential(credential);
-        credentialUser = _credentialUser.user;
+        if (_usedEmail) {
+          final GoogleSignInAuthentication googleAuth =
+              await googleUser.authentication;
 
-        print(credentialUser);
-        print("DDDDone");
-
-        if (_credentialUser.user != null) {
-          await saveSignInUserData(
-            context,
-            _credentialUser.user!,
-            sginup: false,
+          final credential = GoogleAuthProvider.credential(
+            idToken: googleAuth.idToken,
+            accessToken: googleAuth.accessToken,
           );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            backgroundColor: Theme.of(context).errorColor,
-            content: const Text("You have problem when sign in, try agian"),
-          ));
-        }
 
-        return _credentialUser;
+          UserCredential _credentialUser =
+              await auth.signInWithCredential(credential);
+          credentialUser = _credentialUser.user;
+
+          if (_credentialUser.user != null) {
+            await saveSignInUserData(
+              context,
+              _credentialUser.user!,
+              sginup: false,
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              backgroundColor: Theme.of(context).errorColor,
+              content: const Text("You have problem when sign in, try agian"),
+            ));
+          }
+
+          return _credentialUser;
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           backgroundColor: Theme.of(context).errorColor,
@@ -122,9 +136,7 @@ class UserProvider with ChangeNotifier {
   Future switchToProAccount({
     required BuildContext context,
     required ProUserSchema proUserData,
-    required String email,
     required String city,
-    required String phoneNumber,
     required int dateOfBirth,
     required String name,
   }) async {
@@ -142,8 +154,6 @@ class UserProvider with ChangeNotifier {
             await usersCollection.where("Id", isEqualTo: currentUser!.Id).get();
 
         Map<String, Object?> userData = {
-          "email": email,
-          "phoneNumber": phoneNumber,
           "dateOfBirth": dateOfBirth,
           "name": name,
           "isProAccount": true,
@@ -155,7 +165,10 @@ class UserProvider with ChangeNotifier {
 
         await query.docs.single.reference.update(userData);
 
+        currentUser!.isProAccount = true;
         proCurrentUser = proUserData;
+
+        notifyListeners();
       } catch (err) {
         print(err);
       }
@@ -167,7 +180,7 @@ class UserProvider with ChangeNotifier {
     User userData, {
     bool sginup = true,
     String name = "",
-        bool signinWithPhoneNumber = false,
+    bool signinWithPhoneNumber = false,
   }) async {
     print(userData);
     CollectionReference usersCollection =
@@ -191,22 +204,22 @@ class UserProvider with ChangeNotifier {
       final ipv4 = await Ipify.ipv4();
 
       currentUser = UserSchema(
-        email: userData.email,
-        name: userData.displayName ?? name,
-        lastLogin: DateTime.now().millisecondsSinceEpoch,
-        createdAt: DateTime.now().millisecondsSinceEpoch,
-        Id: userData.uid,
-        providerId: userData.providerData[0].providerId,
-        phoneNumber: userData.phoneNumber,
-        deviceInfo: deviceInfo.toMap(),
-        proAccount: null,
-        displaySizes:
-            "${MediaQuery.of(context).size.width} ${MediaQuery.of(context).size.height}",
-        dateOfBirth: null,
-        gender: null,
-        chatList: [],
-        ip: ipv4,
-      );
+          email: userData.email,
+          name: userData.displayName ?? name,
+          lastLogin: DateTime.now().millisecondsSinceEpoch,
+          createdAt: DateTime.now().millisecondsSinceEpoch,
+          Id: userData.uid,
+          providerId: userData.providerData[0].providerId,
+          phoneNumber: userData.phoneNumber,
+          deviceInfo: deviceInfo.toMap(),
+          proAccount: null,
+          displaySizes:
+              "${MediaQuery.of(context).size.width} ${MediaQuery.of(context).size.height}",
+          dateOfBirth: null,
+          gender: null,
+          chatList: [],
+          ip: ipv4,
+          profileImagePath: userData.photoURL);
 
       await usersCollection.add(currentUser!.toMap());
 
@@ -230,6 +243,8 @@ class UserProvider with ChangeNotifier {
 
       Map userQueryData = query.docs.single.data() as Map;
       print(userQueryData);
+
+      /// ! check user id equal for it in authntication.
 
       currentUser = UserSchema(
         email: userQueryData["email"],
@@ -255,14 +270,88 @@ class UserProvider with ChangeNotifier {
           currentUser!.proAccount != null) {
         Map proUserQueryData = currentUser!.proAccount!;
         proCurrentUser = ProUserSchema(
-            createdAt: proUserQueryData["createdAt"],
-            userId: proUserQueryData["userId"],
-            publicPhoneNumber: proUserQueryData["publicPhoneNumber"],
-            publicEmail: proUserQueryData["publicEmail"]);
+          likes: proUserQueryData["likes"],
+          createdAt: proUserQueryData["createdAt"],
+          userId: proUserQueryData["userId"],
+          publicPhoneNumber: proUserQueryData["publicPhoneNumber"],
+          publicEmail: proUserQueryData["publicEmail"],
+          activationStatus: proUserQueryData["activationStatus"],
+          verified: proUserQueryData["verified"],
+        );
       }
 
       currentUser!.lastLogin = DateTime.now().millisecondsSinceEpoch;
       notifyListeners();
+    }
+  }
+
+  Future<bool> deleteAccount(
+    BuildContext context,
+  ) async {
+    try {
+      UserProvider userProvider =
+          Provider.of<UserProvider>(context, listen: false);
+
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await store
+          .collection(collection)
+          .where("Id", isEqualTo: currentUser!.Id)
+          .get();
+
+      if (querySnapshot.docs.length > 1) {
+        // !!!!!!!!!!
+        return false;
+      }
+
+      if (querySnapshot.docs.length == 1) {
+        querySnapshot.docs[0].reference.delete();
+      }
+
+      if (userProvider.currentUser!.providerId == "google.com") {
+        // await googleSignin.currentUser!.clearAuthCache();
+        print("DDDone 00");
+        final GoogleSignInAccount? googleUser = await googleSignin.signIn();
+        print("DDDone 11");
+        if (googleUser != null) {
+          bool _usedEmail = await checkEmailNotused(googleUser.email);
+
+          if (_usedEmail) {
+            final GoogleSignInAuthentication googleAuth =
+                await googleUser.authentication;
+
+            final credential = GoogleAuthProvider.credential(
+              idToken: googleAuth.idToken,
+              accessToken: googleAuth.accessToken,
+            );
+
+            UserCredential _credentialUser =
+                await auth.signInWithCredential(credential);
+            credentialUser = _credentialUser.user;
+
+            if (_credentialUser.user != null) {
+              ///
+              print("login ");
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                backgroundColor: Theme.of(context).errorColor,
+                content: const Text("You have problem when sign in, try agian"),
+              ));
+            }
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            backgroundColor: Theme.of(context).errorColor,
+            content: const Text("You haven't signed in google"),
+          ));
+        }
+      }
+
+      await auth.currentUser!.delete();
+
+      await signout();
+      return true;
+    } catch (err) {
+      print(err);
+      return false;
     }
   }
 
@@ -307,8 +396,12 @@ class UserProvider with ChangeNotifier {
     try {
       credentialUser = null;
       currentUser = null;
-      await auth.signOut();
+      await googleSignin.disconnect();
+      print("disconnect");
       await googleSignin.signOut();
+      await auth.signOut();
+      print("signout");
+
       notifyListeners();
     } catch (err) {
       return false;

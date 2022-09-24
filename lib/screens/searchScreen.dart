@@ -228,41 +228,66 @@ class _SearchScreenState extends State<SearchScreen>
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         activitiesList[index].address,
                                         style: Theme.of(context)
                                             .textTheme
-                                            .titleMedium,
+                                            .titleSmall,
                                         softWrap: true,
                                       ),
-                                      Text(
-                                        activitiesList[index].description,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium,
-                                        overflow: TextOverflow.fade,
+
+                                      Column(
+                                        children: [
+                                          RatingBarIndicator(
+                                            itemBuilder: (context, index) {
+                                              return Icon(
+                                                Icons.star_rate_rounded,
+                                                color: Colors.amber,
+                                              );
+                                            },
+                                            rating: 2,
+                                            itemSize: 20,
+                                          ),
+                                          Row(
+                                            mainAxisSize: MainAxisSize.max,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Icon(
+                                                Icons.location_on_sharp,
+                                                size: 14,
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsetsDirectional
+                                                    .fromSTEB(5, 0, 0, 0),
+                                                child: Text(
+                                                  activitiesList[index].address,
+                                                  style: TextStyle(
+                                                      fontSize:
+                                                          Theme.of(context)
+                                                                  .textTheme
+                                                                  .bodySmall!
+                                                                  .fontSize! -
+                                                              3),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
                                       ),
-                                      RatingBarIndicator(
-                                        itemBuilder: (context, index) {
-                                          return Icon(
-                                            Icons.star_rate_rounded,
-                                            color: Colors.amber,
-                                          );
-                                        },
-                                        rating: 2,
-                                        itemSize: 20,
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsetsDirectional.fromSTEB(
-                                            4, 0, 0, 0),
-                                        child: Text(
-                                          '10 reviews',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall,
-                                        ),
-                                      ),
+                                      //   Padding(
+                                      //     padding: EdgeInsetsDirectional.fromSTEB(
+                                      //         4, 0, 0, 0),
+                                      //     child: Text(
+                                      //       '10 reviews',
+                                      //       style: Theme.of(context)
+                                      //           .textTheme
+                                      //           .bodySmall,
+                                      //     ),
+                                      //   ),
                                     ],
                                   ),
                                 ),
@@ -450,14 +475,17 @@ class _SearchScreenState extends State<SearchScreen>
                                 horizontal: 10, vertical: 8),
                             side: const BorderSide(width: 1),
                           ),
-                          child: Text(e["title"]),
+                          child: Text(
+                            e["title"],
+                            style: TextStyle(fontSize: 14),
+                          ),
                         ),
                       );
                     }).toList(),
                   ],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
             ],
@@ -485,6 +513,7 @@ class _ResultActivituBoxWidgetState extends State<ResultActivituBoxWidget> {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 20),
+      height: 240,
       child: Card(
         clipBehavior: Clip.antiAliasWithSaveLayer,
         elevation: 3,
@@ -495,7 +524,7 @@ class _ResultActivituBoxWidgetState extends State<ResultActivituBoxWidget> {
             Image.network(
               'https://picsum.photos/seed/248/600',
               width: 100,
-              height: 210,
+              height: 240,
               fit: BoxFit.cover,
             ),
             Expanded(
@@ -509,13 +538,13 @@ class _ResultActivituBoxWidgetState extends State<ResultActivituBoxWidget> {
                         "Title",
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
-                      Text(
-                        'promotion 5% for children',
-                        // style:
-                      ),
+                    //   Text(
+                    //     'promotion 5% for children',
+                    //     // style:
+                    //   ),
                       Text(
                         'discribtion ,Flutter is an open-source UI software development kit',
-                        // style:
+                        style: Theme.of(context).textTheme.bodySmall,
                       ),
 
                       Column(
@@ -571,19 +600,7 @@ class _ResultActivituBoxWidgetState extends State<ResultActivituBoxWidget> {
                           ),
                         ],
                       ),
-                      // Container(
-                      //   decoration: BoxDecoration(
-                      //     color: Color(0xFFD6D6D6),
-                      //     borderRadius: BorderRadius.circular(8),
-                      //   ),
-                      //   child: const Padding(
-                      //     padding: EdgeInsetsDirectional.fromSTEB(5, 5, 5, 5),
-                      //     child: Text(
-                      //       'private only',
-                      //       // style:
-                      //     ),
-                      //   ),
-                      // ),
+                    
                       SizedBox(
                         height: 5,
                       ),
@@ -604,7 +621,7 @@ class _ResultActivituBoxWidgetState extends State<ResultActivituBoxWidget> {
                                     EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
                                 child: Text(
                                   'Location',
-                                  style: Theme.of(context).textTheme.bodyMedium,
+                                  style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               ),
                             ],

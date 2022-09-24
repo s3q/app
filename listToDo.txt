@@ -1,0 +1,15 @@
+edit activities 
+vertify email and number [ account, switch to profitional ]
+statistics for activities and profitional accounts (click chat or contacts way, view counts every day, likes counts, )
+search for activities 
+search for places 
+display activities
+error databases
+notifications
+ads (emails) -
+load widget (login, signup, create activities, switch to pro, )
+
+
+firebase function:
+// 
+
