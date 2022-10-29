@@ -6,6 +6,7 @@ class ChatSchema {
   List users;
   String Id;
   String? storeId;
+  String activityId;
   List<MassageSchema>? massages;
 
   ChatSchema({
@@ -13,12 +14,14 @@ class ChatSchema {
     required this.publicKey,
     required this.users,
     required this.Id,
+    required this.activityId,
     this.massages,
     this.storeId,
   });
 
   Map<String, dynamic> toMap() {
     return {
+        "activityId": activityId,
       "createdAt": createdAt,
       "publicKey": publicKey,
       "users": users,

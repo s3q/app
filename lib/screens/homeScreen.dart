@@ -37,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
   PageController _pageController = PageController(initialPage: 0);
 
   void autoSignin(context) async {
-    final userProvider = Provider.of<UserProvider>(context);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
     await userProvider.saveSignInUserData(context, userProvider.credentialUser!,
         sginup: false);
   }
@@ -132,14 +132,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 backgroundColor: MaterialStateProperty.all(Colors.transparent),
               ),
               child: Badge(
-                badgeContent: auth.currentUser != null
-                    ? (auth.currentUser!.emailVerified
+                badgeContent: 
+                    userProvider.islogin() && auth.currentUser?.emailVerified == true
                         ? null
                         : const Icon(
                             Icons.error_outline_rounded,
-                            size: 10,
-                          ))
-                    : null,
+                            size: 13,
+                            color: Colors.white,
+                          )
+                    ,
                 badgeColor: ColorsHelper.orange,
                 elevation: 1,
                 child: const Icon(

@@ -9,7 +9,65 @@ notifications
 ads (emails) -
 load widget (login, signup, create activities, switch to pro, )
 
+success login page
 
 firebase function:
 // 
 
+
+Chat: 
+last massage 
+activity
+is readed, recived
+received time, 
+sned photo, audio, location, contacts, his ads,
+# fillter barc  
+# replay time 
+% block user
+delete chat 
+sort chats with new massage
+
+
+activity :
+upload images -
+pick lovcation zome 
+
+Photos:
+delete photo, main photo, zome photos -
+minimum 1, maximum 8, - 
+choose one from calls way -
+call req -
+
+prices - description max 20  -> get start from price ( 4 ) + add button min 1 -
+prices note, max 50, min 0 -
+
+report page -
+review page -
+contact woner page - 
+wishlist -
+
+
+contacts us -
+edit activity 
+my activities screen -
+activity statistics : -
+    - 
+    -
+    -
+    -
+before publich activity screen
+
+
+
+reset password page
+vertify pro account 
+edit pro account 
+set lang
+notifications
+
+
+chatsCount: d.data()["chatsCount"]
+callsCount: d.data()["callsCount"]
+viewsCount: d.data()["viewsCount"]
+likesCount: d.data()["likesCount"]
+sharesCount: d.data()["sharesCount"]

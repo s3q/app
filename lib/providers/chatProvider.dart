@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:app/constants/constants.dart';
 import 'package:app/providers/userProvider.dart';
 import 'package:app/schemas/chatSchema.dart';
@@ -7,6 +8,7 @@ import 'package:app/screens/getStartedScreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -70,11 +72,41 @@ class ChatProvider with ChangeNotifier {
 
       //   print(users[docs[i].id]);
 
+      QuerySnapshot<Map<String, dynamic>> lastMassagesQuery = await store
+          .collection(ChatProvider.collection)
+          .doc(docs[i].id)
+          .collection(CollectionsConstants.massages)
+          .where("readedAt", isEqualTo: 0)
+          .orderBy("createdAt")
+          .get();
+
+      MassageSchema? lastMassage;
+
+      if (lastMassagesQuery.docs.isNotEmpty) {
+        lastMassage = MassageSchema(
+          Id: lastMassagesQuery.docs[0].data()["Id"],
+          imagePath: lastMassagesQuery.docs[0].data()["imagePath"],
+          type: lastMassagesQuery.docs[0].data()["type"],
+          audioPath: lastMassagesQuery.docs[0].data()["audioPath"],
+          chatId: lastMassagesQuery.docs[0].data()["chatId"],
+          massage: lastMassagesQuery.docs[0].data()["massage"],
+          createdAt: lastMassagesQuery.docs[0].data()["createdAt"],
+          readedAt: lastMassagesQuery.docs[0].data()["readedAt"],
+          from: lastMassagesQuery.docs[0].data()["from"],
+        );
+      }
+
       ChatSchema chatData = ChatSchema(
         storeId: docs[i].id,
+        activityId: docs[i].data()["activityId"],
         createdAt: docs[i].data()["createdAt"],
         publicKey: docs[i].data()["publicKey"],
         users: [userId2],
+        massages: lastMassage != null
+            ? [
+                lastMassage,
+              ]
+            : [],
         Id: docs[i].data()["Id"],
       );
 
@@ -115,6 +147,7 @@ class ChatProvider with ChangeNotifier {
     chats = query2.docs
         .map((e) => ChatSchema(
               storeId: e.id,
+              activityId: e["activityId"],
               createdAt: e["createdAt"],
               publicKey: e["publicKey"],
               users: e["users"],
@@ -135,6 +168,10 @@ class ChatProvider with ChangeNotifier {
         chat.massages = query1.docs
             .map(
               (e) => MassageSchema(
+                Id: e["Id"],
+                type: e["type"],
+                imagePath: e["imagePath"],
+                audioPath: e["audioPath"],
                 chatId: e["chatId"],
                 massage: e["massage"],
                 createdAt: e["createdAt"],
@@ -158,6 +195,47 @@ class ChatProvider with ChangeNotifier {
     return null;
   }
 
+  Future<MassageSchema?> sendImageMessage({required String imagePath}) async {
+    try {
+      assert(chat != null);
+      assert(chat!.storeId != null);
+      assert(imagePath.trim() != "");
+
+      print(chat!.storeId);
+      //   QuerySnapshot<Map<String, dynamic>> query1 =
+      CollectionReference<Map<String, dynamic>> query1 = store
+          .collection(ChatProvider.collection)
+          .doc(chat!.storeId!)
+          .collection(CollectionsConstants.massages);
+      String storePath =
+          "${ChatProvider.collection}/${auth.currentUser!.uid}/uploadedImages/${Uuid().v4()}.jpg";
+      final storageRef = FirebaseStorage.instance.ref(storePath);
+      File file = File(imagePath);
+      storageRef.putFile(file);
+
+      String downloadPath =
+          await FirebaseStorage.instance.ref(storePath).getDownloadURL();
+
+      MassageSchema massage = MassageSchema(
+        Id: Uuid().v4(),
+        type: "image",
+        from: auth.currentUser!.uid,
+        imagePath: downloadPath.trim(),
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+        readedAt: 0,
+        chatId: chat!.Id,
+      );
+
+      //   DocumentReference<Map<String, dynamic>> docRef =
+      await query1.add(massage.toMap());
+      print("done");
+
+      return massage;
+    } catch (err) {
+      return null;
+    }
+  }
+
   Future<MassageSchema?> sendMassage({required String text}) async {
     try {
       assert(chat != null);
@@ -176,6 +254,8 @@ class ChatProvider with ChangeNotifier {
       print(text);
 
       MassageSchema massage = MassageSchema(
+        Id: Uuid().v4(),
+        type: "text",
         from: auth.currentUser!.uid,
         massage: text.trim(),
         createdAt: DateTime.now().millisecondsSinceEpoch,
@@ -231,11 +311,12 @@ class ChatProvider with ChangeNotifier {
     // required String credentialUserId,
     required BuildContext context,
     required String userId,
+    required String activityId,
   }) async {
     try {
       if (auth.currentUser == null) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        //   backgroundColor: Theme.of(context).errorColor,
+          //   backgroundColor: Theme.of(context).errorColor,
           content: const Text("you havn't logned "),
           action: SnackBarAction(
             onPressed: () async {
@@ -254,7 +335,7 @@ class ChatProvider with ChangeNotifier {
       /* ####################  add users to temporary storage #################### */
       print([auth.currentUser!.uid, userId]);
       print(checkingQuery.docs.toList());
-     
+
       UserProvider userProvider =
           Provider.of<UserProvider>(context, listen: false);
 
@@ -280,6 +361,7 @@ class ChatProvider with ChangeNotifier {
         String chatId = Uuid().v4();
         //   String storeId = Uuid().v4();
         chat = ChatSchema(
+          activityId: activityId,
           createdAt: DateTime.now().millisecondsSinceEpoch,
           publicKey: Uuid().v1(),
           users: [
@@ -315,14 +397,22 @@ class ChatProvider with ChangeNotifier {
         chat?.storeId = newChatQuery.docs[0].id;
 
         return chatId;
+
       } else if (checkingQuery.docs.length == 1) {
+
         Map chatDataAsMap = checkingQuery.docs.single.data();
+        
         chat = ChatSchema(
+            activityId: chatDataAsMap["activityId"],
             createdAt: chatDataAsMap["createdAt"],
             publicKey: chatDataAsMap["publicKey"],
             users: chatDataAsMap["users"],
             Id: chatDataAsMap["Id"],
             storeId: checkingQuery.docs.single.id);
+
+        await checkingQuery.docs.single.reference.update({
+            "activityId": activityId,
+        });
       }
     } catch (err) {
       print("ERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");

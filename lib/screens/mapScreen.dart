@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:app/helpers/appHelper.dart';
 import 'package:app/helpers/colorsHelper.dart';
 import 'package:app/helpers/geolocateHelper.dart';
 import 'package:app/schemas/activitySchema.dart';
+import 'package:app/screens/searchScreen.dart';
 import 'package:custom_marker/marker_icon.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -44,18 +46,19 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)?.settings.arguments as ActivitySchema;
+    ActivitySchema args =
+        ModalRoute.of(context)?.settings.arguments as ActivitySchema;
 
-    List<ActivitySchema> activityList = [if (args != null ) args];
+    List<ActivitySchema> activityList = [if (args != null) args];
 
     CameraPosition _initialCameraPosition = CameraPosition(
-      target: args.latlng,
+      target: LatLng(args.lat, args.lng),
       zoom: 20,
     );
 
     Marker _marker = Marker(
       markerId: MarkerId(Uuid().v4()),
-      position: args.latlng,
+      position: LatLng(args.lat, args.lng),
       infoWindow: InfoWindow(title: args.address, snippet: args.description),
     );
 
@@ -79,13 +82,13 @@ class _MapScreenState extends State<MapScreen> {
               },
             ),
             Align(
-              alignment: AlignmentDirectional(-.9, .9),
+              alignment: const AlignmentDirectional(-.9, .9),
               child: ClipOval(
                 child: Material(
                   color: Colors.white, // button color
                   child: InkWell(
                     splashColor: Colors.white12, // inkwell color
-                    child: SizedBox(
+                    child: const SizedBox(
                       width: 60,
                       height: 60,
                       child: Icon(
@@ -112,14 +115,14 @@ class _MapScreenState extends State<MapScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          margin: EdgeInsets.only(top: 10, left: 10),
+                          margin: const EdgeInsets.only(top: 10, left: 10),
                           child: Container(
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(50),
                                 color: Colors.white),
                             child: IconButton(
                               // color: Colors.b,
-                              icon: Icon(Icons.arrow_back, size: 28),
+                              icon: const Icon(Icons.arrow_back, size: 28),
                               onPressed: () {
                                 Navigator.pop(context);
                               },
@@ -132,8 +135,46 @@ class _MapScreenState extends State<MapScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                
-                               
+                                InkWell(
+                                  onTap: () {
+                                 Navigator.pushNamed(
+                                        context, SearchScreen.router,
+                                        arguments: args);
+                                  },
+                                  focusColor: Colors.white12,
+                                  child: Hero(
+                                    tag: "search_box1",
+                                    child: Container(
+                                      // height: 50,
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 15, horizontal: 10),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: Colors.black45, width: 1),
+                                        borderRadius: BorderRadius.circular(16),
+                                        color: Colors.white,
+                                      ),
+                                      child: Row(children: [
+                                        Icon(
+                                          Icons.search_rounded,
+                                          size: 30,
+                                          color: Colors.black45,
+                                        ),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        Text("Where to go?",
+                                            style: TextStyle(
+                                                fontSize: Theme.of(context)
+                                                    .textTheme
+                                                    .titleMedium!
+                                                    .fontSize,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black54)),
+                                      ]),
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -141,16 +182,16 @@ class _MapScreenState extends State<MapScreen> {
                       ],
                     ),
 
-                    ToggleSwitch(
-                      inactiveBgColor: Colors.white.withOpacity(.8),
-                      activeBgColor: [Colors.grey.withOpacity(.8)],
-                      initialLabelIndex: 0,
-                      totalSwitches: 3,
-                      labels: ['America', 'Canada', 'Mexico'],
-                      onToggle: (index) {
-                        print('switched to: $index');
-                      },
-                    ),
+                    // ToggleSwitch(
+                    //   inactiveBgColor: Colors.white.withOpacity(.8),
+                    //   activeBgColor: [Colors.grey.withOpacity(.8)],
+                    //   initialLabelIndex: 0,
+                    //   totalSwitches: 3,
+                    //   labels: const ['America', 'Canada', 'Mexico'],
+                    //   onToggle: (index) {
+                    //     print('switched to: $index');
+                    //   },
+                    // ),
 
                     //   ..._getSearchResults().map((e) {
                     //     return GestureDetector(
@@ -186,13 +227,17 @@ class _MapScreenState extends State<MapScreen> {
                   controller: pageController,
                   onPageChanged: (p) async {
                     GoogleMapController con = await _controller.future;
-                    con.showMarkerInfoWindow(_markers[p].markerId);
+                    con.showMarkerInfoWindow(_marker.markerId);
 
                     con.animateCamera(CameraUpdate.newCameraPosition(
-                        CameraPosition(
-                            target: _markers[p].position, zoom: 18)));
+                        CameraPosition(target: _marker.position, zoom: 18)));
                   },
                   itemBuilder: (context, index) {
+                    print(activityList[index].images);
+                    print(activityList[index]
+                        .images
+                        .where((e) => e.contains("main"))
+                        .toList()[0]);
                     return Align(
                       alignment: Alignment.topCenter,
                       child: Container(
@@ -210,8 +255,11 @@ class _MapScreenState extends State<MapScreen> {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Image.asset(
-                                  activityList[index].imagePath,
+                                Image.network(
+                                  activityList[index]
+                                      .images
+                                      .where((e) => e.contains("main"))
+                                      .toList()[0],
                                   fit: BoxFit.cover,
                                   height: 100,
                                   width: 100,
@@ -240,8 +288,8 @@ class _MapScreenState extends State<MapScreen> {
                                 IconButton(
                                   onPressed: () async {
                                     await MapsLauncher.launchCoordinates(
-                                      _markers[index].position.latitude,
-                                      _markers[index].position.longitude,
+                                      _marker.position.latitude,
+                                      _marker.position.longitude,
                                     );
                                   },
                                   icon: Icon(Icons.assistant_navigation),

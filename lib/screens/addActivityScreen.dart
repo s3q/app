@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:app/helpers/appHelper.dart';
+import 'package:app/helpers/colorsHelper.dart';
 import 'package:app/providers/activityProvider.dart';
 import 'package:app/providers/userProvider.dart';
 import 'package:app/schemas/activitySchema.dart';
@@ -8,7 +10,11 @@ import 'package:app/screens/pickLocationScreen.dart';
 import 'package:app/widgets/SafeScreen.dart';
 import 'package:app/widgets/appBarWidget.dart';
 import 'package:app/widgets/checkboxWidget.dart';
+import 'package:app/widgets/dividerWidget.dart';
 import 'package:app/widgets/inputTextFieldWidget.dart';
+import 'package:app/widgets/uploadDatesBoxWidget.dart';
+import 'package:app/widgets/uploadImagePagesWidget.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -31,6 +37,7 @@ class AddActivityScreen extends StatefulWidget {
 class _AddActivityScreenState extends State<AddActivityScreen> {
   final _formKey = GlobalKey<FormState>();
   final ImagePicker _picker = ImagePicker();
+  late String Id;
 
   final _phoneNumberWhatsappController = TextEditingController();
   final _phoneNumberCallController = TextEditingController();
@@ -41,17 +48,44 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
   final _checkboxChatW = ValueNotifier<bool>(false);
   final _checkboxChatC = ValueNotifier<bool>(true);
   final _instagramCheck = ValueNotifier<bool>(false);
+  final _avilableDates = ValueNotifier<List>([]);
   bool _checkboxOp_SFC = true;
   bool _checkboxOp_GOA = true;
   bool _checkboxOp_SCT = false;
 
   final _uploadedImagesPath = ValueNotifier<List<String>>([]);
+  Map<int, String?> uploadedumagesPath = {};
 
   String? errorInUploadImages;
+  final _errorMassage = ValueNotifier<String?>(null);
 
   List _categories = AppHelper.categories.map((e) => e["title"]).toList();
 
   Map data = {};
+  Map<String, int> suitableAges = {};
+  Map<String, bool> genderSuitability = {};
+
+  Map<String, Map<String, String?>?> prices = {};
+
+  List<dynamic> dates = [];
+
+  Map weekDays = {
+    "sunday": false,
+    "moday": false,
+    "tuesday": false,
+    "wenday": false,
+    "thursday": false,
+    "firsday": false,
+    "starday": false,
+  };
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    Id = Uuid().v4();
+  }
 
   void _pickImage() async {
     final List<XFile>? images = await _picker.pickMultiImage();
@@ -63,6 +97,17 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
     }
   }
 
+  void removeUploadedImage(value) {
+    bool re = _uploadedImagesPath.value.remove(value);
+    print(re);
+  }
+
+  void bookmarkMainPhoto(value) {
+    _uploadedImagesPath.value.remove(value);
+    _uploadedImagesPath.value.insertAll(0, value);
+    print("Home");
+  }
+
   Future _submit(BuildContext context) async {
     ActivityProvider activityProvider =
         Provider.of<ActivityProvider>(context, listen: false);
@@ -70,38 +115,99 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
         Provider.of<UserProvider>(context, listen: false);
     bool validation = _formKey.currentState!.validate();
 
-    if (validation && _uploadedImagesPath.value.length > 4) {
+    if (validation) {
       _formKey.currentState!.save();
+
+      data["availableDays"] = weekDays.keys.map((v) {
+        if (weekDays[v] == true) {
+          print(v);
+          return v;
+        }
+      }).toList();
+
+      print(data["availableDays"]);
+
+      data["availableDays"] = data["availableDays"].map((e) {
+        if (e != null && e?.toString().trim() != "") {
+          return e;
+        }
+      }).toList();
+
+      //   prices = prices.map((k, v) {
+      //     print(prices[k]?["price"].runtimeType);
+      //     if (prices[k]?["price"] == null || prices[k]?["price"]?.trim() == "") {
+      //       print(k);
+
+      //       return MapEntry(k, null);
+      //     }
+      //     return MapEntry(k, prices[k]!);
+      //   });
+
+      print(prices);
+
       ActivitySchema activityData = ActivitySchema(
-          userId: userProvider.currentUser!.Id,
-          Id: Uuid().v4(),
-          lat: data["lat"],
-          lng: data["lng"],
-          address: data["address"],
-          phoneNumberWhatsapp: data["phoneNumberWhatsapp"] ?? "",
-          phoneNumberCall: data["phoneNumberCall"],
-          description: data["description"],
-          images: _uploadedImagesPath.value,
-          importantInformation: data["importantInformation"],
-          instagramAccount: data["instagramAccount"] ?? "",
-          //   cCall: data["cCall"],
-          //   cTrippointChat: data["cTrippointChat"],
-          //   cWhatsapp: data["cWhatsapp"],
-          category: data["category"],
-          priceStartFrom:  int.parse(data["priceStartFrom"]),
-          pricesDescription: data["pricesDescription"],
-          op_GOA: _checkboxOp_GOA,
-          op_SCT: _checkboxOp_SCT,
-          op_SFC: _checkboxOp_SFC,
-          title: data["title"],);
+        isActive: false,
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+        lastUpdate: DateTime.now().millisecondsSinceEpoch,
+        userId: userProvider.currentUser!.Id,
+        Id: Id,
+        dates: dates,
+        lat: data["lat"],
+        lng: data["lng"],
+        address: data["address"],
+        phoneNumberWhatsapp: data["phoneNumberWhatsapp"] ?? "",
+        phoneNumberCall: data["phoneNumberCall"],
+        description: data["description"],
+        images: [],
+        importantInformation: data["importantInformation"],
+        availableDays: data["availableDays"],
+        cTrippointChat: _checkboxChatT,
+        category: data["category"],
+        prices: prices.values.toList(),
+        priceNote: data["priceNote"],
+        op_GOA: _checkboxOp_GOA,
+        suitableAges: suitableAges,
+        genderSuitability: genderSuitability,
+        title: data["title"],
+        reviews: [],
+      );
+
+      print(uploadedumagesPath);
+
+      activityData.images = await uploadedumagesPath.keys.map((e) async {
+        String prefix = e == 0 ? "main" : "regu";
+
+        if (uploadedumagesPath[e]?.trim() == "" ||
+            uploadedumagesPath[e] == null) {
+          //   uploadedumagesPath.remove(e);
+          return "";
+        }
+        String path =
+            "${ActivityProvider.collection}/$Id/displayImages/${prefix + Uuid().v4()}.jpg";
+        final storageRef = FirebaseStorage.instance.ref(path);
+        File file = File(uploadedumagesPath[e]!);
+        storageRef.putFile(file);
+
+        // uploadedumagesPath[e] = path;
+        return await FirebaseStorage.instance.ref(path).getDownloadURL();
+        // return path;
+      }).toList();
+
+      //   activityData.images = uploadedumagesPath.values.toList();
+      activityData.images.removeWhere(((e) => e == null));
+      activityData.availableDays.removeWhere(((e) => e == null));
+      //   activityData.availableDays.removeWhere(((e) => e == null));
+
+      print(activityData.images);
+
       print(activityData.toMap());
+
       await activityProvider.createActivity(context, activityData);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    print(_categories);
     UserProvider userProvider = Provider.of<UserProvider>(context);
 
     if (userProvider.currentUser?.isProAccount == false &&
@@ -138,69 +244,24 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      OutlinedButton.icon(
-                        icon: Icon(Icons.photo_camera_back_outlined),
-                        label: const Text("Add photos"),
-                        onPressed: () async {
-                          setState(() {
-                            errorInUploadImages = null;
-                          });
-
-                          _pickImage();
-                        },
-                      ),
-                      if (errorInUploadImages != null)
-                        Text(errorInUploadImages!),
-                      Container(
-                        height: 200,
-                        child: ValueListenableBuilder(
-                          valueListenable: _uploadedImagesPath,
-                          builder: (context, value, child) {
-                            return Stack(
-                              children: [
-                                PageView(
-                                  controller: pageViewController,
-                                  scrollDirection: Axis.horizontal,
-                                  children: (value as List<String>)
-                                      .map((e) => Image.file(
-                                            File(e),
-                                            height: 200,
-                                            fit: BoxFit.cover,
-                                          ))
-                                      .toList(),
-                                ),
-                                if (value.length > 1)
-                                  Align(
-                                    alignment:
-                                        const AlignmentDirectional(.7, .9),
-                                    child: SmoothPageIndicator(
-                                      controller: pageViewController,
-                                      count: value.length,
-                                      axisDirection: Axis.horizontal,
-                                      onDotClicked: (i) {
-                                        pageViewController.animateToPage(
-                                          i,
-                                          duration:
-                                              const Duration(milliseconds: 500),
-                                          curve: Curves.ease,
-                                        );
-                                      },
-                                      effect: const ExpandingDotsEffect(
-                                        expansionFactor: 1.5,
-                                        spacing: 6,
-                                        radius: 16,
-                                        dotWidth: 12,
-                                        dotHeight: 12,
-                                        dotColor: Color(0xFF9E9E9E),
-                                        activeDotColor: Color(0xFF3F51B5),
-                                        paintStyle: PaintingStyle.fill,
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            );
-                          },
-                        ),
+                      //   OutlinedButton.icon(
+                      //     icon: Icon(Icons.photo_camera_back_outlined),
+                      //     label: const Text("Add photos"),
+                      //     onPressed: () async {
+                      //       setState(() {
+                      //         errorInUploadImages = null;
+                      //       });
+                      //       _pickImage();
+                      //     },
+                      //   ),
+                      //   if (errorInUploadImages != null)
+                      //     Text(errorInUploadImages!),
+                      UploadImagePagesWidget(onImageAdded: (images) {
+                        uploadedumagesPath = images;
+                        print(uploadedumagesPath);
+                      }),
+                      SizedBox(
+                        height: 20,
                       ),
                       Padding(
                         padding: const EdgeInsets.all(10),
@@ -270,51 +331,201 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                               },
                             ),
                             const SizedBox(
-                              height: 15,
+                              height: 20,
+                            ),
+
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: InputTextFieldWidget(
+                                    labelText: "\$",
+                                    validator: (val) {
+                                      bool empty = true;
+                                      print(prices.values);
+                                      prices.values.map((e) {
+                                        if (e != null) {
+                                          if (e.toString().trim() != "") {
+                                            empty = false;
+                                          }
+                                        }
+                                      });
+                                      if (val.toString().trim() != "") {
+                                        empty = false;
+                                      }
+                                      if (empty) {
+                                        return "One price at least";
+                                      }
+                                      //   if (val.contains(r'[A-Za-z]')) {
+                                      //     return "The name should only consist of letters";
+                                      //   }
+                                      return null;
+                                    },
+                                    onSaved: (val) {
+                                      prices["1"] = {
+                                        "price": val?.trim(),
+                                      };
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: InputTextFieldWidget(
+                                    labelText: "Price",
+                                    validator: (val) {
+                                      if (prices["1"]?["price"] != null) {
+                                        if (val == null)
+                                          return "Type the price";
+                                        if (val.trim() == "" || val.length < 1)
+                                          return "Type the price";
+                                      }
+                                      //   if (val.contains(r'[A-Za-z]')) {
+                                      //     return "The name should only consist of letters";
+                                      //   }
+                                      return null;
+                                    },
+                                    onSaved: (val) {
+                                      if (prices["1"]?["price"] != null) {
+                                        prices["1"] = {
+                                          "price": prices["1"]?["price"],
+                                          "des": val?.trim(),
+                                        };
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(
+                              height: 10,
+                            ),
+
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: InputTextFieldWidget(
+                                    labelText: "\$",
+                                    validator: (val) {
+                                      //   if (val.contains(r'[A-Za-z]')) {
+                                      //     return "The name should only consist of letters";
+                                      //   }
+                                      return null;
+                                    },
+                                    onSaved: (val) {
+                                      prices["2"] = {
+                                        "price": val?.trim(),
+                                      };
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: InputTextFieldWidget(
+                                    labelText: "Price",
+                                    validator: (val) {
+                                      if (prices["2"]?["price"] != null) {
+                                        if (val == null)
+                                          return "Type the price";
+                                        if (val.trim() == "" || val.length < 1)
+                                          return "Type the price";
+                                      }
+                                      return null;
+                                    },
+                                    onSaved: (val) {
+                                      if (prices["2"]?["price"] != null) {
+                                        prices["2"] = {
+                                          "price": prices["2"]?["price"],
+                                          "des": val?.trim(),
+                                        };
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(
+                              height: 10,
+                            ),
+
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: InputTextFieldWidget(
+                                    labelText: "\$",
+                                    validator: (val) {
+                                      //   if (val.contains(r'[A-Za-z]')) {
+                                      //     return "The name should only consist of letters";
+                                      //   }
+                                      return null;
+                                    },
+                                    onSaved: (val) {
+                                      prices["3"] = {
+                                        "price": val?.trim(),
+                                      };
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: InputTextFieldWidget(
+                                    labelText: "Price",
+                                    validator: (val) {
+                                      if (prices["3"]?["price"] != null) {
+                                        if (val == null)
+                                          return "Type the price";
+                                        if (val.trim() == "" || val.length < 1)
+                                          return "Type the price";
+                                      }
+                                      return null;
+                                    },
+                                    onSaved: (val) {
+                                      if (prices["3"]?["price"] != null) {
+                                        prices["3"] = {
+                                          "price": prices["2"]?["price"],
+                                          "des": val?.trim(),
+                                        };
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            SizedBox(
+                              height: 10,
+                            ),
+
+                            const SizedBox(
+                              height: 20,
                             ),
                             InputTextFieldWidget(
-                              text: data["pricesDescription"],
-                              labelText: "Prices",
+                              text: data["priceNote"],
+                              labelText: "Price Notes",
                               minLines: 4,
                               helperText: "Add the prices for your activity.",
                               validator: (val) {
-                                if (val == null)
-                                  return "Use 25 characters or more for a prices Description";
-                                if (val.trim() == "" || val.length < 25)
-                                  return "Use 25 characters or more for a prices Description";
-                                //   if (val.contains(r'[A-Za-z]')) {
-                                //     return "The name should only consist of letters";
-                                //   }
+                                if (val.length > 50) return "too long";
+
                                 return null;
                               },
                               onSaved: (val) {
-                                data["pricesDescription"] = val?.trim();
+                                data["priceNote"] = val?.trim();
                               },
                             ),
                             const SizedBox(
                               height: 15,
                             ),
-                            InputTextFieldWidget(
-                              text: data["priceStartFrom"],
-                              labelText: "start from",
-                              helperText: "the price start from",
-                              validator: (val) {
-                                // if (val == null)
-                                //   return "Use 40 characters or more for important information";
-                                // if (val.trim() == "" || val.length < 40)
-                                //   return "Use 40 characters or more for important information";
-                                // //   if (val.contains(r'[A-Za-z]')) {
-                                // //     return "The name should only consist of letters";
-                                // //   }
-                                return null;
-                              },
-                              onSaved: (val) {
-                                data["priceStartFrom"] = val?.trim();
-                              },
-                            ),
-                            SizedBox(
-                              height: 15,
-                            ),
+
                             InputTextFieldWidget(
                               text: data["description"],
                               labelText: "Description",
@@ -323,12 +534,12 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                   "Add more details about the activitiy",
                               validator: (val) {
                                 if (val == null)
-                                  return "Use 40 characters or more for description";
-                                if (val.trim() == "" || val.length < 40)
-                                  return "Use 40 characters or more for description";
-                                //   if (val.contains(r'[A-Za-z]')) {
-                                //     return "The name should only consist of letters";
-                                //   }
+                                  return "Use 10 characters or more for description";
+                                if (val.trim() == "" || val.length < 10)
+                                  return "Use 10 characters or more for description";
+
+                                if (val.length > 100) return "too long";
+
                                 return null;
                               },
                               onSaved: (val) {
@@ -345,12 +556,12 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                               helperText: "Add important information",
                               validator: (val) {
                                 if (val == null)
-                                  return "Use 40 characters or more for important information";
-                                if (val.trim() == "" || val.length < 40)
-                                  return "Use 40 characters or more for important information";
-                                //   if (val.contains(r'[A-Za-z]')) {
-                                //     return "The name should only consist of letters";
-                                //   }
+                                  return "Use 10 characters or more for important information";
+                                if (val.trim() == "" || val.length < 10)
+                                  return "Use 10 characters or more for important information";
+
+                                if (val.length > 100) return "too long";
+
                                 return null;
                               },
                               onSaved: (val) {
@@ -368,9 +579,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                   return "Use 2 characters or more for address";
                                 if (val.trim() == "" || val.length < 2)
                                   return "Use 2 characters or more for address";
-                                //   if (val.contains(r'[A-Za-z]')) {
-                                //     return "The name should only consist of letters";
-                                //   }
+
                                 return null;
                               },
                               onSaved: (val) {
@@ -390,20 +599,19 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                         context, PickLocationSceen.router)
                                     as LatLng;
                                 print(latlanArg);
-                                print("EEEEEEEEEEEEEEEEEEEEEE");
                                 if (latlanArg != null) {
                                   data["lat"] = latlanArg.latitude;
                                   data["lng"] = latlanArg.longitude;
                                 }
                               },
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 20,
                             ),
-                            Text(
+                            const Text(
                               "Choose how you would like to be contacted by customers",
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 10,
                             ),
                             CheckboxWidget(
@@ -411,16 +619,15 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                 isCheck: _checkboxChatT,
                                 onChanged: (isChecked) {
                                   print(isChecked);
-                                  _checkboxChatT = !_checkboxChatT;
+                                  _checkboxChatT = isChecked;
                                 }),
                             CheckboxWidget(
                                 label: "Whatsapp",
                                 isCheck: _checkboxChatW.value,
                                 onChanged: (isChecked) {
                                   print(isChecked);
-                                  _checkboxChatW.value = !_checkboxChatW.value;
+                                  _checkboxChatW.value = isChecked;
                                 }),
-
                             ValueListenableBuilder(
                               valueListenable: _checkboxChatW,
                               builder: (context, value, child) {
@@ -439,7 +646,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                     //   return "invalid phone number";
                                     // }
                                   },
-                                  
+
                                   onSaved: (val) {
                                     data["phoneNumberWhatsapp"] = val?.trim();
                                   },
@@ -450,10 +657,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                 label: "Call",
                                 isCheck: _checkboxChatC.value,
                                 onChanged: (isChecked) {
-                                  setState(() {
-                                    _checkboxChatC.value =
-                                        !_checkboxChatC.value;
-                                  });
+                                  _checkboxChatC.value = !_checkboxChatC.value;
                                 }),
 
                             ValueListenableBuilder(
@@ -481,75 +685,173 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                 );
                               },
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 15,
                             ),
 
-                            CheckboxWidget(
-                                label:
-                                    "Would you like to add the activity Instagram page ?",
-                                isCheck: _instagramCheck.value,
-                                onChanged: (isChecked) {
-                                  print(isChecked);
-                                  _instagramCheck.value =
-                                      !_instagramCheck.value;
-                                }),
-                            // SizedBox(height: 5,),
-                            ValueListenableBuilder(
-                              valueListenable: _instagramCheck,
-                              builder: (context, value, child) {
-                                return InputTextFieldWidget(
-                                  enabled: value as bool,
-                                  keyboardType: TextInputType.number,
+                            // CheckboxWidget(
+                            //     label:
+                            //         "Would you like to add the activity Instagram page ?",
+                            //     isCheck: _instagramCheck.value,
+                            //     onChanged: (isChecked) {
+                            //       print(isChecked);
+                            //       _instagramCheck.value =
+                            //           !_instagramCheck.value;
+                            //     }),
+                            // // SizedBox(height: 5,),
+                            // ValueListenableBuilder(
+                            //   valueListenable: _instagramCheck,
+                            //   builder: (context, value, child) {
+                            //     return InputTextFieldWidget(
+                            //       enabled: value as bool,
+                            //       keyboardType: TextInputType.number,
 
-                                  labelText: "instagram Account",
-                                  //   labelStyle:,
-                                  helperText: "Add Your instagram.",
+                            //       labelText: "instagram Account",
+                            //       //   labelStyle:,
+                            //       helperText: "Add Your instagram.",
 
-                                  validator: (val) {
-                                   
-                                  },
-                                  onSaved: (val) {
-                                    data["instagramAccount"] = val?.trim();
-                                  },
-                                );
-                              },
-                            ),
+                            //       validator: (val) {},
+                            //       onSaved: (val) {
+                            //         data["instagramAccount"] = val?.trim();
+                            //       },
+                            //     );
+                            //   },
+                            // ),
                             SizedBox(
                               height: 20,
                             ),
+                            const Text(
+                                "chose the days will the activity is visiable"),
+
+                            ...weekDays.keys.map((v) {
+                              return CheckboxWidget(
+                                  label: v,
+                                  isCheck: weekDays[v],
+                                  onChanged: (isChecked) {
+                                    print(isChecked);
+                                    weekDays[v] = isChecked;
+                                  });
+                            }).toList(),
+
+                            DividerWidget(
+                              text: "Or",
+                            ),
+
+                            UploadDatesBoxWidget(onDatesSelected: (fdates) {
+                              print(fdates);
+                              dates = fdates;
+                            }),
+
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: InputTextFieldWidget(
+                                    keyboardType: TextInputType.number,
+                                    labelText: "Max Age",
+                                    onSaved: (val) {
+                                      suitableAges["max"] =
+                                          int.parse(val?.trim());
+                                    },
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                Expanded(
+                                  child: InputTextFieldWidget(
+                                    keyboardType: TextInputType.number,
+                                    labelText: "Min Age",
+                                    onSaved: (val) {
+                                      suitableAges["min"] =
+                                          int.parse(val?.trim());
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+
+                            const Text("Who Activity for ?"),
+                            Row(
+                              children: [
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(
+                                  child: CheckboxWidget(
+                                      label: "man",
+                                      isCheck: data["suitableForMan"] ?? false,
+                                      onChanged: (isChecked) {
+                                        print(isChecked);
+                                        genderSuitability["man"] = isChecked;
+                                      }),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(
+                                  child: CheckboxWidget(
+                                      label: "woman",
+                                      isCheck:
+                                          data["suitableForWoman"] ?? false,
+                                      onChanged: (isChecked) {
+                                        print(isChecked);
+                                        genderSuitability["woman"] = isChecked;
+                                      }),
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(
+                              height: 20,
+                            ),
                             CheckboxWidget(
-                                label:
-                                    "Is the activity suitable for children ?",
-                                isCheck: _checkboxOp_SFC,
-                                onChanged: (isChecked) {
-                                  print(isChecked);
-                                  _checkboxOp_SFC = !_checkboxOp_SFC;
-                                }),
-                            CheckboxWidget(
-                                label: "Is private group option available ?",
+                                label: "Does activity accept group booking",
                                 isCheck: _checkboxOp_GOA,
                                 onChanged: (isChecked) {
                                   print(isChecked);
-                                  _checkboxOp_GOA = !_checkboxOp_GOA;
-                                }),
-                            CheckboxWidget(
-                                label:
-                                    "Is your activity requires any skills or tools that the customer should has ?",
-                                isCheck: _checkboxOp_SCT,
-                                onChanged: (isChecked) {
-                                  print(isChecked);
-                                  _checkboxOp_GOA = !_checkboxOp_GOA;
+                                  _checkboxOp_GOA = isChecked;
                                 }),
 
-                            SizedBox(
+                            const SizedBox(
                               height: 20,
                             ),
+
+                            ValueListenableBuilder(
+                              valueListenable: _errorMassage,
+                              builder: (context, value, child) {
+                                if (value.runtimeType != String) {
+                                  return SizedBox();
+                                }
+                                return Column(
+                                  children: [
+                                    Container(
+                                      margin: const EdgeInsets.all(10),
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        color: ColorsHelper.red,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Text(value.toString()),
+                                    ),
+                                    const SizedBox(
+                                      height: 20,
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
                             ElevatedButton(
-                                onPressed: () async {
-                                  await _submit(context);
-                                },
-                                child: const Text("Submit"),),
+                              onPressed: () async {
+                                await _submit(context);
+                              },
+                              child: const Text("Submit"),
+                            ),
                           ],
                         ),
                       ),

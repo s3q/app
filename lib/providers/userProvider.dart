@@ -1,5 +1,6 @@
 import 'package:app/constants/constants.dart';
 import 'package:app/helpers/errorsHelper.dart';
+import 'package:app/providers/activityProvider.dart';
 import 'package:app/schemas/proUserSchema.dart';
 import 'package:app/schemas/userSchema.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -50,21 +51,40 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  Future fetchUserData({required String userId}) async {
+  Future<UserSchema?> fetchUserData({required String userId}) async {
+    print(users[userId]);
+    print(users);
     if (users[userId] == null) {
       QuerySnapshot<Map<String, dynamic>> u = await store
           .collection(UserProvider.collection)
-          .where("Id", isEqualTo: userId)
+          .where("Id", isEqualTo: userId.trim())
           .get();
       Map<String, dynamic> user = u.docs.single.data();
+
+      Map proAccount = user["proAccount"];
+      ProUserSchema? proUserSchema;
+
+      if (proAccount["createdAt"] != null) {
+        proUserSchema = ProUserSchema(
+            createdAt: proAccount["createdAt"],
+            userId: proAccount["userId"],
+            publicPhoneNumber: proAccount["publicPhoneNumber"],
+            instagram: proAccount["instagram"],
+            publicEmail: proAccount["publicEmail"]);
+      }
+
       users[userId] = UserSchema(
+        // wishlist: ,
+        proAccount: proUserSchema != null ? proUserSchema.toMap() : {},
         name: user["name"],
         Id: user["Id"],
         ip: user["ip"],
         profileColor: user["profileColor"],
-        profileImagePath: user["profileColor"],
+        profileImagePath: user["profileImagePath"],
       );
     }
+    print(userId);
+    print(users[userId]);
     return users[userId];
   }
 
@@ -87,36 +107,36 @@ class UserProvider with ChangeNotifier {
       final GoogleSignInAccount? googleUser = await googleSignin.signIn();
       print("DDDone 11");
       if (googleUser != null) {
-        bool _usedEmail = await checkEmailNotused(googleUser.email);
+        // bool _usedEmail = await checkEmailNotused(googleUser.email);
 
-        if (_usedEmail) {
-          final GoogleSignInAuthentication googleAuth =
-              await googleUser.authentication;
+        // if (_usedEmail) {
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
 
-          final credential = GoogleAuthProvider.credential(
-            idToken: googleAuth.idToken,
-            accessToken: googleAuth.accessToken,
+        final credential = GoogleAuthProvider.credential(
+          idToken: googleAuth.idToken,
+          accessToken: googleAuth.accessToken,
+        );
+
+        UserCredential _credentialUser =
+            await auth.signInWithCredential(credential);
+        credentialUser = _credentialUser.user;
+
+        if (_credentialUser.user != null) {
+          await saveSignInUserData(
+            context,
+            _credentialUser.user!,
+            sginup: false,
           );
-
-          UserCredential _credentialUser =
-              await auth.signInWithCredential(credential);
-          credentialUser = _credentialUser.user;
-
-          if (_credentialUser.user != null) {
-            await saveSignInUserData(
-              context,
-              _credentialUser.user!,
-              sginup: false,
-            );
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              backgroundColor: Theme.of(context).errorColor,
-              content: const Text("You have problem when sign in, try agian"),
-            ));
-          }
-
-          return _credentialUser;
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            backgroundColor: Theme.of(context).errorColor,
+            content: const Text("You have problem when sign in, try agian"),
+          ));
         }
+
+        return _credentialUser;
+        // }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           backgroundColor: Theme.of(context).errorColor,
@@ -175,6 +195,43 @@ class UserProvider with ChangeNotifier {
     }
   }
 
+  Future<bool> addToWishlist(
+      activityId, ActivityProvider activityProvider) async {
+    if (currentUser!.wishlist != null) {
+      await store.collection(collection).doc(currentUser?.Id).update({
+        "wishlist": [...currentUser!.wishlist!, activityId]
+      });
+
+      await activityProvider.likeActivity(activityId);
+
+      // await query.reference.update({
+      //   "wishlist": [...query.data()?["wishlist"], activityId]
+      // });
+
+      currentUser?.wishlist = [...currentUser!.wishlist!, activityId];
+
+      return true;
+    }
+    return false; // !!!!!!
+  }
+
+  Future removeFromWishlist(activityId) async {
+    if (currentUser!.wishlist != null) {
+      await store.collection(collection).doc(currentUser?.Id).update({
+        "wishlist": [
+          ...currentUser!.wishlist!.where((e) => e != activityId).toList()
+        ]
+      });
+
+      // await query.reference.update({
+      //   "wishlist": [...query.data()?["wishlist"], activityId]
+      // });
+
+      currentUser?.wishlist =
+          currentUser!.wishlist!.where((e) => e != activityId).toList();
+    }
+  }
+
   Future saveSignInUserData(
     BuildContext context,
     User userData, {
@@ -204,6 +261,8 @@ class UserProvider with ChangeNotifier {
       final ipv4 = await Ipify.ipv4();
 
       currentUser = UserSchema(
+          // storeId: ,
+          wishlist: [],
           email: userData.email,
           name: userData.displayName ?? name,
           lastLogin: DateTime.now().millisecondsSinceEpoch,
@@ -221,8 +280,10 @@ class UserProvider with ChangeNotifier {
           ip: ipv4,
           profileImagePath: userData.photoURL);
 
-      await usersCollection.add(currentUser!.toMap());
+      DocumentReference<Object?> queryCurrentUserDoc =
+          await usersCollection.add(currentUser!.toMap());
 
+      currentUser?.storeId = queryCurrentUserDoc.id;
       notifyListeners();
     } else if (query.docs.length > 1) {
       print("ERROR");
@@ -247,6 +308,8 @@ class UserProvider with ChangeNotifier {
       /// ! check user id equal for it in authntication.
 
       currentUser = UserSchema(
+        wishlist: userQueryData["wishlist"],
+        storeId: query.docs.single.reference.id,
         email: userQueryData["email"],
         name: userQueryData["name"],
         lastLogin: userQueryData["lastLogin"],

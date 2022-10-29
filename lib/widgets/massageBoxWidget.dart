@@ -25,9 +25,9 @@ class MassageBoxWidget extends StatelessWidget {
           : CrossAxisAlignment.end,
       children: [
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-          margin: EdgeInsets.only(top: 5),
-          constraints: BoxConstraints(minWidth: 100, maxWidth: 200),
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+          margin:  const EdgeInsets.only(top: 5),
+          constraints: const BoxConstraints(minWidth: 100, maxWidth: 200),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               color: massage.from == auth.currentUser?.uid
@@ -36,16 +36,27 @@ class MassageBoxWidget extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                massage.massage,
-                // maxLines: 6,
-                // overflow: TextOverflow.ellipsis,
-              ),
-              SizedBox(
+              if (massage.type == "text")
+                Text(
+                  massage.massage!,
+                  // maxLines: 6,
+                  // overflow: TextOverflow.ellipsis,
+                ),
+              if (massage.type == "image")
+                Image.network(
+                  massage.imagePath!,
+                  width: 200,
+                  height: 200,
+                  fit: BoxFit.cover,
+                ),
+              const SizedBox(
                 height: 2,
               ),
-              Text(DateFormat('hh:mm a').format(
-                  DateTime.fromMillisecondsSinceEpoch(massage.createdAt)), style: Theme.of(context).textTheme.bodySmall,)
+              Text(
+                DateFormat('hh:mm a').format(
+                    DateTime.fromMillisecondsSinceEpoch(massage.createdAt)),
+                style: Theme.of(context).textTheme.bodySmall,
+              )
             ],
           ),
         )

@@ -5,6 +5,7 @@ import 'package:app/providers/chatProvider.dart';
 import 'package:app/providers/settingsProvider.dart';
 import 'package:app/providers/userProvider.dart';
 import 'package:app/schemas/userSchema.dart';
+import 'package:app/screens/ContactOwnerScreen.dart';
 import 'package:app/screens/VertifyEmailScreen.dart';
 import 'package:app/screens/activityDetailsScreen.dart';
 import 'package:app/screens/addActivityScreen.dart';
@@ -12,17 +13,21 @@ import 'package:app/screens/deleteAccountScreen.dart';
 import 'package:app/screens/editProfileScreen.dart';
 import 'package:app/screens/getStartedScreen.dart';
 import 'package:app/screens/homeScreen.dart';
+import 'package:app/screens/mapScreen.dart';
 import 'package:app/screens/massagesScreen.dart';
 import 'package:app/screens/overViewScreen.dart';
 import 'package:app/screens/pickLocationScreen.dart';
 import 'package:app/screens/policyAndPrivacyScreen.dart';
 import 'package:app/screens/proAccount/switchToProAccountScreen.dart';
 import 'package:app/screens/profileScreen.dart';
+import 'package:app/screens/reportActivityScreen.dart';
 import 'package:app/screens/searchScreen.dart';
+import 'package:app/screens/sendReviewScreen.dart';
 import 'package:app/screens/signinPhoneNumberScreen.dart';
 import 'package:app/screens/signinScreen.dart';
 import 'package:app/screens/termsAndConditionsScreen.dart';
 import 'package:app/screens/updateProfileDataScreen.dart';
+import 'package:app/screens/viewReviewsScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -379,6 +384,12 @@ class MMApp extends StatelessWidget {
           PickLocationSceen.router: (context) => const PickLocationSceen(),
           VertifyEmailScreen.router: (context) => const VertifyEmailScreen(),
           DeleteAccountScreen.router: (context) => const DeleteAccountScreen(),
+
+          SendReviewScreen.router: (context) => SendReviewScreen(),
+          ViewReviewScreen.router: (context) => ViewReviewScreen(),
+           ContactOwnerScreen.router: (context) => ContactOwnerScreen(),
+           ReportActivityScreen.router: (context) => ReportActivityScreen(),
+           MapScreen.router: (context) => MapScreen(),
         },
         debugShowCheckedModeBanner: false,
       ),

@@ -2,20 +2,33 @@ import 'dart:async';
 
 import 'package:app/constants/constants.dart';
 import 'package:app/helpers/colorsHelper.dart';
+import 'package:app/providers/activityProvider.dart';
 import 'package:app/providers/chatProvider.dart';
 import 'package:app/providers/userProvider.dart';
 import 'package:app/schemas/activitySchema.dart';
+import 'package:app/schemas/userSchema.dart';
+import 'package:app/screens/ContactOwnerScreen.dart';
 import 'package:app/screens/massagesScreen.dart';
+import 'package:app/screens/sendReviewScreen.dart';
+import 'package:app/screens/viewReviewsScreen.dart';
+import 'package:app/widgets/LinkWidget.dart';
 import 'package:app/widgets/googlemapDescWidget.dart';
+import 'package:app/widgets/orginizerActivityBoxWidget.dart';
 import 'package:app/widgets/ratingBarWidget.dart';
+import 'package:app/widgets/textBoxActWidget.dart';
+import 'package:app/widgets/textCardWidget.dart';
+import 'package:app/widgets/textIocnActWidget.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:badges/badges.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expandable/expandable.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -31,19 +44,22 @@ class ActivityDetailsScreen extends StatefulWidget {
 }
 
 class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
+  final store = FirebaseStorage.instance;
+  bool init = false;
   PageController pageViewController = PageController(initialPage: 0);
 
   void _gotoChat({
     required BuildContext context,
     required UserProvider userProvider,
     required String userId,
+    required String activityId,
   }) async {
     if (userProvider.islogin()) {
       final chatProvider = Provider.of<ChatProvider>(context, listen: false);
 
       // final userProvider = Provider.of<UserProvider>(context, listen: false);
 
-      String s = await chatProvider.addChat(context: context, userId: userId);
+      String s = await chatProvider.addChat(context: context, userId: userId, activityId: activityId);
       if (chatProvider.chat != null) {
         if (chatProvider.chat!.users.contains(userId) &&
             chatProvider.chat!.users.contains(userProvider.currentUser!.Id)) {
@@ -55,10 +71,22 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
+    ActivityProvider activityProvider = Provider.of<ActivityProvider>(context);
     final args = ModalRoute.of(context)?.settings.arguments as ActivitySchema;
-    print(args);
+
+    if (!init) {
+      Future.delayed(
+          Duration.zero, () => activityProvider.openActivity(args.Id));
+      init = true;
+    }
 
     return Scaffold(
       //   appBar: AppBar(
@@ -102,7 +130,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                   borderRadius: BorderRadius.circular(0),
                 ),
                 child: Container(
-                  height: 200,
+                  height: 300,
                   width: MediaQuery.of(context).size.width,
                   child: Stack(
                     children: [
@@ -110,30 +138,20 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                         tag: args.images[0],
                         child: PageView(
                           controller: pageViewController,
-                          children: [
-                            Image.asset(
-                              args.images[0],
-                              height: 200,
+                          children: args.images.map((e) {
+                            return Image.network(
+                              e,
+                              height: 300,
                               fit: BoxFit.cover,
-                            ),
-                            Image.asset(
-                              args.images[0],
-                              height: 200,
-                              fit: BoxFit.cover,
-                            ),
-                            Image.asset(
-                              args.images[0],
-                              height: 200,
-                              fit: BoxFit.cover,
-                            ),
-                          ],
+                            );
+                          }).toList(),
                         ),
                       ),
                       Align(
                         alignment: const AlignmentDirectional(.7, .9),
                         child: SmoothPageIndicator(
                           controller: pageViewController,
-                          count: 3,
+                          count: args.images.length,
                           axisDirection: Axis.horizontal,
                           onDotClicked: (i) {
                             pageViewController.animateToPage(
@@ -155,8 +173,10 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                         ),
                       ),
                       Align(
-                        alignment: const AlignmentDirectional(-.96, -.9),
+                        alignment: const AlignmentDirectional(-1, -.9),
                         child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          //   padding: EdgeInsets.all(5),
                           decoration: BoxDecoration(
                               boxShadow: const [
                                 BoxShadow(
@@ -167,11 +187,37 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                               ],
                               borderRadius: BorderRadius.circular(50),
                               color: Colors.white60),
-                          child: IconButton(
-                            icon: const Icon(Icons.arrow_back, size: 28),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.arrow_back, size: 28),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              Row(
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.share, size: 28),
+                                    onPressed: () {
+                                      //   Navigator.pop(context);
+                                      activityProvider
+                                          .addSharesCountActivity(args.Id);
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.favorite_border,
+                                        size: 28),
+                                    onPressed: () {
+                                      //   Navigator.pop(context);
+                                      userProvider.addToWishlist(
+                                          args.Id, activityProvider);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -180,8 +226,9 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                 ),
               ),
               Container(
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       args.title,
@@ -191,58 +238,287 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                       height: 10,
                     ),
                     Row(
-                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'From',
-                          style: Theme.of(context).textTheme.bodyMedium,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                TextIconInfoActWidget(
+                                  icon: Icons.star_rounded,
+                                  color: ColorsHelper.yellow,
+                                  text: activityProvider
+                                          .previewMark(args.reviews)
+                                          .toString() +
+                                      "/5",
+                                ),
+                                // Icon(
+                                //   Icons.star_rounded,
+                                //   color: ColorsHelper.yellow,
+                                // ),
+                                // SizedBox(
+                                //   width: 5,
+                                // ),
+                                // Text(
+                                //   activityProvider
+                                //           .previewMark(args.previews)
+                                //           .toString() +
+                                //       "/5",
+                                //   style: Theme.of(context).textTheme.bodySmall,
+                                // ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text(
+                                  args.reviews.length.toString() + " reviews",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall
+                                      ?.copyWith(fontSize: 12),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            TextIconInfoActWidget(
+                              text: args.address,
+                              icon: Icons.location_on_rounded,
+                              //  style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ],
                         ),
-                        Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
-                          child: Text(
-                            args.priceStartFrom.toString(),
-                            style: Theme.of(context)
-                                .textTheme
-                                .copyWith(
-                                  titleLarge: TextStyle(
-                                    fontSize: Theme.of(context)
-                                        .textTheme
-                                        .titleLarge
-                                        ?.fontSize,
-                                    color: ColorsHelper.red.shade600,
-                                  ),
-                                )
-                                .titleLarge,
-                          ),
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Text(
+                              'From',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                            Padding(
+                              padding:
+                                  EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
+                              child: Text(
+                                activityProvider
+                                    .startFromPrice(args.prices)
+                                    .toString(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge!
+                                    .copyWith(
+                                      color: ColorsHelper.red.shade600,
+                                    ),
+                              ),
+                            ),
+                            Text('OMR',
+                                style: Theme.of(context).textTheme.titleSmall),
+                          ],
                         ),
-                        Text('OMR',
-                            style: Theme.of(context).textTheme.titleSmall),
                       ],
                     ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    P_TextCard(
-                      text: 'book through abb or contact owner',
-                    ),
-                    P_TextCard(
-                      text: 'Free cancellation up to 24 hours in',
-                      icon: Icons.date_range,
-                    ),
-                    P_TextCard(
-                      text: 'Booking confirmed in 24 hours ',
-                      icon: Icons.bookmark,
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    P_TextInfo(text: "Location", icon: Icons.location_on),
-                    P_TextInfo(text: "3 Hours", icon: Icons.timelapse),
+
+                    // TextBoxActWidget(
+                    //   text: 'book through abb or contact owner',
+                    // ),
+                    // TextBoxActWidget(
+                    //   text: 'Free cancellation up to 24 hours in',
+                    //   icon: Icons.date_range,
+                    // ),
+                    // TextBoxActWidget(
+                    //   text: 'Booking confirmed in 24 hours ',
+                    //   icon: Icons.bookmark,
+                    // ),
+                    // const SizedBox(
+                    //   height: 15,
+                    // ),
+                    // P_TextInfo(text: "Location", icon: Icons.location_on),
+                    // P_TextInfo(text: "3 Hours", icon: Icons.timelapse),
                   ],
                 ),
               ),
+
+              const SizedBox(
+                height: 10,
+              ),
+              SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      if (args.genderSuitability["woman"] == true &&
+                          (args.genderSuitability["man"] == false ||
+                              args.genderSuitability["man"] == null))
+                        TextBoxActWidget(
+                          text: "Women only",
+                        ),
+                      if (args.suitableAges["min"] != null &&
+                          args.suitableAges["min"].toString().trim() != "")
+                        TextBoxActWidget(
+                          text: "Above " + args.suitableAges["min"].toString(),
+                        ),
+                      if (args.op_GOA == true)
+                        TextBoxActWidget(
+                          text: "Private group",
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+
+              SizedBox(
+                height: 10,
+              ),
+              Container(
+                  padding: EdgeInsets.all(10),
+                  child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Dates : "),
+                        Column(
+                          children: [
+                            Column(
+                              children: args.dates.map((e) {
+                                if (e != null && e != "") {
+                                  return Container(
+                                    margin:
+                                        EdgeInsets.symmetric(horizontal: 10),
+                                    child: OutlinedButton(
+                                      onPressed: () {},
+                                      style: OutlinedButton.styleFrom(
+                                        primary: Colors.black87,
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10, vertical: 8),
+                                        side: const BorderSide(width: 1),
+                                      ),
+                                      child: Text(
+                                        DateFormat('MM/dd/yyyy, hh:mm a')
+                                            .format(DateTime
+                                                .fromMillisecondsSinceEpoch(e)),
+                                        style: TextStyle(fontSize: 14),
+                                      ),
+                                    ),
+                                  );
+                                }
+                                return SizedBox();
+                              }).toList(),
+                            ),
+                            if (args.dates.isEmpty)
+                              Row(
+                                children: [
+                                  //   if (args.availableDays.contains(String))
+                                  ...args.availableDays.map((e) {
+                                    if (e != null) {
+                                      return Container(
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        child: OutlinedButton(
+                                          onPressed: () {},
+                                          style: OutlinedButton.styleFrom(
+                                            primary: Colors.black87,
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 10, vertical: 8),
+                                            side: const BorderSide(width: 1),
+                                          ),
+                                          child: Text(
+                                            e,
+                                            style: TextStyle(fontSize: 14),
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                    return SizedBox();
+                                  }).toList(),
+                                ],
+                              ),
+                          ],
+                        ),
+                      ])),
+
               Divider(
                 thickness: 2,
+                color: ColorsHelper.blue.shade400,
+              ),
+              OriginizerActivityBoxWidget(
+                activitySchema: args,
+              ),
+              Divider(
+                thickness: 1,
+                color: ColorsHelper.blue.shade400,
+              ),
+
+              Container(
+                width: MediaQuery.of(context).size.width,
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'Prices',
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    ...args.prices.map((e) {
+                      if (e["price"] != null &&
+                          e["price"].toString().trim() != "") {
+                        return Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Container(
+                                padding: EdgeInsets.all(10),
+                                margin: EdgeInsets.symmetric(horizontal: 10),
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: ColorsHelper.grey, width: 1),
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Text(e["price"].toString()),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 3,
+                              child: Container(
+                                padding: EdgeInsets.all(10),
+                                margin: EdgeInsets.symmetric(horizontal: 10),
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: ColorsHelper.grey, width: 1),
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Text(e["des"].toString()),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                      return SizedBox();
+                    }).toList(),
+                    //   Text(args.prices),
+
+                    SizedBox(
+                      height: 15,
+                    ),
+                    TextCardWidget(
+                      title: "Activity description",
+                      text: args.description,
+                    ),
+                    TextCardWidget(
+                      title: "Important information",
+                      text: args.importantInformation,
+                    ),
+                  ],
+                ),
+              ),
+
+              Divider(
+                thickness: 1,
                 color: ColorsHelper.blue.shade400,
               ),
               Container(
@@ -254,8 +530,11 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          'Location:',
-                          style: Theme.of(context).textTheme.titleMedium,
+                          'Location: ',
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         Padding(
                           padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
@@ -279,6 +558,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                       height: 250,
                       child: GooglemapDescWidget(
                         latlan: LatLng(args.lat, args.lng),
+                        activitySchema: args,
                         onChanged: () {},
                       )),
                   CupertinoButton(
@@ -286,10 +566,11 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                     padding: EdgeInsets.all(10),
                     borderRadius: BorderRadius.zero,
                     onPressed: () {
-                    //   Navigator.pushNamed(context, MapScreen.router,
-                    //       arguments: args);
+                      //   Navigator.pushNamed(context, MapScreen.router,
+                      //       arguments: args);
 
-                    // !!!!!!!!!!!!!!!!!!!!!!!!
+                      // !!!!!!!!!!!!!!!!!!!!!!!!
+                      
                     },
                     child: Icon(
                       Icons.open_in_full_rounded,
@@ -304,32 +585,33 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
               //   height: 250,
               //   fit: BoxFit.cover,
               // ),
-              SizedBox(
-                height: 10,
-              ),
-              Divider(
-                thickness: 2,
-                color: ColorsHelper.blue.shade400,
-              ),
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 10),
-                child: Column(
-                  children: [
-                    P_ExpandableView(
-                      title: "description",
-                      text: s,
-                    ),
-                    P_ExpandableView(
-                      title: "What\'s include",
-                      text: s,
-                    ),
-                    P_ExpandableView(
-                      title: "Important information",
-                      text: s,
-                    ),
-                  ],
-                ),
-              ),
+
+              //   SizedBox(
+              //     height: 10,
+              //   ),
+              //   Divider(
+              //     thickness: 2,
+              //     color: ColorsHelper.blue.shade400,
+              //   ),
+              //   Container(
+              //     margin: const EdgeInsets.symmetric(vertical: 10),
+              //     child: Column(
+              //       children: [
+              //         P_ExpandableView(
+              //           title: "description",
+              //           text: s,
+              //         ),
+              //         P_ExpandableView(
+              //           title: "What\'s include",
+              //           text: s,
+              //         ),
+              //         P_ExpandableView(
+              //           title: "Important information",
+              //           text: s,
+              //         ),
+              //       ],
+              //     ),
+              //   ),
               Divider(
                 thickness: 1,
                 // color: ColorsHelper.blue.shade400,
@@ -350,13 +632,18 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                         Padding(
                           padding: EdgeInsetsDirectional.fromSTEB(0, 20, 0, 0),
                           child: Text(
-                            '4.5',
+                            activityProvider
+                                .previewMark(args.reviews)
+                                .toString(),
                             style: Theme.of(context).textTheme.displaySmall,
                           ),
                         ),
                         RatingBarWidget(
                           onRated: (val) {
                             print(val);
+                            Navigator.pushNamed(
+                                context, SendReviewScreen.router,
+                                arguments: args);
                           },
                           size: 30,
                         ),
@@ -366,7 +653,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                         //     children: [],
                         //   ),
                         Text(
-                          '35 reviews',
+                          args.reviews.length.toString() + ' reviews',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ],
@@ -376,16 +663,19 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                       child: OutlinedButton(
                         onPressed: () {
                           print('Button pressed ...');
+                          Navigator.pushNamed(context, ViewReviewScreen.router,
+                              arguments: args);
                         },
                         style: OutlinedButton.styleFrom(
                             // primary: ColorsHelper.green,
-                            padding: EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 30),
-                            side:
-                                BorderSide(width: 3, color: ColorsHelper.green),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            )),
+                            // padding: EdgeInsets.symmetric(
+                            //     vertical: 10, horizontal: 30),
+                            // side:
+                            //     BorderSide(width: 3, color: ColorsHelper.green),
+                            // shape: RoundedRectangleBorder(
+                            //   borderRadius: BorderRadius.circular(8),
+                            // ),
+                            ),
                         child: const Text('see reviews'),
                       ),
                     ),
@@ -396,76 +686,9 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                 thickness: 1,
                 // color: ColorsHelper.blue.shade400,
               ),
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 10),
-                padding: EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Text(
-                      'Orginized by',
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Container(
-                        //   width: 80,
-                        //   height: 80,
-                        //   clipBehavior: Clip.antiAlias,
-                        //   decoration: BoxDecoration(
-                        //     shape: BoxShape.circle,
-                        //   ),
-                        //   child: Image.asset(
-                        //     'assets/images/user.png',
-                        //   ),
-                        // ),
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              maxRadius: 40,
-                            ),
-                            Padding(
-                              padding:
-                                  EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
-                              child: Text(
-                                'Ahmed',
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
-                            ),
-                          ],
-                        ),
 
-                        ElevatedButton(
-                          onPressed: () {
-                            _gotoChat(
-                              context: context,
-                              userProvider: userProvider,
-                              userId: args.userId,
-                            );
-                          },
-                          child: Text("Contact Owner"),
-                          style: ElevatedButton.styleFrom(
-                            primary: ColorsHelper.pink,
-                            // padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                            shape: RoundedRectangleBorder(
-                              side: BorderSide(
-                                color: Colors.transparent,
-                                width: 1,
-                              ),
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+              LinkWidget(text: "! Report this listing ", onPressed: () {}),
+
               const SizedBox(
                 height: 80,
               ),
@@ -479,8 +702,11 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: ElevatedButton(
-            onPressed: () {},
-            child: Text("Book now"),
+            onPressed: () {
+              Navigator.pushNamed(context, ContactOwnerScreen.router,
+                  arguments: args);
+            },
+            child: Text("Contact Owner"),
             style: ElevatedButton.styleFrom(
               padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
             ),
@@ -583,84 +809,6 @@ class P_ExpandableView extends StatelessWidget {
               );
             },
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class P_TextInfo extends StatelessWidget {
-  IconData icon;
-  String text;
-  P_TextInfo({Key? key, required this.text, required this.icon})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 5),
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Icon(
-            icon,
-            color: Theme.of(context).textTheme.bodyMedium?.color,
-            size: 18,
-          ),
-          Padding(
-            padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
-            child: Text(
-              text,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class P_TextCard extends StatelessWidget {
-  IconData? icon;
-  String text;
-  P_TextCard({Key? key, required this.text, this.icon}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 5),
-      decoration: BoxDecoration(
-        //   color: ColorsHelper.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: ColorsHelper.pink,
-        ),
-      ),
-      child: Padding(
-        padding: EdgeInsetsDirectional.fromSTEB(5, 5, 5, 5),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            icon != null
-                ? Icon(
-                    icon,
-                    color: Colors.black,
-                    size: 20,
-                  )
-                : Icon(
-                    Icons.arrow_forward_ios_rounded,
-                    color: Colors.black,
-                    size: 20,
-                  ),
-            SizedBox(
-              width: 10,
-            ),
-            AutoSizeText(
-              text,
-              maxLines: 1,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ],
         ),
       ),
     );

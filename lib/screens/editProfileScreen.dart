@@ -77,7 +77,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               TextFormField(
                                 controller: _firstNameInput,
                                 keyboardType: TextInputType.name,
-                                autofocus: true,
                                 obscureText: false,
                                 decoration: const InputDecoration(
                                   suffixText: "Fisrt Name",
@@ -124,7 +123,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 child: TextFormField(
                                   controller: _secondNameInput,
                                   keyboardType: TextInputType.name,
-                                  autofocus: true,
                                   obscureText: false,
                                   decoration: const InputDecoration(
                                     suffixText: "Second Name",

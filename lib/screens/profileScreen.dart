@@ -21,6 +21,8 @@ class ProfileScreen extends StatelessWidget {
     UserProvider userProvider = Provider.of<UserProvider>(context);
     final auth = FirebaseAuth.instance;
     bool _isLogin = userProvider.islogin();
+
+    print(auth.currentUser?.emailVerified);
     return SafeScreen(
         padding: 0,
         child: Column(
@@ -91,7 +93,7 @@ class ProfileScreen extends StatelessWidget {
                   const SizedBox(
                     height: 10,
                   ),
-                  if (_isLogin && auth.currentUser?.emailVerified == true)
+                  if (_isLogin && auth.currentUser?.emailVerified == false)
                     ListTitleWidget(
                       title: "Verify Email",
                       icon: Icons.verified,
@@ -103,7 +105,7 @@ class ProfileScreen extends StatelessWidget {
                       },
                     ),
                   if (_isLogin)
-                    userProvider.currentUser?.isProAccount == false &&
+                    (userProvider.currentUser?.isProAccount == false &&
                             userProvider.proCurrentUser == null
                         ? ListTitleWidget(
                             title: "Switch to Professional Account",
@@ -117,7 +119,7 @@ class ProfileScreen extends StatelessWidget {
                             title: "Edit Your Professional Account",
                             icon: Icons.local_police_rounded,
                             onTap: () {},
-                          ),
+                          )),
                   ListTitleWidget(
                     title: "Language",
                     icon: Icons.language,

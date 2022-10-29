@@ -8,6 +8,7 @@ class UserSchema {
   int? lastLogin;
   int? createdAt;
   String Id;
+  String? storeId;
   String? providerId;
   String? phoneNumber;
   Map<String, dynamic>? deviceInfo;
@@ -22,6 +23,8 @@ class UserSchema {
   int? profileColor;
   String? city;
 
+  List? wishlist;
+
   static List colors = [
     0xFFFFE082,
     0xFF90CAF9,
@@ -30,8 +33,8 @@ class UserSchema {
     0xFF18FFFF,
     0xFFEEEEEE
   ];
-
   UserSchema({
+    this.storeId,
     this.email,
     required this.name,
     this.lastLogin,
@@ -50,10 +53,12 @@ class UserSchema {
     this.profileColor,
     this.profileImagePath,
     this.city,
+     this.wishlist,
   });
 
   Map<String, dynamic> toMap() {
     return {
+        "storeId": storeId,
       "email": email,
       "name": name,
       "lastLogin": lastLogin,
@@ -72,6 +77,7 @@ class UserSchema {
       "profileColor": colors[Random().nextInt(colors.length)],
       "profileImagePath": profileImagePath,
       "city": city,
+      "wishlist": wishlist,
     };
   }
 }

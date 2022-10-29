@@ -3,8 +3,9 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class RatingBarWidget extends StatefulWidget {
   double? size;
-  Function onRated;
-  RatingBarWidget({Key? key, required this.onRated, this.size})
+  Function(double)? init;
+  Function(double) onRated;
+  RatingBarWidget({Key? key, required this.onRated, this.size, this.init})
       : super(key: key);
 
   @override
@@ -13,6 +14,22 @@ class RatingBarWidget extends StatefulWidget {
 
 class RatingBarStateWidget extends State<RatingBarWidget> {
   double ratingBarValue = 3;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    if (widget.init != null) {
+      widget.init!(ratingBarValue);
+    }
+
+    // Future.delayed(
+    //   Duration.zero,
+    //   widget.onRated(ratingBarValue),
+    // );
+  }
+
   @override
   Widget build(BuildContext context) {
     return RatingBar.builder(

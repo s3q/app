@@ -1,5 +1,6 @@
 import 'package:app/helpers/appHelper.dart';
 import 'package:app/helpers/colorsHelper.dart';
+import 'package:app/providers/activityProvider.dart';
 import 'package:app/schemas/activitySchema.dart';
 import 'package:app/screens/activityDetailsScreen.dart';
 import 'package:app/screens/addActivityScreen.dart';
@@ -7,7 +8,10 @@ import 'package:app/screens/overViewScreen.dart';
 import 'package:app/screens/searchScreen.dart';
 import 'package:app/widgets/activityCardWidget.dart';
 import 'package:app/widgets/categoryCardWidget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import "package:flutter/material.dart";
+import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -20,11 +24,64 @@ class DiscoverScreen extends StatefulWidget {
 }
 
 class _DiscoverScreenState extends State<DiscoverScreen> {
+  final functions = FirebaseFunctions.instance;
   PageController pageViewController = PageController(initialPage: 0);
   TextEditingController textController = TextEditingController();
 
+  List<Widget> activitesCards = [
+    SizedBox(),
+  ];
+
+  Future loadActivites() async {
+    ActivityProvider activityProvider =
+        Provider.of<ActivityProvider>(context, listen: false);
+
+     activityProvider.topActivitesFillter().then((snapshot) {
+      print(snapshot);
+      List<ActivitySchema> data = snapshot as List<ActivitySchema>;
+      print(data);
+
+      setState(() {
+        activitesCards.addAll(data.map((d) {
+          print(d.images);
+
+          return ActivityCardWidget(
+              activity: d,
+              onPressed: () {
+                Navigator.pushNamed(
+                  context,
+                  ActivityDetailsScreen.router,
+                  arguments: d,
+                );
+              });
+        }).toList());
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    super.initState();
+    Future.delayed(Duration.zero, () => loadActivites());
+
+//  WidgetsBinding.instance
+//         .addPostFrameCallback((_) => loadActivites());
+
+    // await loadActivites();
+
+    // loadActivites();
+    // FirebaseFunctions.instance
+    //     .httpsCallable("topActivitesFillter")
+    //     .call()
+    //     .then((value) => print((value.data as List)[0]));
+  }
+
   @override
   Widget build(BuildContext context) {
+    ActivityProvider activityProvider = Provider.of<ActivityProvider>(context);
+
     return ListView(
       children: [
         //   Text(userProvider.currentUser["email"]),
@@ -122,7 +179,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                   ),
                   child: InkWell(
                     onTap: () async {
-                      await Navigator.pushNamed(context, SearchScreen.router, arguments: AppHelper.Activities[0]);
+                      await Navigator.pushNamed(context, SearchScreen.router,
+                          arguments: activityProvider.topActivitiesList.values.toList());
                     },
                     focusColor: Colors.white12,
                     child: Hero(
@@ -241,16 +299,17 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           ),
         ),
 
-        ActivityCardWidget(
-            activity: AppHelper.Activities[0],
-            onPressed: () {
-              print("jjjjjjjjjjjjjjjjjjj");
-              Navigator.pushNamed(
-                context,
-                ActivityDetailsScreen.router,
-                arguments:AppHelper.Activities[0],
-              );
-            }),
+        ...activitesCards,
+
+        // ActivityCardWidget(
+        //     activity: AppHelper.Activities[0],
+        //     onPressed: () {
+        //       Navigator.pushNamed(
+        //         context,
+        //         ActivityDetailsScreen.router,
+        //         arguments: AppHelper.Activities[0],
+        //       );
+        //     }),
 
         TextButton(
           onPressed: () {

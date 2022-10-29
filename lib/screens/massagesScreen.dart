@@ -1,16 +1,19 @@
 import 'package:app/constants/constants.dart';
 import 'package:app/helpers/colorsHelper.dart';
+import 'package:app/providers/activityProvider.dart';
 import 'package:app/providers/chatProvider.dart';
 import 'package:app/providers/userProvider.dart';
 import 'package:app/schemas/chatSchema.dart';
 import 'package:app/schemas/massageSchema.dart';
 import 'package:app/schemas/userSchema.dart';
+import 'package:app/screens/activityDetailsScreen.dart';
 import 'package:app/widgets/massageBoxWidget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -28,8 +31,11 @@ class _MassagesScreenState extends State<MassagesScreen> {
   String? massage;
   final formKey = GlobalKey<FormState>();
   final textController = TextEditingController();
-  int previousVarDays = 0;
   ItemScrollController _scrollController = ItemScrollController();
+  final ImagePicker _picker = ImagePicker();
+  List<int> massegesDateIndex = [];
+
+  List<String> _uploadedImagesPath = [];
 
   Future sendMassage(BuildContext context) async {
     ChatProvider chatProvider =
@@ -48,7 +54,6 @@ class _MassagesScreenState extends State<MassagesScreen> {
   }
 
   List scrollTo(int index) {
-
     if (_scrollController.isAttached) {
       _scrollController.scrollTo(
           index: index, duration: const Duration(seconds: 1));
@@ -62,6 +67,45 @@ class _MassagesScreenState extends State<MassagesScreen> {
     return [];
   }
 
+  Future fetchUserAndActivityData({
+    required String userId,
+    required String activityId,
+  }) async {
+    UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
+    ActivityProvider activityProvider =
+        Provider.of<ActivityProvider>(context, listen: false);
+    await userProvider.fetchUserData(userId: userId);
+    await activityProvider.fetchActivityWStore(activityId);
+  }
+
+  Future _uploadImages() async {
+    ChatProvider chatProvider =
+        Provider.of<ChatProvider>(context, listen: false);
+    final List<XFile>? images = await _picker.pickMultiImage();
+    if (images != null) {
+      _uploadedImagesPath.addAll(images.map((e) => e.path));
+
+      await _uploadedImagesPath.map((e) async {
+        await chatProvider.sendImageMessage(imagePath: e);
+      });
+    }
+  }
+
+  void _sortMessages(List<QueryDocumentSnapshot<Map<String, dynamic>>> docs) {
+    int previousVarCreatedAt = 0;
+
+    docs.asMap().forEach((i, m) {
+      int createdAt = m.data()["createdAt"];
+
+      // print(createdAt);
+      if (createdAt != previousVarCreatedAt) {
+        previousVarCreatedAt = createdAt;
+        massegesDateIndex.add(i);
+      }
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -73,15 +117,21 @@ class _MassagesScreenState extends State<MassagesScreen> {
     final args = ModalRoute.of(context)?.settings.arguments as ChatSchema;
     UserProvider userProvider = Provider.of<UserProvider>(context);
     ChatProvider chatProvider = Provider.of<ChatProvider>(context);
+    ActivityProvider activityProvider = Provider.of<ActivityProvider>(context);
 
     args.users.remove(userProvider.credentialUser?.uid);
     String userId = args.users[0];
+    String activityId = args.activityId;
     UserSchema user = userProvider.users[userId]!;
 
+
     return FutureBuilder(
-        future: userProvider.fetchUserData(userId: userId),
+        future:
+            fetchUserAndActivityData(userId: userId, activityId: activityId),
         builder: (BuildContext context, AsyncSnapshot<Object?> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+          if (snapshot.connectionState == ConnectionState.waiting ||
+              activityProvider.activities[activityId] == null ||
+              userProvider.users[userId] == null) {
             return const Center(
               child: CircularProgressIndicator(),
             );
@@ -99,9 +149,13 @@ class _MassagesScreenState extends State<MassagesScreen> {
                   .snapshots(),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-                if (snapshot.hasData == false) {
+                if (snapshot.connectionState == ConnectionState.waiting ||
+                    snapshot.hasData == false ||
+                    snapshot.data == null) {
                   return const SizedBox();
                 }
+
+                _sortMessages(snapshot.data!.docs);
                 return Scaffold(
                   appBar: AppBar(
                     backgroundColor: Colors.white,
@@ -136,9 +190,35 @@ class _MassagesScreenState extends State<MassagesScreen> {
                     color: Colors.white,
                     child: Column(
                       children: [
+                        Container(
+                            child: ListTile(
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, ActivityDetailsScreen.router,
+                                arguments:
+                                    activityProvider.activities[activityId]);
+                          },
+                          leading: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: ColorsHelper.grey),
+                            width: 100,
+                            height: 100,
+                            child: Image.network(activityProvider
+                                .activities[activityId]?.images
+                                .where((i) => i.toString().contains("main"))
+                                .toList()[0]),
+                          ),
+                          title: Text(
+                            activityProvider.activities[activityId]!.title,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                        )),
                         Expanded(
-                            child: ScrollablePositionedList.builder( // !!!!!!!!!!!! PROBLEM !!!!!!!!!!!!!!!!
-                          padding: EdgeInsets.symmetric(
+                            child: ScrollablePositionedList.builder(
+                          // !!!!!!!!!!!! PROBLEM !!!!!!!!!!!!!!!!
+
+                          padding: const EdgeInsets.symmetric(
                               vertical: 20, horizontal: 10),
                           itemScrollController: _scrollController,
                           itemCount: snapshot.data!.docs.length,
@@ -147,23 +227,20 @@ class _MassagesScreenState extends State<MassagesScreen> {
                             QueryDocumentSnapshot<Map<String, dynamic>>
                                 massageData = snapshot.data!.docs[index];
                             MassageSchema massage = MassageSchema(
-                                from: massageData.data()["from"],
-                                massage: massageData.data()["massage"],
-                                createdAt: massageData.data()["createdAt"],
-                                readedAt: massageData.data()["readedAt"],
-                                chatId: massageData.data()["chatId"]);
+                              type: massageData.data()["type"],
+                              Id: massageData.data()["Id"],
+                              audioPath: massageData.data()["audioPath"],
+                              imagePath: massageData.data()["imagePath"],
+                              from: massageData.data()["from"],
+                              massage: massageData.data()["massage"],
+                              createdAt: massageData.data()["createdAt"],
+                              readedAt: massageData.data()["readedAt"],
+                              chatId: massageData.data()["chatId"],
+                            );
 
-                            int days = DateTime.fromMillisecondsSinceEpoch(
-                                    massage.createdAt)
-                                .day;
-
-                            print(days);
-                            if (days != previousVarDays) {
-                              previousVarDays = days;
-                              print("PREEEEEEEEEEEEEEEE");
-                              print(previousVarDays);
-
-                              return Column( // !!!!!!!!!!!! PROBLEM !!!!!!!!!!!!!!!!
+                            if (massegesDateIndex.contains(index)) {
+                              return Column(
+                                // !!!!!!!!!!!! PROBLEM !!!!!!!!!!!!!!!!
                                 key: Key(massageData.id),
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
@@ -172,7 +249,7 @@ class _MassagesScreenState extends State<MassagesScreen> {
                                         DateTime.fromMillisecondsSinceEpoch(
                                             massage.createdAt))),
                                   ),
-                                  MassageBoxWidget(massage: massage)
+                                    MassageBoxWidget(massage: massage)
                                 ],
                               );
                             }
@@ -261,7 +338,7 @@ class _MassagesScreenState extends State<MassagesScreen> {
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyMedium,
-                                      decoration:  InputDecoration(
+                                      decoration: InputDecoration(
                                         contentPadding:
                                             EdgeInsets.only(right: 50, left: 8),
 
@@ -271,21 +348,23 @@ class _MassagesScreenState extends State<MassagesScreen> {
                                         //   prefixIcon: Icon(
                                         //     Icons.person,
                                         //   ),
-                                     focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.black45,
-                          width: 1,
-                        ),
-                        borderRadius: BorderRadius.all(Radius.circular(16)),
-                      ),
-                      
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.black45,
-                          width: 1,
-                        ),
-                        borderRadius: BorderRadius.all(Radius.circular(16)),
-                      ),
+                                        focusedBorder: const OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Colors.black45,
+                                            width: 1,
+                                          ),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(16)),
+                                        ),
+
+                                        border: const OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Colors.black45,
+                                            width: 1,
+                                          ),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(16)),
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -293,21 +372,60 @@ class _MassagesScreenState extends State<MassagesScreen> {
                                     right: 0.4,
                                     child: Padding(
                                       padding: const EdgeInsets.all(4),
-                                      child: Container(
-                                        height: 40,
-                            
-                                        decoration: BoxDecoration(
-                                          color: ColorsHelper.yellow,
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50))
-                                        ),
-                                        child: IconButton(
-                                    
-                                            onPressed: () async {
-                                              await sendMassage(context);
-                                              // _scrollController.scrollTo(index: snapshot.data!.docs.length-1, duration: Duration(seconds: 1));
-                                            },
-                                            icon: Icon(Icons.send, size: 18,)),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            height: 40,
+                                            margin: const EdgeInsets.symmetric(
+                                                horizontal: 5),
+                                            decoration: BoxDecoration(
+                                                color: ColorsHelper.grey,
+                                                borderRadius:
+                                                    const BorderRadius.all(
+                                                        Radius.circular(50))),
+                                            child: Row(
+                                              children: [
+                                                IconButton(
+                                                    onPressed: () async {
+                                                      // _scrollController.scrollTo(index: snapshot.data!.docs.length-1, duration: Duration(seconds: 1));
+                                                    },
+                                                    icon: const Icon(
+                                                      Icons
+                                                          .keyboard_voice_rounded,
+                                                      size: 18,
+                                                    )),
+                                                IconButton(
+                                                    onPressed: () async {
+                                                      await _uploadImages();
+                                                      // _scrollController.scrollTo(index: snapshot.data!.docs.length-1, duration: Duration(seconds: 1));
+                                                    },
+                                                    icon: const Icon(
+                                                      Icons.camera_alt_rounded,
+                                                      size: 18,
+                                                    )),
+                                              ],
+                                            ),
+                                          ),
+                                          Container(
+                                            height: 40,
+                                            margin: const EdgeInsets.symmetric(
+                                                horizontal: 5),
+                                            decoration: BoxDecoration(
+                                                color: ColorsHelper.yellow,
+                                                borderRadius:
+                                                    const BorderRadius.all(
+                                                        Radius.circular(50))),
+                                            child: IconButton(
+                                                onPressed: () async {
+                                                  await sendMassage(context);
+                                                  // _scrollController.scrollTo(index: snapshot.data!.docs.length-1, duration: Duration(seconds: 1));
+                                                },
+                                                icon: const Icon(
+                                                  Icons.send,
+                                                  size: 18,
+                                                )),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   )

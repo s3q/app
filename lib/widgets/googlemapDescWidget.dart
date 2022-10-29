@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:app/schemas/activitySchema.dart';
+import 'package:app/screens/mapScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -9,8 +11,9 @@ import 'package:uuid/uuid.dart';
 class GooglemapDescWidget extends StatefulWidget {
   Function() onChanged;
   LatLng latlan;
+  ActivitySchema activitySchema;
   GooglemapDescWidget(
-      {super.key, required this.onChanged, required this.latlan});
+      {super.key, required this.onChanged, required this.latlan, required this.activitySchema});
 
   @override
   State<GooglemapDescWidget> createState() => _GooglemapDescWidgetState();
@@ -36,11 +39,11 @@ class _GooglemapDescWidgetState extends State<GooglemapDescWidget> {
       color: Colors.white,
       child: InkWell(
         splashColor: Colors.white12, // inkwell color
-
         child: GoogleMap(
-            onTap: (_latlng) {
-                
-            },
+          onTap: (_latlng) {
+            Navigator.pushNamed(context, MapScreen.router,
+                arguments: widget.activitySchema);
+          },
           mapType: MapType.normal,
           initialCameraPosition: initialCameraPosition,
           onMapCreated: (controller) {

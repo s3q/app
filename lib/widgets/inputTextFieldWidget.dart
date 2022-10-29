@@ -6,6 +6,7 @@ class InputTextFieldWidget extends StatefulWidget {
   String? labelText;
   String? helperText;
   String? hintText;
+  String? prefixText;
   IconData? prefixIcon;
 
   bool? enabled;
@@ -39,6 +40,7 @@ class InputTextFieldWidget extends StatefulWidget {
     this.validator,
     this.autofocus,
     this.obscureText,
+    this.prefixText,
   });
 
   @override
@@ -67,6 +69,7 @@ class _InputTextFieldWidgetState extends State<InputTextFieldWidget> {
         labelText: widget.labelText,
         filled: true,
         fillColor: Colors.white,
+        prefixText: widget.prefixText,
         prefixIcon: widget.prefixIcon != null
             ? Icon(
                 widget.prefixIcon,

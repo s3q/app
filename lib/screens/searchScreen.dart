@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:app/helpers/appHelper.dart';
 import 'package:app/helpers/colorsHelper.dart';
 import 'package:app/helpers/geolocateHelper.dart';
+import 'package:app/providers/activityProvider.dart';
+import 'package:app/providers/userProvider.dart';
 import 'package:app/schemas/activitySchema.dart';
 import 'package:app/widgets/SafeScreen.dart';
 import 'package:app/widgets/loadingWidget.dart';
@@ -14,6 +16,7 @@ import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:maps_launcher/maps_launcher.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -31,7 +34,8 @@ class _SearchScreenState extends State<SearchScreen>
   int _currentTab = 0;
   bool _isLoading = true;
 
-  List<ActivitySchema> activitiesList = AppHelper.Activities;
+  List<ActivitySchema> activitiesList = [];
+  List<Marker>? markersList;
 
   final _initialCameraPosition = const CameraPosition(
     target: LatLng(23.244037241974922, 58.091192746314015),
@@ -67,57 +71,88 @@ class _SearchScreenState extends State<SearchScreen>
     }).catchError((error, stackTrace) => null);
   }
 
+  Future _getActivityNearYourPoint() async {
+    ActivityProvider activityProvider =
+        Provider.of<ActivityProvider>(context, listen: false);
+    await _getCurrentLocation();
+    activitiesList = await activityProvider.fetchActivitiesNearLocation(
+        LatLng(_currentPosition!.latitude, _currentPosition!.latitude));
+    setState(() {
+      activitiesList = activitiesList;
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
 
-    Future.delayed(Duration(milliseconds: 1000), () {
-      setState(() {
-        _isLoading = false;
-      });
+    Future.delayed(Duration(milliseconds: 1000), () async {
+      try {
+        List<ActivitySchema> args =
+            ModalRoute.of(context)?.settings.arguments as List<ActivitySchema>;
+
+        if (args.isEmpty) {
+          ActivityProvider activityProvider =
+              Provider.of<ActivityProvider>(context, listen: false);
+          activitiesList = await activityProvider.topActivitesFillter();
+        }
+        setState(() {
+          if (args.isEmpty) {
+            activitiesList = activitiesList;
+          } else {
+            activitiesList = args;
+          }
+          _isLoading = false;
+        });
+        print(_isLoading);
+      } catch (err) {
+        print(err);
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)?.settings.arguments as ActivitySchema;
+    UserProvider userProvider = Provider.of<UserProvider>(context);
+    ActivityProvider activityProvider = Provider.of<ActivityProvider>(context);
+    // final args = ModalRoute.of(context)?.settings.arguments as ActivitySchema;
 
-    if (args != null) activitiesList.add(args);
+    // if (args != null) activitiesList.add(args);
 
-    Marker _marker = Marker(
-      markerId: MarkerId(Uuid().v4()),
-      position: LatLng(activitiesList[0].lat, activitiesList[0].lng),
-      infoWindow: InfoWindow(
-        title: activitiesList[0].address,
-      ),
-    );
+    // Marker _marker = Marker(
+    //   markerId: MarkerId(Uuid().v4()),
+    //   position: LatLng(activitiesList[0].lat, activitiesList[0].lng),
+    //   infoWindow: InfoWindow(
+    //     title: activitiesList[0].address,
+    //   ),
+    // );
 
-    List<Marker> _markers = activitiesList
-        .asMap()
-        .map((i, e) {
-          return MapEntry(
-              i,
-              Marker(
-                flat: true,
-                markerId: MarkerId(Uuid().v4()),
-                position: LatLng(activitiesList[0].lat, activitiesList[0].lng),
-                infoWindow: InfoWindow(
-                  title: e.address,
-                  snippet: (e.priceStartFrom.toString() + "\$"),
-                ),
-                icon: BitmapDescriptor.defaultMarkerWithHue(
-                    BitmapDescriptor.hueRose),
-                onTap: () {
-                  pageController.animateToPage(i,
-                      duration: Duration(milliseconds: 400),
-                      curve: Curves.easeInOut);
-                },
-              ));
-        })
-        .values
-        .toList();
+    // List<Marker> markersList! = activitiesList
+    //     .asMap()
+    //     .map((i, e) {
+    //       return MapEntry(
+    //           i,
+    //           Marker(
+    //             flat: true,
+    //             markerId: MarkerId(Uuid().v4()),
+    //             position: LatLng(activitiesList[0].lat, activitiesList[0].lng),
+    //             infoWindow: InfoWindow(
+    //               title: e.address,
+    //               // !  snippet: (e.priceStartFrom.toString() + "\$"),
+    //             ),
+    //             icon: BitmapDescriptor.defaultMarkerWithHue(
+    //                 BitmapDescriptor.hueRose),
+    //             onTap: () {
+    //               pageController.animateToPage(i,
+    //                   duration: Duration(milliseconds: 400),
+    //                   curve: Curves.easeInOut);
+    //             },
+    //           ));
+    //     })
+    //     .values
+    //     .toList();
 
     if (_isLoading) {
       return const LoadingWidget();
@@ -134,9 +169,7 @@ class _SearchScreenState extends State<SearchScreen>
           myLocationEnabled: true,
           myLocationButtonEnabled: true,
           mapType: MapType.normal,
-          markers: {
-            ..._markers,
-          },
+          markers: markersList != null ? {...markersList!} : {},
           onTap: (latLng) {
             FocusScope.of(context).unfocus();
           },
@@ -178,6 +211,8 @@ class _SearchScreenState extends State<SearchScreen>
             ),
           ),
         ),
+
+        // if (activitiesList != null)
         Align(
           alignment: AlignmentDirectional(0, .8),
           child: Container(
@@ -189,11 +224,14 @@ class _SearchScreenState extends State<SearchScreen>
               itemCount: activitiesList.length,
               controller: pageController,
               onPageChanged: (p) async {
-                GoogleMapController con = await _controller.future;
-                con.showMarkerInfoWindow(_markers[p].markerId);
+                if (markersList != null) {
+                  GoogleMapController con = await _controller.future;
+                  con.showMarkerInfoWindow(markersList![p].markerId);
 
-                con.animateCamera(CameraUpdate.newCameraPosition(
-                    CameraPosition(target: _markers[p].position, zoom: 18)));
+                  con.animateCamera(CameraUpdate.newCameraPosition(
+                      CameraPosition(
+                          target: markersList![p].position, zoom: 18)));
+                }
               },
               itemBuilder: (context, index) {
                 return Align(
@@ -217,8 +255,8 @@ class _SearchScreenState extends State<SearchScreen>
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Image.asset(
-                                  activitiesList[index].images[0],
+                                Image.network(
+                                  activitiesList[index].images.where((element) => element.toString().contains("main")).toList()[0],
                                   fit: BoxFit.cover,
                                   height: 100,
                                   width: 100,
@@ -297,19 +335,22 @@ class _SearchScreenState extends State<SearchScreen>
                               children: [
                                 IconButton(
                                   onPressed: () async {
-                                    await MapsLauncher.launchCoordinates(
-                                      _markers[index].position.latitude,
-                                      _markers[index].position.longitude,
-                                    );
+                                    if (markersList != null) {
+                                      await MapsLauncher.launchCoordinates(
+                                        markersList![index].position.latitude,
+                                        markersList![index].position.longitude,
+                                      );
+                                    }
                                   },
                                   icon: Icon(Icons.assistant_navigation),
                                 ),
-                                Text(
-                                  activitiesList[index]
-                                          .priceStartFrom
-                                          .toString() +
-                                      " \$",
-                                )
+                                // Text(
+                                //   activitiesList[index]
+                                //           .priceStartFrom
+                                //           .toString() +
+                                //       " \$",
+                                // )
+                                // !
                               ],
                             ),
                           ],
@@ -538,10 +579,10 @@ class _ResultActivituBoxWidgetState extends State<ResultActivituBoxWidget> {
                         "Title",
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
-                    //   Text(
-                    //     'promotion 5% for children',
-                    //     // style:
-                    //   ),
+                      //   Text(
+                      //     'promotion 5% for children',
+                      //     // style:
+                      //   ),
                       Text(
                         'discribtion ,Flutter is an open-source UI software development kit',
                         style: Theme.of(context).textTheme.bodySmall,
@@ -600,7 +641,7 @@ class _ResultActivituBoxWidgetState extends State<ResultActivituBoxWidget> {
                           ),
                         ],
                       ),
-                    
+
                       SizedBox(
                         height: 5,
                       ),

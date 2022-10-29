@@ -1,3 +1,4 @@
+import 'package:app/helpers/colorsHelper.dart';
 import 'package:app/providers/settingsProvider.dart';
 import 'package:app/providers/userProvider.dart';
 import 'package:app/schemas/proUserSchema.dart';
@@ -55,7 +56,7 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
 
   Future _submit(BuildContext context) async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    bool validation = _formKey2.currentState!.validate();
+    bool validation = _formKey1.currentState!.validate();
     bool done = false;
 
     if (validation) {
@@ -77,7 +78,11 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
         name: data["name"],
       );
 
-      Navigator.pushNamed(context, ProfileScreen.router);
+    //   Navigator.pushNamed(context, ProfileScreen.router);
+
+    setState(() {
+      indexOverView += 1;
+    });
     }
   }
 
@@ -366,24 +371,61 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                   SizedBox(
                     height: 30,
                   ),
-                  Checkbox(
-                    checkColor: Colors.white,
-                    fillColor: MaterialStateProperty.all(Colors.blue),
-                    value: isCheckedCheckbox,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        isCheckedCheckbox = value!;
-                      });
-                    },
-                  ),
-                  Text("Agree to"),
+                  Row(
+                    children: [
+                      Checkbox(
+                        checkColor: Colors.white,
+                        fillColor: MaterialStateProperty.all(Colors.blue),
+                        value: isCheckedCheckbox,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            isCheckedCheckbox = value!;
+                          });
+                        },
+                      ),
+
+                      Text("Agree to"),
                   LinkWidget(text: "terms and condition", onPressed: () {})
+                    ],
+                  ),
+                  
                 ],
               ),
             ),
           ),
         ],
       ),
+
+      Column(
+        children: [
+          SizedBox(
+            height: 50,
+          ),
+          Icon(
+            Icons.done_all_rounded,
+            size: 100,
+            color: ColorsHelper.green,
+          ),
+          SizedBox(
+            height: 30,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              children: [
+                Text(
+                  "almost we Done \n",
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                Text(" please wait 6 hours to vertify your infromation"),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+        ],
+      )
     ];
 
     return SafeScreen(
@@ -426,15 +468,17 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                           : SizedBox(),
                       ElevatedButton(
                         onPressed: () async {
-                          if (indexOverView == 0) {
+                          if (indexOverView  == 0) {
                             //!!!!!!!!!
 
                             setState(() {
                               indexOverView += 1;
                             });
+                          } else if (indexOverView == 2) {
+                            Navigator.pushReplacementNamed(context, ProfileScreen.router);
                           } else {
                             await _submit(context);
-                          }
+                          } 
                         },
                         style: ButtonStyle(
                           padding: MaterialStateProperty.all(
@@ -442,9 +486,9 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                                 horizontal: 60, vertical: 20),
                           ),
                         ),
-                        child: indexOverView == 1
+                        child: indexOverView !=  2?  (indexOverView == 1
                             ? const Text("Get Started")
-                            : const Text("Next"),
+                            : const Text("Next")) : Text("Done"),
                       ),
                     ],
                   ),
