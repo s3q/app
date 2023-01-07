@@ -10,4 +10,5 @@ class CollectionsConstants {
   static String activities = "activites";
   static String reports = "reports";
   static String activityStatistics = "activity_statistics";
+  static String notifications = "notifications";
 }

@@ -2,7 +2,10 @@ import 'package:app/helpers/colorsHelper.dart';
 import 'package:app/providers/activityProvider.dart';
 import 'package:app/providers/userProvider.dart';
 import 'package:app/schemas/activitySchema.dart';
+import 'package:app/widgets/activity/reviewsTextActivity.dart';
 import 'package:app/widgets/textBoxActWidget.dart';
+import 'package:app/widgets/textIocnActWidget.dart';
+import 'package:app/widgets/wishlistIconButtonWidget.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import "package:flutter/material.dart";
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -82,25 +85,8 @@ class _ActivityCardWidgetState extends State<ActivityCardWidget> {
                                   bottomLeft: Radius.circular(10),
                                 ),
                               ),
-                              child: IconButton(
-                                icon: Icon(
-                                  userProvider.currentUser!.wishlist!
-                                          .contains(widget.activity.Id)
-                                      ? Icons.favorite
-                                      : Icons.favorite_border,
-                                ),
-                                onPressed: () async {
-                                  if (userProvider.currentUser!.wishlist!
-                                      .contains(widget.activity.Id)) {
-                                    await userProvider
-                                        .removeFromWishlist(widget.activity.Id);
-                                  } else {
-                                     await userProvider
-                                        .addToWishlist(widget.activity.Id, activityProvider);
-                                  }
-                                  setState(() {});
-                                },
-                              ),
+                              child: WishlistIconButtonWidget( activityStoreId:  widget.activity.storeId!,
+                                  activityId: widget.activity.Id),
                             )),
                       ],
                     ),
@@ -119,23 +105,13 @@ class _ActivityCardWidgetState extends State<ActivityCardWidget> {
                         const SizedBox(
                           height: 15,
                         ),
-                        Row(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            Icon(
-                              Icons.location_on,
-                              size: 20,
+
+                           TextIconInfoActWidget(
+                              text:  widget.activity.address,
+                              icon: Icons.location_on_rounded,
+                              //  style: Theme.of(context).textTheme.bodySmall,
                             ),
-                            Padding(
-                              padding:
-                                  EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
-                              child: Text(
-                                widget.activity.address,
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
-                            ),
-                          ],
-                        ),
+                    
 
                         // ! SizedBox(
                         //   height: 10,
@@ -162,39 +138,7 @@ class _ActivityCardWidgetState extends State<ActivityCardWidget> {
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Row(
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                const Icon(
-                                  Icons.star_rounded,
-                                  color: Color(0xFFFFA130),
-                                  size: 25,
-                                ),
-                                Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      4, 0, 0, 0),
-                                  child: Text(
-                                    activityProvider
-                                            .previewMark(
-                                                widget.activity.reviews)
-                                            .toString() +
-                                        "/5",
-                                    style:
-                                        Theme.of(context).textTheme.bodyMedium,
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      8, 0, 0, 0),
-                                  child: Text(
-                                    widget.activity.reviews.length.toString() +
-                                        ' reviews',
-                                    style:
-                                        Theme.of(context).textTheme.bodyMedium,
-                                  ),
-                                ),
-                              ],
-                            ),
+                            ReviewsTextActivity(activitySchema: widget.activity),
                             Padding(
                               padding:
                                   EdgeInsetsDirectional.fromSTEB(0, 20, 10, 0),

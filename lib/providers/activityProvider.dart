@@ -4,6 +4,8 @@ import 'package:app/schemas/activitySchema.dart';
 import 'package:app/schemas/activityStatisticsSchema.dart';
 import 'package:app/schemas/reviewSchema.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
@@ -21,15 +23,29 @@ class ActivityProvider with ChangeNotifier {
   static final store = FirebaseFirestore.instance;
   static final storage = FirebaseStorage.instance;
 
+  Future<List<ActivitySchema>> fetchAllActivites() async {
+    QuerySnapshot<Map<String, dynamic>> activitesListSnapshot = await store
+        .collection("activites")
+        .where("isActive", isEqualTo: true)
+        .get();
+
+    List<ActivitySchema> ListActiviesSchema = [];
+    activitesListSnapshot.docs.forEach((d) {
+      ActivitySchema activitySchema = ActivitySchema.toSchema(d.data());
+      activitySchema.storeId = d.id;
+      activities[d.data()["Id"]] = activitySchema;
+    });
+
+    return activities.values.toList();
+  }
+
   Future<List<ActivitySchema>> topActivitesFillter() async {
     if (topActivitiesList.length < 10) {
       QuerySnapshot<Map<String, dynamic>> activitesListSnapshot = await store
           .collection("activites")
           .where("isActive", isEqualTo: true)
-          .limit(10)
+          //   .limit(10)
           .get();
-
-      print(activitesListSnapshot.docs);
 
       activitesListSnapshot.docs.forEach((d) {
         // a.data()["viewCounter"];
@@ -37,49 +53,53 @@ class ActivityProvider with ChangeNotifier {
         // a.data()["availableDays"];
         // a.data()["lat"];
         // a.data()["lng"];
-        ActivitySchema a = ActivitySchema(
-          storeId: d.id,
-          createdAt: d.data()["createdAt"],
-          reviews: d.data()["reviews"],
-          isActive: d.data()["isActive"],
-          lastUpdate: d.data()["lastUpdate"],
-          userId: d.data()["userId"],
-          dates: d.data()["dates"],
-          Id: d.data()["Id"],
-          lat: d.data()["lat"],
-          lng: d.data()["lng"],
-          address: d.data()["address"],
-          availableDays: d.data()["availableDays"],
-          phoneNumberCall: d.data()["phoneNumberCall"],
-          description: d.data()["description"],
-          images: d.data()["images"],
-          importantInformation: d.data()["importantInformation"],
-          cTrippointChat: d.data()["cTrippointChat"],
-          category: d.data()["category"],
-          priceNote: d.data()["priceNote"],
-          prices: d.data()["prices"],
-          op_GOA: d.data()["op_GOA"],
-          title: d.data()["title"],
-          genderSuitability: d.data()["genderSuitability"],
-          suitableAges: d.data()["suitableAges"],
-          chatsCount: d.data()["chatsCount"],
-          callsCount: d.data()["callsCount"],
-          viewsCount: d.data()["viewsCount"],
-          likesCount: d.data()["likesCount"],
-          sharesCount: d.data()["sharesCount"],
-        );
 
-        a.images.remove(null);
-        a.images.remove(null);
-        a.images.remove(null);
-        a.images.remove(null);
-        a.images.remove(null);
-        a.images.remove(null);
-        a.images.remove(null);
-        a.images.remove(null);
-        a.images.remove(null);
-        a.images.remove(null);
-        a.images.remove(null);
+        // ActivitySchema a = ActivitySchema(
+        //   storeId: d.id,
+        //   createdAt: d.data()["createdAt"],
+        //   reviews: d.data()["reviews"],
+        //   isActive: d.data()["isActive"],
+        //   lastUpdate: d.data()["lastUpdate"],
+        //   userId: d.data()["userId"],
+        //   dates: d.data()["dates"],
+        //   Id: d.data()["Id"],
+        //   lat: d.data()["lat"],
+        //   lng: d.data()["lng"],
+        //   address: d.data()["address"],
+        //   availableDays: d.data()["availableDays"],
+        //   phoneNumberCall: d.data()["phoneNumberCall"],
+        //   description: d.data()["description"],
+        //   images: d.data()["images"],
+        //   importantInformation: d.data()["importantInformation"],
+        //   cTrippointChat: d.data()["cTrippointChat"],
+        //   category: d.data()["category"],
+        //   priceNote: d.data()["priceNote"],
+        //   prices: d.data()["prices"],
+        //   op_GOA: d.data()["op_GOA"],
+        //   title: d.data()["title"],
+        //   genderSuitability: d.data()["genderSuitability"],
+        //   suitableAges: d.data()["suitableAges"],
+        //   chatsCount: d.data()["chatsCount"],
+        //   callsCount: d.data()["callsCount"],
+        //   viewsCount: d.data()["viewsCount"],
+        //   likesCount: d.data()["likesCount"],
+        //   sharesCount: d.data()["sharesCount"],
+        // );
+
+        ActivitySchema a = ActivitySchema.toSchema(d.data());
+        a.storeId = d.id;
+
+        // a.images.remove(null);
+        // a.images.remove(null);
+        // a.images.remove(null);
+        // a.images.remove(null);
+        // a.images.remove(null);
+        // a.images.remove(null);
+        // a.images.remove(null);
+        // a.images.remove(null);
+        // a.images.remove(null);
+        // a.images.remove(null);
+        // a.images.remove(null);
 
         topActivitiesList[a.Id] = a;
       });
@@ -97,157 +117,167 @@ class ActivityProvider with ChangeNotifier {
   }
 
   Future<ActivityStatisticsSchema?> fetchActivityStatistics(activityId) async {
-    QuerySnapshot<Map<String, dynamic>> activityStatisticsQuery = await store
-        .collection(CollectionsConstants.activityStatistics)
-        .where("activityId", isEqualTo: activityId)
-        .get();
+    // QuerySnapshot<Map<String, dynamic>> activityStatisticsQuery = await store
+    //     .collection(CollectionsConstants.activityStatistics)
+    //     .where("activityId", isEqualTo: activityId)
+    //     .get();
 
-    if (activityStatisticsQuery.docs.isNotEmpty) {
-      Map<String, dynamic> activityStatisticsAsMap =
-          activityStatisticsQuery.docs.single.data();
-      ActivityStatisticsSchema activityStatisticsSchema =
-          ActivityStatisticsSchema(
-        sharesCount: activityStatisticsAsMap["sharesCount"],
-        createdAt: activityStatisticsAsMap["createdAt"],
-        Id: activityStatisticsAsMap["Id"],
-        activityId: activityStatisticsAsMap["activityId"],
-        callsCount: activityStatisticsAsMap["callsCount"],
-        chatsCount: activityStatisticsAsMap["chatsCount"],
-        instsgramCount: activityStatisticsAsMap["instsgramCount"],
-        likesCount: activityStatisticsAsMap["likesCount"],
-        viewsCount: activityStatisticsAsMap["viewsCount"],
-        whatsappCount: activityStatisticsAsMap["whatsappCount"],
-      );
+    // if (activityStatisticsQuery.docs.isNotEmpty) {
+    //   Map<String, dynamic> activityStatisticsAsMap =
+    //       activityStatisticsQuery.docs.single.data();
+    //   ActivityStatisticsSchema activityStatisticsSchema =
+    //       ActivityStatisticsSchema(
+    //     sharesCount: activityStatisticsAsMap["sharesCount"],
+    //     createdAt: activityStatisticsAsMap["createdAt"],
+    //     Id: activityStatisticsAsMap["Id"],
+    //     activityId: activityStatisticsAsMap["activityId"],
+    //     callsCount: activityStatisticsAsMap["callsCount"],
+    //     chatsCount: activityStatisticsAsMap["chatsCount"],
+    //     instsgramCount: activityStatisticsAsMap["instsgramCount"],
+    //     likesCount: activityStatisticsAsMap["likesCount"],
+    //     viewsCount: activityStatisticsAsMap["viewsCount"],
+    //     whatsappCount: activityStatisticsAsMap["whatsappCount"],
+    //   );
 
-      return activityStatisticsSchema;
-    }
+    //   print(activityStatisticsSchema);
+
+    //   return activityStatisticsSchema;
+    // }
   }
 
-  Future openActivity(activityId) async {
-    QuerySnapshot<Map<String, dynamic>> activityQuery = await store
-        .collection(collection)
-        .where("ActivityId", isEqualTo: activityId)
-        .get();
-
-    if (activityQuery.docs.isNotEmpty) {
-      await activityQuery.docs.single.reference.update({
-        "viewsCount":
-            int.parse(activityQuery.docs.single.data()["viewCount"]) + 1,
+  Future openActivity(activityStoreId, activityId) async {
+    try {
+      assert(activityStoreId != null);
+      HttpsCallableResult response = await FirebaseFunctions.instance
+          .httpsCallable("increaseCountersActivities")
+          .call({
+        "doc": activityStoreId,
+        "field": "viewsCount",
       });
-      activities[activityId]!.viewsCount =
-          int.parse(activityQuery.docs.single.data()["viewCount"]) + 1;
+
+      activities[activityId]!.viewsCount = response.data;
+    } catch (err) {
+      print(err);
     }
+    //   await activityQuery.docs.single.reference.update({
+    //     "viewsCount":
+    //         int.parse(activityQuery.docs.single.data()["viewCount"]) + 1,
+    //   });
+    //   activities[activityId]!.viewsCount =
+    //       int.parse(activityQuery.docs.single.data()["viewCount"]) + 1;
   }
 
-  Future<bool> likeActivity(activityId) async {
-    QuerySnapshot<Map<String, dynamic>> activityQuery = await store
-        .collection(collection)
-        .where("ActivityId", isEqualTo: activityId)
-        .get();
-
-    if (activityQuery.docs.isNotEmpty) {
-      await activityQuery.docs.single.reference.update({
-        "likesCount":
-            int.parse(activityQuery.docs.single.data()["likesCount"]) + 1,
+  Future<bool> likeActivity(activityStoreId, activityId) async {
+    try {
+      assert(activityStoreId != null);
+      HttpsCallableResult response = await FirebaseFunctions.instance
+          .httpsCallable("increaseCountersActivities")
+          .call({
+        "doc": activityStoreId,
+        "field": "likesCount",
       });
-      activities[activityId]!.viewsCount =
-          int.parse(activityQuery.docs.single.data()["likesCount"]) + 1;
-    }
 
-    return false;
+      activities[activityId]!.likesCount = response.data;
+      return true;
+    } catch (err) {
+      print(err);
+      return false;
+    }
   }
 
-  Future<bool> addCallsCountActivity(activityId) async {
-    QuerySnapshot<Map<String, dynamic>> activityQuery = await store
-        .collection(collection)
-        .where("ActivityId", isEqualTo: activityId)
-        .get();
-
-    if (activityQuery.docs.isNotEmpty) {
-      await activityQuery.docs.single.reference.update({
-        "callsCount":
-            int.parse(activityQuery.docs.single.data()["callsCount"]) + 1,
+  Future<bool> addCallsCountActivity(activityStoreId, activityId) async {
+    try {
+      assert(activityStoreId != null);
+      HttpsCallableResult response = await FirebaseFunctions.instance
+          .httpsCallable("increaseCountersActivities")
+          .call({
+        "doc": activityStoreId,
+        "field": "callsCount",
       });
-      activities[activityId]!.viewsCount =
-          int.parse(activityQuery.docs.single.data()["callsCount"]) + 1;
-    }
 
-    return false;
+      activities[activityId]?.callsCount = response.data;
+      return true;
+    } catch (err) {
+      print(err);
+      return false;
+    }
   }
 
-  Future<bool> addChatsCountActivity(activityId) async {
-    QuerySnapshot<Map<String, dynamic>> activityQuery = await store
-        .collection(collection)
-        .where("ActivityId", isEqualTo: activityId)
-        .get();
-
-    if (activityQuery.docs.isNotEmpty) {
-      await activityQuery.docs.single.reference.update({
-        "chatsCount":
-            int.parse(activityQuery.docs.single.data()["chatsCount"]) + 1,
+  Future<bool> addChatsCountActivity(activityStoreId, activityId) async {
+    try {
+      assert(activityStoreId != null);
+      HttpsCallableResult response = await FirebaseFunctions.instance
+          .httpsCallable("increaseCountersActivities")
+          .call({
+        "doc": activityStoreId,
+        "field": "chatsCount",
       });
-      activities[activityId]!.viewsCount =
-          int.parse(activityQuery.docs.single.data()["chatsCount"]) + 1;
-    }
 
-    return false;
+      activities[activityId]?.chatsCount = response.data;
+      return true;
+    } catch (err) {
+      print(err);
+      return false;
+    }
   }
 
-  Future<bool> addSharesCountActivity(activityId) async {
-    QuerySnapshot<Map<String, dynamic>> activityQuery = await store
-        .collection(collection)
-        .where("ActivityId", isEqualTo: activityId)
-        .get();
-
-    if (activityQuery.docs.isNotEmpty) {
-      await activityQuery.docs.single.reference.update({
-        "shareCount":
-            int.parse(activityQuery.docs.single.data()["shareCount"]) + 1,
+  Future<bool> addSharesCountActivity(activityStoreId, activityId) async {
+    try {
+      assert(activityStoreId != null);
+      HttpsCallableResult response = await FirebaseFunctions.instance
+          .httpsCallable("increaseCountersActivities")
+          .call({
+        "doc": activityStoreId,
+        "field": "sharesCount",
       });
-      activities[activityId]!.viewsCount =
-          int.parse(activityQuery.docs.single.data()["shareCount"]) + 1;
-    }
 
-    return false;
+      activities[activityId]?.sharesCount = response.data;
+      return true;
+    } catch (err) {
+      print(err);
+      return false;
+    }
   }
 
-  Future<bool> addWhatsappCountActivity(activityId) async {
-    QuerySnapshot<Map<String, dynamic>> activityQuery = await store
-        .collection(collection)
-        .where("ActivityId", isEqualTo: activityId)
-        .get();
+//   Future<bool> addWhatsappCountActivity(activityStoreId, activityId) async {
+//      try {
+//       assert(activityStoreId != null);
+//       HttpsCallableResult response = await FirebaseFunctions.instance
+//           .httpsCallable("increaseCountersActivities")
+//           .call({
+//         "doc": activityStoreId,
+//         "field": "sharesCount",
+//       });
 
-    if (activityQuery.docs.isNotEmpty) {
-      await activityQuery.docs.single.reference.update({
-        "whatsappCount":
-            int.parse(activityQuery.docs.single.data()["whatsappCount"]) + 1,
-      });
-    }
+//       activities[activityId]?.whatsappCount = response.data;
+//             return true;
 
-    return true;
-  }
+//     } catch (err) {
+//       print(err);
+//       return false;
+//     }
+//   }
 
-  Future<bool> addInstagramCountActivity(activityId) async {
-    QuerySnapshot<Map<String, dynamic>> activityQuery = await store
-        .collection(collection)
-        .where("ActivityId", isEqualTo: activityId)
-        .get();
+//   Future<bool> addInstagramCountActivity(activityId) async {
+//     QuerySnapshot<Map<String, dynamic>> activityQuery = await store
+//         .collection(collection)
+//         .where("ActivityId", isEqualTo: activityId)
+//         .get();
 
-    if (activityQuery.docs.isNotEmpty) {
-      await activityQuery.docs.single.reference.update({
-        "InstagramCount":
-            int.parse(activityQuery.docs.single.data()["InstagramCount"]) + 1,
-      });
-    }
+//     if (activityQuery.docs.isNotEmpty) {
+//       await activityQuery.docs.single.reference.update({
+//         "InstagramCount":
+//             int.parse(activityQuery.docs.single.data()["InstagramCount"]) + 1,
+//       });
+//     }
 
-    return true;
-  }
+//     return true;
+//   }
 
   int? startFromPrice(List prices) {
     int? lessPrice;
     int i = 0;
     prices.forEach((e) {
-      print(e);
       if (e["price"] != null && e["price"].toString().trim() != "") {
         int n = int.parse(e["price"]);
 
@@ -302,6 +332,7 @@ class ActivityProvider with ChangeNotifier {
       return activities[activityId]!;
     }
     if (topActivitiesList[activityId] != null) {
+      activities[activityId] = topActivitiesList[activityId]!;
       return topActivitiesList[activityId]!;
     }
 
@@ -317,8 +348,8 @@ class ActivityProvider with ChangeNotifier {
       createdAt: act["createdAt"],
       lastUpdate: act["lastUpdate"],
       userId: act["userId"],
-      likesCount: act["likeCount"],
-      viewsCount: act["viewCount"],
+      likesCount: act["likesCount"],
+      viewsCount: act["viewsCount"],
       callsCount: act["callsCount"],
       sharesCount: act["sharesCount"],
       chatsCount: act["chatsCount"],
@@ -335,13 +366,14 @@ class ActivityProvider with ChangeNotifier {
       cTrippointChat: act["cTrippointChat"],
       category: act["category"],
       priceNote: act["priceNote"],
-      prices: act["price"],
+      prices: act["prices"],
       op_GOA: act["op_GOA"],
       dates: act["dates"],
       reviews: act["reviews"],
       suitableAges: act["suitableAges"],
       genderSuitability: act["genderSuitability"],
       title: act["title"],
+      tags: act["tags"],
     );
 
     return activities[activityId]!;
@@ -349,23 +381,117 @@ class ActivityProvider with ChangeNotifier {
 
   Future<List<ActivitySchema>?> fetchUserActivities(
       BuildContext context, userId) async {
-    try {
-      UserProvider userProvider =
-          Provider.of<UserProvider>(context, listen: false);
-      QuerySnapshot<Map<String, dynamic>> userActivitiesQuery = await store
-          .collection(CollectionsConstants.activities)
-          .where("userId", isEqualTo: userId)
-          .get();
+    UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
+    QuerySnapshot<Map<String, dynamic>> userActivitiesQuery = await store
+        .collection(CollectionsConstants.activities)
+        .where("userId", isEqualTo: userId)
+        .get();
 
-      List<ActivitySchema> activityList = [];
+    List<ActivitySchema> activityList = [];
 
-      userProvider.fetchUserData(userId: userId);
+    await userProvider.fetchUserData(userId: userId);
 
-      userActivitiesQuery.docs.forEach((element) {
-        Map act = element.data();
-        // assert(act )
-        activities[act["Id"]] = ActivitySchema(
-          storeId: element.id,
+    userActivitiesQuery.docs.forEach((element) {
+      Map<String, dynamic> act = element.data();
+
+      // assert(act )
+      activities[act["Id"]] = ActivitySchema(
+        storeId: element.id,
+        isActive: act["isActive"],
+        createdAt: act["createdAt"],
+        lastUpdate: act["lastUpdate"],
+        userId: act["userId"],
+        likesCount: act["likesCount"],
+        viewsCount: act["viewsCount"],
+        callsCount: act["callsCount"],
+        sharesCount: act["sharesCount"],
+        chatsCount: act["chatsCount"],
+        Id: act["Id"],
+        lat: act["lat"],
+        lng: act["lng"],
+        address: act["address"],
+        phoneNumberWhatsapp: act["phoneNumberWhatsapp"],
+        phoneNumberCall: act["phoneNumberCall"],
+        description: act["description"],
+        images: act["images"],
+        importantInformation: act["importantInformation"],
+        availableDays: act["availableDays"],
+        cTrippointChat: act["cTrippointChat"],
+        category: act["category"],
+        priceNote: act["priceNote"],
+        prices: act["prices"],
+        op_GOA: act["op_GOA"],
+        dates: act["dates"],
+        reviews: act["reviews"],
+        suitableAges: act["suitableAges"],
+        genderSuitability: act["genderSuitability"],
+        title: act["title"],
+        tags: act["tags"],
+      );
+
+      if (activities[act["Id"]] != null) {
+        activityList.add(activities[act["Id"]]!);
+      }
+    });
+
+    return activityList;
+  }
+
+  Future sendReview(
+      ReviewSchecma reviewSchecma, String storeId, String activityId) async {
+    DocumentSnapshot<Map<String, dynamic>> activityQuery =
+        await store.collection(collection).doc(storeId).get();
+
+    await activityQuery.reference.update({
+      "reviews": [
+        ...activityQuery.data()?["reviews"],
+        reviewSchecma.toMap(),
+      ]
+    });
+
+    topActivitiesList[activityId]?.reviews.add(reviewSchecma.toMap());
+    activities[activityId]?.reviews.add(reviewSchecma.toMap());
+  }
+
+  double calculateDistance(lat1, lon1, lat2, lon2) {
+    var p = 0.017453292519943295;
+    var c = cos;
+    var a = 0.5 -
+        c((lat2 - lat1) * p) / 2 +
+        c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
+    return 12742 * asin(sqrt(a));
+  }
+
+  Future<List<ActivitySchema>> fetchActivitiesNearLocation(
+      LatLng latLng) async {
+    List<ActivitySchema> activitiesList = [];
+
+    double lessKmY = ((110.574 * latLng.latitude) - 30) / 110.574;
+    double greaterKmY = ((110.574 * latLng.latitude) + 30) / 110.574;
+    double lessKmX =
+        ((111.320 * cos(latLng.latitude) * latLng.longitude) + 30) /
+            111.320 *
+            cos(latLng.latitude);
+    double greaterKmX =
+        ((111.320 * cos(latLng.latitude) * latLng.longitude) + 30) /
+            111.320 *
+            cos(latLng.latitude);
+
+    QuerySnapshot<Map<String, dynamic>> activitiesQuery = await store
+        .collection(collection)
+        .where("lat",
+            isLessThanOrEqualTo: lessKmY, isGreaterThanOrEqualTo: greaterKmY)
+        .where(
+          "lng",
+          isLessThanOrEqualTo: lessKmX,
+          isGreaterThanOrEqualTo: greaterKmX,
+        )
+        .get();
+
+    activitiesQuery.docs.map((act) {
+      activitiesList.add(ActivitySchema(
+          storeId: act.reference.id,
           isActive: act["isActive"],
           createdAt: act["createdAt"],
           lastUpdate: act["lastUpdate"],
@@ -395,102 +521,7 @@ class ActivityProvider with ChangeNotifier {
           suitableAges: act["suitableAges"],
           genderSuitability: act["genderSuitability"],
           title: act["title"],
-        );
-
-        if (activities[act["Id"]] != null) {
-          activityList.add(activities[act["Id"]]!);
-        }
-      });
-      return activityList;
-    } catch (err) {}
-  }
-
-  Future sendReview(
-      ReviewSchecma reviewSchecma, String storeId, String activityId) async {
-    DocumentSnapshot<Map<String, dynamic>> activityQuery =
-        await store.collection(collection).doc(storeId).get();
-
-    await activityQuery.reference.update({
-      "reviews": [
-        ...activityQuery.data()?["reviews"],
-        reviewSchecma.toMap(),
-      ]
-    });
-
-    topActivitiesList[activityId]?.reviews.add(reviewSchecma.toMap());
-    activities[activityId]?.reviews.add(reviewSchecma.toMap());
-    print(topActivitiesList[activityId]?.reviews);
-  }
-
-  double calculateDistance(lat1, lon1, lat2, lon2) {
-    var p = 0.017453292519943295;
-    var c = cos;
-    var a = 0.5 -
-        c((lat2 - lat1) * p) / 2 +
-        c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
-    return 12742 * asin(sqrt(a));
-  }
-
-  Future<List<ActivitySchema>> fetchActivitiesNearLocation(
-      LatLng latLng) async {
-    List<ActivitySchema> activitiesList = [];
-
-    double lessKmY = ((110.574 * latLng.latitude) - 30) / 110.574;
-    double greaterKmY = ((110.574 * latLng.latitude) + 30) / 110.574;
-    double lessKmX =
-        ((111.320 * cos(latLng.latitude) * latLng.longitude) + 30) /
-            111.320 *
-            cos(latLng.latitude);
-    double greaterKmX =
-        ((111.320 * cos(latLng.latitude) * latLng.longitude) + 30) /
-            111.320 *
-            cos(latLng.latitude);
-    print([lessKmY, greaterKmY]);
-    print([lessKmX, greaterKmX]);
-    QuerySnapshot<Map<String, dynamic>> activitiesQuery = await store
-        .collection(collection)
-        .where("lat",
-            isLessThanOrEqualTo: lessKmY, isGreaterThanOrEqualTo: greaterKmY)
-        .where(
-          "lng",
-          isLessThanOrEqualTo: lessKmX,
-          isGreaterThanOrEqualTo: greaterKmX,
-        )
-        .get();
-
-    activitiesQuery.docs.map((act) {
-      activitiesList.add(ActivitySchema(
-        storeId: act.reference.id,
-        isActive: act["isActive"],
-        createdAt: act["createdAt"],
-        lastUpdate: act["lastUpdate"],
-        userId: act["userId"],
-        likesCount: act["likeCount"],
-        viewsCount: act["viewCount"],
-        callsCount: act["callsCount"],
-        sharesCount: act["sharesCount"],
-        chatsCount: act["chatsCount"],
-        Id: act["Id"],
-        lat: act["lat"],
-        lng: act["lng"],
-        address: act["address"],
-        phoneNumberWhatsapp: act["phoneNumberWhatsapp"],
-        phoneNumberCall: act["phoneNumberCall"],
-        description: act["description"],
-        images: act["images"],
-        importantInformation: act["importantInformation"],
-        availableDays: act["availableDays"],
-        cTrippointChat: act["cTrippointChat"],
-        category: act["category"],
-        priceNote: act["priceNote"],
-        prices: act["price"],
-        op_GOA: act["op_GOA"],
-        dates: act["dates"],
-        reviews: act["reviews"],
-        suitableAges: act["suitableAges"],
-        genderSuitability: act["genderSuitability"],
-        title: act["title"],
-      ));
+          tags: act["tags"]));
     });
 
     return activitiesList;
@@ -510,7 +541,7 @@ class ActivityProvider with ChangeNotifier {
       assert(userProvider.proCurrentUser!.activationStatus == true);
 
       CollectionReference activityCollection = store.collection(collection);
-      print(activityData.toMap());
+
       await activityCollection.add(activityData.toMap());
 
       ActivityStatisticsSchema activityStatisticsSchema =
@@ -529,8 +560,131 @@ class ActivityProvider with ChangeNotifier {
       store
           .collection(CollectionsConstants.activityStatistics)
           .add(activityStatisticsSchema.toMap());
+
+      return true;
+    } catch (err) {
+      print(err);
+      return false;
+    }
+  }
+
+  Future<ActivitySchema?> updateActivityWStore(String activityStoreId) async {
+    try {
+      DocumentSnapshot<Map<String, dynamic>> queryActivity =
+          await store.collection(collection).doc(activityStoreId).get();
+
+      Map<String, dynamic>? act = queryActivity.data();
+      assert(act != null);
+      ActivitySchema activitySchema = ActivitySchema.toSchema(act!);
+      activitySchema.storeId = queryActivity.reference.id;
+      activities[act["Id"]] = activitySchema;
+
+      if (topActivitiesList[act["Id"]] != null) {
+        topActivitiesList[act["Id"]] = activitySchema;
+      }
+
+      return activities[act["Id"]];
     } catch (err) {
       print(err);
     }
+  }
+
+  Future<bool> updateActivityData(
+      {required BuildContext context,
+      required Map<String, dynamic> data,
+      required String activityStoreId}) async {
+    try {
+      await store.collection(collection).doc(activityStoreId).update(data);
+      await updateActivityWStore(activityStoreId);
+      return true;
+    } catch (err) {
+      print(err);
+      return false;
+    }
+  }
+
+  Future<bool> deleteActivity(
+      BuildContext context, String activityStoreId) async {
+    DocumentSnapshot<Map<String, dynamic>> activityQuery =
+        await store.collection(collection).doc(activityStoreId).get();
+
+    if (activityQuery.data()!["userId"] == auth.currentUser!.uid) {
+      if (activities[activityQuery.data()!["Id"]] != null) {
+        for (var image in activities[activityQuery.data()!["Id"]]!.images) {
+          String imageName = image
+              .split(
+                  "activites/${activityQuery.data()!["Id"]}/displayImages/")[1]
+              .split(".jpg")[0];
+          Reference ref = storage.ref(
+              "activites/${activityQuery.data()!["Id"]}/displayImages/${imageName}.jpg");
+          await ref.delete();
+        }
+
+        await activityQuery.reference.delete();
+
+        activities[activityQuery.data()!["Id"]]!.isActive = false;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> freezeActivity(
+      BuildContext context, String activityStoreId) async {
+    DocumentSnapshot<Map<String, dynamic>> activityQuery =
+        await store.collection(collection).doc(activityStoreId).get();
+
+    if (activityQuery.data()!["userId"] == auth.currentUser!.uid) {
+      await activityQuery.reference.update({
+        "isActive": false,
+      });
+
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> activateActivity(
+      BuildContext context, String activityStoreId) async {
+    DocumentSnapshot<Map<String, dynamic>> activityQuery =
+        await store.collection(collection).doc(activityStoreId).get();
+
+    if (activityQuery.data()!["userId"] == auth.currentUser!.uid) {
+      await activityQuery.reference.update({
+        "isActive": true,
+      });
+
+      return true;
+    }
+    return false;
+  }
+
+  String mainDisplayImage(List images) {
+    String mainImage = "";
+
+    if (images
+            .where((element) => element.toString().contains("main"))
+            .toList()
+            .length !=
+        0) {
+      mainImage = images
+          .where((element) => element.toString().contains("main"))
+          .toList()[0];
+    } else if (images
+            .where((element) => element.toString().contains("regu"))
+            .toList()
+            .length !=
+        0) {
+      mainImage = images
+          .where((element) => element.toString().contains("regu"))
+          .toList()[0];
+    } else {
+      mainImage = images[0];
+    }
+
+    print(")))))");
+    print(mainImage);
+
+    return mainImage;
   }
 }

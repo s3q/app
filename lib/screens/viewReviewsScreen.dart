@@ -39,7 +39,7 @@ class _ViewReviewScreenState extends State<ViewReviewScreen> {
               height: 30,
             ),
             Container(
-                height: 150,
+              height: 150,
               padding: EdgeInsets.all(8),
               child: Column(
                 children: [
@@ -84,66 +84,81 @@ class _ViewReviewScreenState extends State<ViewReviewScreen> {
                           future: userProvider.fetchUserData(
                               userId: activitySchema.reviews[index]["userId"]),
                           builder: (context, snapshot) {
+                            
                             if (snapshot.connectionState ==
                                     ConnectionState.waiting ||
                                 !snapshot.hasData) {
-                              return  Column(
-                              children: [
-                                ListTile(
-                                                                   
-
-                                 leading: const CircleAvatar(
-                                  radius: 25,
-                                ),
-                                  title: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text("... ...", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),), 
-                                       RatingBarIndicator(
-                                        itemBuilder: (context, index) {
-                                          return const Icon(
-                                            Icons.star_rate_rounded,
-                                            color: Colors.amber,
-                                          );
-                                        },
-                                        rating: activitySchema.reviews[index]
-                                            ["rating"],
-                                        itemSize: 18,
-                                      ),
-                                    ],
-                                  ),
-                                  subtitle: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
+                              return Column(
+                                children: [
+                                  ListTile(
+                                    leading: const CircleAvatar(
+                                      radius: 25,
+                                    ),
+                                    title: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "... ...",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.copyWith(
+                                                  fontWeight: FontWeight.bold),
+                                        ),
+                                        RatingBarIndicator(
+                                          itemBuilder: (context, index) {
+                                            return const Icon(
+                                              Icons.star_rate_rounded,
+                                              color: Colors.amber,
+                                            );
+                                          },
+                                          rating: activitySchema.reviews[index]
+                                              ["rating"],
+                                          itemSize: 18,
+                                        ),
+                                      ],
+                                    ),
+                                    subtitle: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
                                         SizedBox(
-                                        height: 5,
-                                      ),
-                                      Text(
-                                        activitySchema.reviews[index]["review"]
-                                            .toString(),
-                                        style:
-                                            Theme.of(context).textTheme.bodySmall,
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Text(
-                                        DateFormat('MM/dd/yyyy, hh:mm a').format(
-                                            DateTime.fromMillisecondsSinceEpoch(
-                                                activitySchema.reviews[index]
-                                                    ["createdAt"])),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall
-                                            ?.copyWith(color: Colors.grey[600]),
-                                      )
-                                    ],
+                                          height: 5,
+                                        ),
+                                        Text(
+                                          activitySchema.reviews[index]
+                                                  ["review"]
+                                              .toString(),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall,
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text(
+                                          DateFormat('MM/dd/yyyy, hh:mm a')
+                                              .format(DateTime
+                                                  .fromMillisecondsSinceEpoch(
+                                                      activitySchema
+                                                              .reviews[index]
+                                                          ["createdAt"])),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall
+                                              ?.copyWith(
+                                                  color: Colors.grey[600]),
+                                        )
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                                                Divider(thickness: 2,),
-
-                              ],
-                            ); ListTile(
+                                  Divider(
+                                    thickness: 2,
+                                  ),
+                                ],
+                              );
+                              ListTile(
                                 shape: Border.all(width: 2),
                                 leading: const CircleAvatar(
                                   radius: 25,
@@ -191,26 +206,37 @@ class _ViewReviewScreenState extends State<ViewReviewScreen> {
                             }
 
                             UserSchema userData = snapshot.data as UserSchema;
+
+                            print("JJJJJJJJJJJJJ");
+                            print(userData.Id);
                             return Column(
                               children: [
                                 ListTile(
-                                                                   
-
                                   leading: CircleAvatar(
-                                    backgroundColor: userData.profileColor != null
-                                        ? Color(userData.profileColor!)
-                                        : null,
-                                    backgroundImage: userData.profileImagePath !=
-                                            null
-                                        ? NetworkImage(userData.profileImagePath!)
-                                        : null,
+                                    backgroundColor:
+                                        userData.profileColor != null
+                                            ? Color(userData.profileColor!)
+                                            : null,
+                                    backgroundImage:
+                                        userData.profileImagePath != null
+                                            ? NetworkImage(
+                                                userData.profileImagePath!)
+                                            : null,
                                     radius: 25,
                                   ),
                                   title: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(userData.name, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),), 
-                                       RatingBarIndicator(
+                                      Text(
+                                        userData.name,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.copyWith(
+                                                fontWeight: FontWeight.bold),
+                                      ),
+                                      RatingBarIndicator(
                                         itemBuilder: (context, index) {
                                           return const Icon(
                                             Icons.star_rate_rounded,
@@ -224,25 +250,29 @@ class _ViewReviewScreenState extends State<ViewReviewScreen> {
                                     ],
                                   ),
                                   subtitle: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                        SizedBox(
+                                      SizedBox(
                                         height: 5,
                                       ),
                                       Text(
                                         activitySchema.reviews[index]["review"]
                                             .toString(),
-                                        style:
-                                            Theme.of(context).textTheme.bodySmall,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall,
                                       ),
                                       SizedBox(
                                         height: 10,
                                       ),
                                       Text(
-                                        DateFormat('MM/dd/yyyy, hh:mm a').format(
-                                            DateTime.fromMillisecondsSinceEpoch(
-                                                activitySchema.reviews[index]
-                                                    ["createdAt"])),
+                                        DateFormat('MM/dd/yyyy, hh:mm a')
+                                            .format(DateTime
+                                                .fromMillisecondsSinceEpoch(
+                                                    activitySchema
+                                                            .reviews[index]
+                                                        ["createdAt"])),
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodySmall
@@ -251,8 +281,9 @@ class _ViewReviewScreenState extends State<ViewReviewScreen> {
                                     ],
                                   ),
                                 ),
-                                                                Divider(thickness: 2,),
-
+                                Divider(
+                                  thickness: 2,
+                                ),
                               ],
                             );
                           });

@@ -37,6 +37,8 @@ class ActivitySchema {
 //   Map<String, bool> genderSuitability;
   bool op_GOA;
 
+  List tags;
+
   ActivitySchema({
     this.storeId,
     required this.createdAt,
@@ -68,7 +70,43 @@ class ActivitySchema {
     required this.reviews,
     required this.suitableAges,
     required this.genderSuitability,
+    required this.tags,
   });
+
+    static ActivitySchema toSchema(Map data) {
+    return ActivitySchema(
+        createdAt: data["createdAt"],
+        isActive: data["isActive"],
+        lastUpdate: data["lastUpdate"],
+        userId: data["userId"],
+        dates: data["dates"]  ?? [],
+        Id: data["Id"],
+        lat: data["lat"],
+        lng: data["lng"],
+        address: data["address"],
+        availableDays: data["availableDays"]  ?? [],
+        phoneNumberCall: data["phoneNumberCall"],
+        description: data["description"],
+        images: data["images"]  ?? [],
+        importantInformation: data["importantInformation"],
+        cTrippointChat: data["cTrippointChat"],
+        category: data["category"],
+        priceNote: data["priceNote"],
+        prices: data["prices"]  ?? [],
+        op_GOA: data["op_GOA"],
+        title: data["title"],
+        reviews: data["reviews"] ?? [],
+        suitableAges: data["suitableAges"],
+        genderSuitability: data["genderSuitability"],
+        viewsCount: data["viewaCount"] ?? 0,
+        callsCount: data["callsCount"] ?? 0,
+        sharesCount: data["sharesCount"] ?? 0,
+        chatsCount: data["chatsCount"] ?? 0,
+        phoneNumberWhatsapp: data["phoneNumberWhatsapp"],
+        storeId: data["storeId"], 
+        tags: data["tags"]
+    );
+  }
 
   Map<String, dynamic> toMap() {
     return {
@@ -101,6 +139,7 @@ class ActivitySchema {
       "genderSuitability": genderSuitability,
       "reviews": reviews,
       "title": title,
+      "tags": tags,
     };
   }
 }

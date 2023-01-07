@@ -1,19 +1,28 @@
 import 'dart:async';
 
+import 'package:app/helpers/adHelper.dart';
 import 'package:app/helpers/appHelper.dart';
 import 'package:app/helpers/colorsHelper.dart';
 import 'package:app/helpers/geolocateHelper.dart';
 import 'package:app/providers/activityProvider.dart';
 import 'package:app/providers/userProvider.dart';
 import 'package:app/schemas/activitySchema.dart';
+import 'package:app/screens/activityDetailsScreen.dart';
 import 'package:app/widgets/SafeScreen.dart';
+import 'package:app/widgets/activityCardMap.dart';
 import 'package:app/widgets/loadingWidget.dart';
+import 'package:app/widgets/resultActivituBoxWidget.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:provider/provider.dart';
@@ -33,13 +42,16 @@ class _SearchScreenState extends State<SearchScreen>
   late TabController _tabController = TabController(length: 2, vsync: this);
   int _currentTab = 0;
   bool _isLoading = true;
+  DraggableScrollableController draggableScrollableController =
+      DraggableScrollableController();
 
   List<ActivitySchema> activitiesList = [];
+  List<ActivitySchema> activitiesResultList = [];
   List<Marker>? markersList;
 
   final _initialCameraPosition = const CameraPosition(
     target: LatLng(23.244037241974922, 58.091192746314015),
-    zoom: 20,
+    zoom: 10,
   );
 
   int page = 0;
@@ -49,6 +61,27 @@ class _SearchScreenState extends State<SearchScreen>
 
   final Completer<GoogleMapController> _controller = Completer();
   Position? _currentPosition;
+
+  fetchAllActivities() {
+    Future.delayed(Duration(milliseconds: 1000), () async {
+      try {
+        ActivityProvider activityProvider =
+            Provider.of<ActivityProvider>(context, listen: false);
+
+        activitiesList = await activityProvider.fetchAllActivites();
+        print("DDUUUUUUUU");
+        print(activitiesList.length);
+        setState(() {
+          activitiesList = activitiesList;
+
+          _isLoading = false;
+        });
+        print(_isLoading);
+      } catch (err) {
+        print(err);
+      }
+    });
+  }
 
   _getCurrentLocation() async {
     GeolocateHelper.determinePosition(context).then((position) {
@@ -63,7 +96,7 @@ class _SearchScreenState extends State<SearchScreen>
               CameraUpdate.newCameraPosition(
                 CameraPosition(
                   target: LatLng(position.latitude, position.longitude),
-                  zoom: 18.0,
+                  zoom: 10,
                 ),
               ),
             ));
@@ -89,36 +122,41 @@ class _SearchScreenState extends State<SearchScreen>
     _tabController = TabController(length: 2, vsync: this);
 
     Future.delayed(Duration(milliseconds: 1000), () async {
-      try {
-        List<ActivitySchema> args =
-            ModalRoute.of(context)?.settings.arguments as List<ActivitySchema>;
-
-        if (args.isEmpty) {
-          ActivityProvider activityProvider =
-              Provider.of<ActivityProvider>(context, listen: false);
-          activitiesList = await activityProvider.topActivitesFillter();
-        }
-        setState(() {
-          if (args.isEmpty) {
-            activitiesList = activitiesList;
-          } else {
-            activitiesList = args;
-          }
-          _isLoading = false;
-        });
-        print(_isLoading);
-      } catch (err) {
-        print(err);
-      }
+      setState(() {
+        _isLoading = false;
+      });
     });
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  int onceCheck = 0;
+
+  @override
   Widget build(BuildContext context) {
+    print("build serach page");
     UserProvider userProvider = Provider.of<UserProvider>(context);
     ActivityProvider activityProvider = Provider.of<ActivityProvider>(context);
-    // final args = ModalRoute.of(context)?.settings.arguments as ActivitySchema;
 
+    if (onceCheck == 0) {
+      final args = ModalRoute.of(context)?.settings.arguments != null
+          ? ModalRoute.of(context)?.settings.arguments as List<ActivitySchema>
+          : ModalRoute.of(context)?.settings.arguments;
+
+      if (args == null) {
+        fetchAllActivities();
+      } else {
+        setState(() {
+          activitiesList = args as List<ActivitySchema>;
+        });
+      }
+
+      onceCheck = 1;
+    }
     // if (args != null) activitiesList.add(args);
 
     // Marker _marker = Marker(
@@ -129,30 +167,30 @@ class _SearchScreenState extends State<SearchScreen>
     //   ),
     // );
 
-    // List<Marker> markersList! = activitiesList
-    //     .asMap()
-    //     .map((i, e) {
-    //       return MapEntry(
-    //           i,
-    //           Marker(
-    //             flat: true,
-    //             markerId: MarkerId(Uuid().v4()),
-    //             position: LatLng(activitiesList[0].lat, activitiesList[0].lng),
-    //             infoWindow: InfoWindow(
-    //               title: e.address,
-    //               // !  snippet: (e.priceStartFrom.toString() + "\$"),
-    //             ),
-    //             icon: BitmapDescriptor.defaultMarkerWithHue(
-    //                 BitmapDescriptor.hueRose),
-    //             onTap: () {
-    //               pageController.animateToPage(i,
-    //                   duration: Duration(milliseconds: 400),
-    //                   curve: Curves.easeInOut);
-    //             },
-    //           ));
-    //     })
-    //     .values
-    //     .toList();
+    List<Marker> markersList = activitiesList
+        .asMap()
+        .map((i, e) {
+          return MapEntry(
+              i,
+              Marker(
+                flat: true,
+                markerId: MarkerId(e.Id),
+                position: LatLng(e.lat, e.lng),
+                infoWindow: InfoWindow(
+                  title: e.address,
+                  // !  snippet: (e.priceStartFrom.toString() + "\$"),
+                ),
+                icon: BitmapDescriptor.defaultMarkerWithHue(
+                    BitmapDescriptor.hueRose),
+                onTap: () {
+                  pageController.animateToPage(i,
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.easeInOut);
+                },
+              ));
+        })
+        .values
+        .toList();
 
     if (_isLoading) {
       return const LoadingWidget();
@@ -171,11 +209,12 @@ class _SearchScreenState extends State<SearchScreen>
           mapType: MapType.normal,
           markers: markersList != null ? {...markersList!} : {},
           onTap: (latLng) {
+            print("Clicked on map");
             FocusScope.of(context).unfocus();
           },
         ),
         Align(
-          alignment: AlignmentDirectional(-.9, .5),
+          alignment: const AlignmentDirectional(-.9, .5),
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(50),
@@ -193,7 +232,7 @@ class _SearchScreenState extends State<SearchScreen>
                 color: Colors.white, // button color
                 child: InkWell(
                   splashColor: Colors.white12, // inkwell color
-                  child: SizedBox(
+                  child: const SizedBox(
                     width: 60,
                     height: 60,
                     child: Icon(
@@ -214,149 +253,40 @@ class _SearchScreenState extends State<SearchScreen>
 
         // if (activitiesList != null)
         Align(
-          alignment: AlignmentDirectional(0, .8),
+          alignment: const AlignmentDirectional(0, .8),
           child: Container(
             height: 120,
             width: MediaQuery.of(context).size.width,
             child: PageView.builder(
-              physics: BouncingScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
               //   dragStartBehavior: DragStartBehavior.down,
               itemCount: activitiesList.length,
               controller: pageController,
               onPageChanged: (p) async {
                 if (markersList != null) {
                   GoogleMapController con = await _controller.future;
-                  con.showMarkerInfoWindow(markersList![p].markerId);
+
+                  con.showMarkerInfoWindow(markersList[p].markerId);
 
                   con.animateCamera(CameraUpdate.newCameraPosition(
                       CameraPosition(
-                          target: markersList![p].position, zoom: 18)));
+                          target: markersList[p].position, zoom: 18)));
                 }
               },
               itemBuilder: (context, index) {
                 return Align(
+                  key: Key(Uuid().v4()),
                   alignment: Alignment.topCenter,
-                  child: Container(
-                    margin: EdgeInsets.all(8),
-                    height: 100,
-                    // height: PAGER_HEIGHT * scale,
-                    // width: MediaQuery.of(context).size.width,
-                    child: Card(
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Image.network(
-                                  activitiesList[index].images.where((element) => element.toString().contains("main")).toList()[0],
-                                  fit: BoxFit.cover,
-                                  height: 100,
-                                  width: 100,
-                                ),
-                                Container(
-                                  margin: EdgeInsets.all(10),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        activitiesList[index].address,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleSmall,
-                                        softWrap: true,
-                                      ),
+                  child: ActivityCardMap(
+                    onClicked: () async {
+                      EasyLoading.show();
 
-                                      Column(
-                                        children: [
-                                          RatingBarIndicator(
-                                            itemBuilder: (context, index) {
-                                              return Icon(
-                                                Icons.star_rate_rounded,
-                                                color: Colors.amber,
-                                              );
-                                            },
-                                            rating: 2,
-                                            itemSize: 20,
-                                          ),
-                                          Row(
-                                            mainAxisSize: MainAxisSize.max,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Icon(
-                                                Icons.location_on_sharp,
-                                                size: 14,
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsetsDirectional
-                                                    .fromSTEB(5, 0, 0, 0),
-                                                child: Text(
-                                                  activitiesList[index].address,
-                                                  style: TextStyle(
-                                                      fontSize:
-                                                          Theme.of(context)
-                                                                  .textTheme
-                                                                  .bodySmall!
-                                                                  .fontSize! -
-                                                              3),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      //   Padding(
-                                      //     padding: EdgeInsetsDirectional.fromSTEB(
-                                      //         4, 0, 0, 0),
-                                      //     child: Text(
-                                      //       '10 reviews',
-                                      //       style: Theme.of(context)
-                                      //           .textTheme
-                                      //           .bodySmall,
-                                      //     ),
-                                      //   ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Column(
-                              children: [
-                                IconButton(
-                                  onPressed: () async {
-                                    if (markersList != null) {
-                                      await MapsLauncher.launchCoordinates(
-                                        markersList![index].position.latitude,
-                                        markersList![index].position.longitude,
-                                      );
-                                    }
-                                  },
-                                  icon: Icon(Icons.assistant_navigation),
-                                ),
-                                // Text(
-                                //   activitiesList[index]
-                                //           .priceStartFrom
-                                //           .toString() +
-                                //       " \$",
-                                // )
-                                // !
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                      Navigator.pushNamed(context, ActivityDetailsScreen.router,
+                          arguments: activitiesList[index]);
+                              await Future.delayed(Duration(milliseconds: 1000));
+                      EasyLoading.dismiss();
+                    },
+                    activitySchema: activitiesList[index],
                   ),
                 );
               },
@@ -364,10 +294,11 @@ class _SearchScreenState extends State<SearchScreen>
           ),
         ),
         DraggableScrollableSheet(
-            initialChildSize: 0.85,
-            maxChildSize: 0.85,
+            controller: draggableScrollableController,
+            initialChildSize: 0.7,
+            maxChildSize: 0.7,
             minChildSize: 0.1,
-            snapSizes: [0.1, 0.85],
+            snapSizes: [0.1, 0.7],
             snap: true,
             builder: (context, scrollController) {
               return ListView(controller: scrollController, children: [
@@ -407,17 +338,120 @@ class _SearchScreenState extends State<SearchScreen>
                 ),
                 Container(
                   color: Colors.white,
+                  height: MediaQuery.of(context).size.height,
                   child: SingleChildScrollView(
                     child: Container(
-                      height: MediaQuery.of(context).size.height,
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(10),
-                            child: ResultActivituBoxWidget(),
-                          ),
-                        ],
-                      ),
+                      child:
+                          //   child: ListView.builder(
+                          //       itemCount: activitiesResultList.length,
+                          //       itemBuilder: (context, index) {
+                          //         ActivitySchema a = activitiesResultList[index];
+                          //         return Container(
+                          //           padding: EdgeInsets.all(10),
+                          //           child: ResultActivituBoxWidget(
+                          //             activitySchema: a,
+                          //             showOnMap: () async {
+                          //               draggableScrollableController.animateTo(0.1,
+                          //                   duration: Duration(milliseconds: 500),
+                          //                   curve: Curves.easeInOut);
+
+                          //               GoogleMapController con =
+                          //                   await _controller.future;
+                          //               Marker __markerA = markersList
+                          //                   .where((element) =>
+                          //                       element.markerId == MarkerId(a.Id))
+                          //                   .toList()[0];
+                          //               con.showMarkerInfoWindow(
+                          //                   __markerA.markerId);
+
+                          //               con.animateCamera(
+                          //                   CameraUpdate.newCameraPosition(
+                          //                       CameraPosition(
+                          //                           target: __markerA.position,
+                          //                           zoom: 18)));
+                          //             },
+                          //           ),
+                          //         );
+                          //       }),
+                          Builder(builder: (context) {
+                        return Column(
+                          children: activitiesList.map((a) {
+                            return Column(
+                              children: [
+                                Container(
+                                  key: Key(Uuid().v4()),
+                                  padding: EdgeInsets.all(10),
+                                  child: ResultActivituBoxWidget(
+                                    onClicked: () async {
+                                      EasyLoading.show();
+
+                                      Navigator.pushNamed(
+                                          context, ActivityDetailsScreen.router,
+                                          arguments: a);
+                                                                  await Future.delayed(Duration(milliseconds: 1000));
+
+                                      EasyLoading.dismiss();
+                                    },
+                                    activitySchema: a,
+                                    showOnMap: () async {
+                                      draggableScrollableController.animateTo(
+                                          0.1,
+                                          duration: Duration(milliseconds: 500),
+                                          curve: Curves.easeInOut);
+
+                                      GoogleMapController con =
+                                          await _controller.future;
+                                      Marker __markerA = markersList
+                                          .where((element) =>
+                                              element.markerId ==
+                                              MarkerId(a.Id))
+                                          .toList()[0];
+                                      con.showMarkerInfoWindow(
+                                          __markerA.markerId);
+
+                                      con.animateCamera(
+                                          CameraUpdate.newCameraPosition(
+                                              CameraPosition(
+                                                  target: __markerA.position,
+                                                  zoom: 18)));
+                                    },
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                              ],
+                            );
+
+                            // return Container(
+                            //   key: Key(Uuid().v4()),
+                            //   padding: EdgeInsets.all(10),
+                            //   child: ResultActivituBoxWidget(
+                            //     activitySchema: a,
+                            //     showOnMap: () async {
+                            //       draggableScrollableController.animateTo(0.1,
+                            //           duration: Duration(milliseconds: 500),
+                            //           curve: Curves.easeInOut);
+
+                            //       GoogleMapController con =
+                            //           await _controller.future;
+                            //       Marker __markerA = markersList
+                            //           .where((element) =>
+                            //               element.markerId == MarkerId(a.Id))
+                            //           .toList()[0];
+                            //       con.showMarkerInfoWindow(__markerA.markerId);
+
+                            //       con.animateCamera(
+                            //           CameraUpdate.newCameraPosition(
+                            //               CameraPosition(
+                            //                   target: __markerA.position,
+                            //                   zoom: 18)));
+                            //     },
+                            //   ),
+                            // );
+                          }).toList(),
+                        );
+                      }),
                     ),
                   ),
                 ),
@@ -436,7 +470,7 @@ class _SearchScreenState extends State<SearchScreen>
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.arrow_back_rounded,
                         size: 28,
                       ),
@@ -444,33 +478,102 @@ class _SearchScreenState extends State<SearchScreen>
                     Expanded(
                       child: Container(
                         padding: EdgeInsets.all(10),
-                        child: TextFormField(
-                          obscureText: false,
-                          decoration: const InputDecoration(
-                            hintText: "Where to go?",
-                            filled: true,
-                            fillColor: Colors.white,
-                            prefixIcon: Icon(
-                              Icons.search_rounded,
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.black45,
-                                width: 1,
+                        // child: Stack(
+                        //   children: [
+                        //     Positioned(
+                        //         bottom: -10,
+                        //       child: Column(
+                        //           children: const [
+                        //               ListTile(
+                        //                 title: Text(""),
+                        //               ),
+                        //                ListTile(
+                        //                 title: Text(""),
+                        //               ),
+                        //                ListTile(
+                        //                 title: Text(""),
+                        //               ),
+                        //           ],
+                        //       ),
+                        //     ),
+                        child: GestureDetector(
+                          onTap: () async {
+                            try {
+                              //   activitiesList =
+                              //       await Navigator.push(context, "")
+                              //           as List<ActivitySchema>;
+                            } catch (err) {}
+                          },
+                          child: TextFormField(
+                            onFieldSubmitted: (v) async {
+                              EasyLoading.show();
+
+                              HttpsCallableResult r = await FirebaseFunctions
+                                  .instance
+                                  .httpsCallable("SearchForActivity")
+                                  .call(v);
+
+                              List<ActivitySchema> acl = [];
+                              for (var activityMap in r.data) {
+                                print(ActivitySchema.toSchema(activityMap));
+                                acl.add(ActivitySchema.toSchema(activityMap));
+                              }
+                              setState(() {
+                                activitiesList = acl;
+                              });
+                              EasyLoading.dismiss();
+                            },
+                            onChanged: (v) async {
+                              EasyLoading.show();
+
+                              HttpsCallableResult r = await FirebaseFunctions
+                                  .instance
+                                  .httpsCallable("SearchForActivityDirectly")
+                                  .call(v);
+                              // (_createTime, _fieldsProto, _ref, _serializer, _readTime, _updateTime)
+                              //   print(r.data);
+
+                              print(r.data.length);
+
+                              List<ActivitySchema> acl = [];
+                              for (var activityMap in r.data) {
+                                print(ActivitySchema.toSchema(activityMap));
+                                acl.add(ActivitySchema.toSchema(activityMap));
+                              }
+                              setState(() {
+                                activitiesList = acl;
+                              });
+                              EasyLoading.dismiss();
+                            },
+                            obscureText: false,
+                            decoration: const InputDecoration(
+                              hintText: "Where to go?",
+                              filled: true,
+                              fillColor: Colors.white,
+                              prefixIcon: Icon(
+                                Icons.search_rounded,
                               ),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(16)),
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.black45,
-                                width: 1,
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.black45,
+                                  width: 1,
+                                ),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(16)),
                               ),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(16)),
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.black45,
+                                  width: 1,
+                                ),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(16)),
+                              ),
                             ),
                           ),
                         ),
+                        //   ],
+                        // ),
                       ),
                     ),
                     IconButton(
@@ -497,7 +600,7 @@ class _SearchScreenState extends State<SearchScreen>
                 labelColor: Colors.black,
                 indicatorColor: Colors.black87,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               SingleChildScrollView(
@@ -509,7 +612,25 @@ class _SearchScreenState extends State<SearchScreen>
                       return Container(
                         margin: EdgeInsets.symmetric(horizontal: 10),
                         child: OutlinedButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            EasyLoading.show();
+
+                            HttpsCallableResult r = await FirebaseFunctions
+                                .instance
+                                .httpsCallable("SearchForActivity")
+                                .call(e["title"]);
+
+                            activitiesList = [];
+                            for (var activityMap in r.data) {
+                              activitiesList
+                                  .add(ActivitySchema.toSchema(activityMap));
+                            }
+
+                            setState(() {
+                              activitiesList = activitiesList;
+                            });
+                            EasyLoading.dismiss();
+                          },
                           style: OutlinedButton.styleFrom(
                             primary: Colors.black87,
                             padding: const EdgeInsets.symmetric(
@@ -532,193 +653,65 @@ class _SearchScreenState extends State<SearchScreen>
             ],
           ),
         ),
+        Container(
+            //   child: Expanded(
+            // child: ListView.builder(
+            //     itemCount: activitiesResultList.length,
+            //     itemBuilder: (context, index) {
+            //           ActivitySchema e = activitiesResultList[index];
+            //           return GestureDetector(
+            //             key: Key(e.Id),
+            //             onTap: () async {
+            //               activitiesList.add(e);
+            //               setState(() {
+            //                 activitiesList;
+            //               });
+
+            //               draggableScrollableController.animateTo(0.1,
+            //                   duration: const Duration(milliseconds: 500),
+            //                   curve: Curves.easeInOut);
+
+            //               GoogleMapController con = await _controller.future;
+            //               Marker __markerA = markersList
+            //                   .where((element) =>
+            //                       element.markerId == MarkerId(e.Id))
+            //                   .toList()[0];
+            //               con.showMarkerInfoWindow(__markerA.markerId);
+
+            //               con.animateCamera(CameraUpdate.newCameraPosition(
+            //                   CameraPosition(
+            //                       target: __markerA.position, zoom: 30)));
+            //             },
+            //             child: Container(
+            //               margin: EdgeInsets.symmetric(vertical: 10),
+            //               child: Column(children: [
+            //                 Text(
+            //                   e.title,
+            //                   overflow: TextOverflow.ellipsis,
+            //                 ),
+            //                 SizedBox(
+            //                   height: 5,
+            //                 ),
+            //                 Text(
+            //                   e.address,
+            //                   style: Theme.of(context).textTheme.bodySmall,
+            //                 )
+            //               ]),
+            //             ),
+            //           );
+            //         }),
+            //   ),
+
+            //   Column(children: [
+
+            //     ...activitiesResultList.map(
+            //       (e) {
+
+            //       },
+            //     ).toList()
+            //   ]),
+            ),
       ]),
-    );
-  }
-}
-
-class ResultActivituBoxWidget extends StatefulWidget {
-  const ResultActivituBoxWidget({super.key});
-
-  @override
-  State<ResultActivituBoxWidget> createState() =>
-      _ResultActivituBoxWidgetState();
-}
-
-class _ResultActivituBoxWidgetState extends State<ResultActivituBoxWidget> {
-  List<bool> isSelected = [
-    false,
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 20),
-      height: 240,
-      child: Card(
-        clipBehavior: Clip.antiAliasWithSaveLayer,
-        elevation: 3,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Image.network(
-              'https://picsum.photos/seed/248/600',
-              width: 100,
-              height: 240,
-              fit: BoxFit.cover,
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                    //   mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Title",
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      //   Text(
-                      //     'promotion 5% for children',
-                      //     // style:
-                      //   ),
-                      Text(
-                        'discribtion ,Flutter is an open-source UI software development kit',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-
-                      Column(
-                        // mainAxisSize: MainAxisSize.max,
-                        // crossAxisAlignment: CrossAxisAlignment.end,
-                        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Padding(
-                            padding:
-                                EdgeInsetsDirectional.fromSTEB(0, 20, 20, 0),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Text(
-                                  '50',
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                ),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Text('OMR'),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              const Icon(
-                                Icons.star_rounded,
-                                color: Color(0xFFFFA130),
-                                size: 20,
-                              ),
-                              Padding(
-                                padding:
-                                    EdgeInsetsDirectional.fromSTEB(2, 0, 0, 0),
-                                child: Text(
-                                  '4/5',
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                              ),
-                              Padding(
-                                padding:
-                                    EdgeInsetsDirectional.fromSTEB(4, 0, 0, 0),
-                                child: Text(
-                                  '10 reviews',
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-
-                      SizedBox(
-                        height: 5,
-                      ),
-
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Icon(
-                                Icons.location_on,
-                                size: 20,
-                              ),
-                              Padding(
-                                padding:
-                                    EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
-                                child: Text(
-                                  'Location',
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
-                              ),
-                            ],
-                          ),
-                          //   Container(
-                          //     margin: EdgeInsets.symmetric(horizontal: 5),
-                          //     child: ToggleButtons(
-                          //       selectedColor: Colors.black87,
-                          //       selectedBorderColor: Colors.transparent,
-                          //       borderColor: Colors.transparent,
-                          //       splashColor: Colors.transparent,
-                          //       fillColor: Colors.transparent,
-                          //       children: [
-                          //         isSelected[0]
-                          //             ? Icon(
-                          //                 Icons.bookmark,
-                          //                 size: 30,
-                          //               )
-                          //             : Icon(
-                          //                 Icons.bookmark_border,
-                          //                 size: 30,
-                          //               ),
-                          //       ],
-                          //       onPressed: (int index) {
-                          //         print(index);
-                          //         setState(() {
-                          //           isSelected[index] = !isSelected[index];
-                          //         });
-                          //       },
-                          //       isSelected: isSelected,
-                          //     ),
-                          //   ),
-                          Container(
-                            margin: EdgeInsets.symmetric(horizontal: 5),
-                            child: TextButton(
-                              style: TextButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  elevation: 0,
-                                  side: const BorderSide(
-                                    color: Colors.black,
-                                    width: 1,
-                                  ),
-                                  shadowColor: Colors.transparent,
-                                  onSurface: Colors.white),
-                              onPressed: () {},
-                              child: Text("On Map"),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ]),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

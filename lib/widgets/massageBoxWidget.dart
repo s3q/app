@@ -1,5 +1,6 @@
 import 'package:app/helpers/colorsHelper.dart';
 import 'package:app/schemas/massageSchema.dart';
+import 'package:app/screens/viewImageFullScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -26,7 +27,7 @@ class MassageBoxWidget extends StatelessWidget {
       children: [
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-          margin:  const EdgeInsets.only(top: 5),
+          margin: const EdgeInsets.only(top: 5),
           constraints: const BoxConstraints(minWidth: 100, maxWidth: 200),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
@@ -43,11 +44,22 @@ class MassageBoxWidget extends StatelessWidget {
                   // overflow: TextOverflow.ellipsis,
                 ),
               if (massage.type == "image")
-                Image.network(
-                  massage.imagePath!,
-                  width: 200,
-                  height: 200,
-                  fit: BoxFit.cover,
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute<void>(
+                        builder: (BuildContext context) =>
+                            ViewImageFullScreen(image: massage.imagePath!),
+                      ),
+                    );
+                  },
+                  child: Image.network(
+                    massage.imagePath!,
+                    width: 200,
+                    height: 200,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               const SizedBox(
                 height: 2,

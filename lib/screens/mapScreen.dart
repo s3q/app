@@ -5,14 +5,18 @@ import 'dart:typed_data';
 import 'package:app/helpers/appHelper.dart';
 import 'package:app/helpers/colorsHelper.dart';
 import 'package:app/helpers/geolocateHelper.dart';
+import 'package:app/providers/activityProvider.dart';
 import 'package:app/schemas/activitySchema.dart';
+import 'package:app/screens/activityDetailsScreen.dart';
 import 'package:app/screens/searchScreen.dart';
+import 'package:app/widgets/activityCardMap.dart';
 import 'package:custom_marker/marker_icon.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:maps_launcher/maps_launcher.dart';
+import 'package:provider/provider.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:uuid/uuid.dart';
 
@@ -26,6 +30,7 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   final Completer<GoogleMapController> _controller = Completer();
+//   GoogleMapController? _controller;
   int page = 0;
   PageController pageController =
       PageController(initialPage: 0, viewportFraction: 0.8);
@@ -46,6 +51,7 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ActivityProvider activityProvider = Provider.of<ActivityProvider>(context);
     ActivitySchema args =
         ModalRoute.of(context)?.settings.arguments as ActivitySchema;
 
@@ -53,7 +59,7 @@ class _MapScreenState extends State<MapScreen> {
 
     CameraPosition _initialCameraPosition = CameraPosition(
       target: LatLng(args.lat, args.lng),
-      zoom: 20,
+      zoom: 10,
     );
 
     Marker _marker = Marker(
@@ -68,9 +74,13 @@ class _MapScreenState extends State<MapScreen> {
           children: [
             GoogleMap(
               initialCameraPosition: _initialCameraPosition,
-              onMapCreated: ((controller) {
+              onMapCreated: (controller) {
+                // setState(() {
+                //   GoogleMapController _controller;
+                // });
+
                 _controller.complete(controller);
-              }),
+              },
               myLocationEnabled: true,
               myLocationButtonEnabled: true,
               mapType: MapType.normal,
@@ -137,16 +147,20 @@ class _MapScreenState extends State<MapScreen> {
                               children: [
                                 InkWell(
                                   onTap: () {
-                                 Navigator.pushNamed(
+                                    Navigator.pushNamed(
                                         context, SearchScreen.router,
-                                        arguments: args);
+                                        arguments: [
+                                          ...activityProvider
+                                              .topActivitiesList.values,
+                                          args
+                                        ]);
                                   },
                                   focusColor: Colors.white12,
                                   child: Hero(
                                     tag: "search_box1",
                                     child: Container(
                                       // height: 50,
-                                      padding: EdgeInsets.symmetric(
+                                      padding: const EdgeInsets.symmetric(
                                           vertical: 15, horizontal: 10),
                                       decoration: BoxDecoration(
                                         border: Border.all(
@@ -155,7 +169,7 @@ class _MapScreenState extends State<MapScreen> {
                                         color: Colors.white,
                                       ),
                                       child: Row(children: [
-                                        Icon(
+                                        const Icon(
                                           Icons.search_rounded,
                                           size: 30,
                                           color: Colors.black45,
@@ -226,6 +240,7 @@ class _MapScreenState extends State<MapScreen> {
                   itemCount: activityList.length,
                   controller: pageController,
                   onPageChanged: (p) async {
+                    // GoogleMapController con = _controller!;
                     GoogleMapController con = await _controller.future;
                     con.showMarkerInfoWindow(_marker.markerId);
 
@@ -233,72 +248,11 @@ class _MapScreenState extends State<MapScreen> {
                         CameraPosition(target: _marker.position, zoom: 18)));
                   },
                   itemBuilder: (context, index) {
-                    print(activityList[index].images);
-                    print(activityList[index]
-                        .images
-                        .where((e) => e.contains("main"))
-                        .toList()[0]);
-                    return Align(
-                      alignment: Alignment.topCenter,
-                      child: Container(
-                        margin: EdgeInsets.all(8),
-                        height: 100,
-                        // height: PAGER_HEIGHT * scale,
-                        // width: MediaQuery.of(context).size.width,
-                        child: Card(
-                          elevation: 4,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Image.network(
-                                  activityList[index]
-                                      .images
-                                      .where((e) => e.contains("main"))
-                                      .toList()[0],
-                                  fit: BoxFit.cover,
-                                  height: 100,
-                                  width: 100,
-                                ),
-                                Container(
-                                  margin: EdgeInsets.all(10),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        activityList[index].address,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleMedium,
-                                        softWrap: true,
-                                      ),
-                                      Text(
-                                        activityList[index].address,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium,
-                                        overflow: TextOverflow.fade,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                IconButton(
-                                  onPressed: () async {
-                                    await MapsLauncher.launchCoordinates(
-                                      _marker.position.latitude,
-                                      _marker.position.longitude,
-                                    );
-                                  },
-                                  icon: Icon(Icons.assistant_navigation),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
+                    return ActivityCardMap(
+                      activitySchema: activityList[index],
+                      onClicked: () {
+                        Navigator.pop(context);
+                      },
                     );
                   },
                 ),
@@ -349,6 +303,15 @@ class _MapScreenState extends State<MapScreen> {
                 ),
               ),
             ));
+
+        // _controller!.animateCamera(
+        //   CameraUpdate.newCameraPosition(
+        //     CameraPosition(
+        //       target: LatLng(position.latitude, position.longitude),
+        //       zoom: 18.0,
+        //     ),
+        //   ),
+        // );
       });
     }).catchError((error, stackTrace) => null);
   }

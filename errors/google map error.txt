@@ -1,0 +1,9 @@
+W/MobStoreFlagStore(29727): 	at android.os.Looper.loop(Looper.java:246)
+W/MobStoreFlagStore(29727): 	at android.os.HandlerThread.run(HandlerThread.java:67)
+E/Google Maps Android API(29727): Authorization failure.  Please see https://developers.google.com/maps/documentation/android-api/start for how to correctly set up the map.
+E/Google Maps Android API(29727): In the Google Developer Console (https://console.developers.google.com)
+E/Google Maps Android API(29727): Ensure that the "Google Maps Android API v2" is enabled.
+E/Google Maps Android API(29727): Ensure that the following Android Key exists:
+E/Google Maps Android API(29727): 	API Key: AIzaSyBiirMF8BSSeqW45_WcaPyvCRkTIRIp6wc
+E/Google Maps Android API(29727): 	Android Application (<cert_fingerprint>;<package_name>): 2D:4D:7B:A5:61:94:ED:60:7D:B0:75:64:DE:0A:42:58:34:19:80:02;com.example.app
+I/Ads     (29727): Use RequestConfiguration.Builder().setTestDeviceIds(Arrays.asList("E057FD0A0A7779B55527EBD27EC88011")) to get test ads on this device.

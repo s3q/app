@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ActivityStatisticsScreen extends StatefulWidget {
+  static String router = "activity_statistics";
   ActivityStatisticsScreen({super.key});
 
   @override
@@ -30,16 +31,18 @@ class _ActivityStatisticsScreenState extends State<ActivityStatisticsScreen> {
                 future:
                     activityProvider.fetchActivityStatistics(activitySchema.Id),
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState ||
-                      !snapshot.hasData ||
-                      (snapshot.data.runtimeType == ActivityStatisticsSchema)) {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
+                //   if (snapshot.connectionState == ConnectionState.waiting ||
+                //       !snapshot.hasData ||
+                //       (snapshot.data.runtimeType != ActivityStatisticsSchema)) {
+                //     return Center(
+                //       child: CircularProgressIndicator(),
+                //     );
+                //   }
 
-                  ActivityStatisticsSchema activityStatisticsSchema =
-                      snapshot.data as ActivityStatisticsSchema;
+                  //   ActivityStatisticsSchema activityStatisticsSchema =
+                  //       snapshot.data as ActivityStatisticsSchema;
+
+                  ActivitySchema activityStatisticsSchema = activitySchema;
                   return Expanded(
                     child: ListView(
                       children: [
@@ -147,7 +150,7 @@ class _ActivityStatisticsScreenState extends State<ActivityStatisticsScreen> {
                                     ),
                                   ],
                                 ),
-                                Text(
+                                 const Text(
                                     "The number of times your ad was viewed by the customer"),
                                 Text(
                                   activityStatisticsSchema.callsCount
@@ -164,9 +167,17 @@ class _ActivityStatisticsScreenState extends State<ActivityStatisticsScreen> {
                             margin: EdgeInsets.symmetric(vertical: 10),
                             child: Column(
                               children: [
-                                Text(
-                                  "Likes Count ",
-                                  style: Theme.of(context).textTheme.titleLarge,
+                                Row(
+                                  children: [
+                                    Icon(Icons.favorite_rounded),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    Text(
+                                      "Likes Count ",
+                                      style: Theme.of(context).textTheme.titleLarge,
+                                    ),
+                                  ],
                                 ),
                                 Text(
                                     "The number of times your ad was viewed by the customer"),
@@ -185,9 +196,17 @@ class _ActivityStatisticsScreenState extends State<ActivityStatisticsScreen> {
                             margin: EdgeInsets.symmetric(vertical: 10),
                             child: Column(
                               children: [
-                                Text(
-                                  "Shares Count ",
-                                  style: Theme.of(context).textTheme.titleLarge,
+                                Row(
+                                  children: [
+                                    Icon(Icons.share_rounded),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    Text(
+                                      "Shares Count ",
+                                      style: Theme.of(context).textTheme.titleLarge,
+                                    ),
+                                  ],
                                 ),
                                 Text(
                                     "The number of times your ad was viewed by the customer"),
@@ -206,9 +225,17 @@ class _ActivityStatisticsScreenState extends State<ActivityStatisticsScreen> {
                             margin: EdgeInsets.symmetric(vertical: 10),
                             child: Column(
                               children: [
+                                Row(
+                                  children: [
+                                    Icon(Icons.chat_rounded),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
                                 Text(
                                   "Chats Count ",
                                   style: Theme.of(context).textTheme.titleLarge,
+                                ),
+                                  ],
                                 ),
                                 Text(
                                     "The number of times your ad was viewed by the customer"),

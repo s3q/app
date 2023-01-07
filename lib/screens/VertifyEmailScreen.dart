@@ -6,6 +6,7 @@ import 'package:app/widgets/appBarWidget.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class VertifyEmailScreen extends StatefulWidget {
   static String router = "vertify_email";
@@ -36,11 +37,13 @@ class _VertifyEmailScreenState extends State<VertifyEmailScreen> {
   }
 
   Future _sendVertificationEmail() async {
+    EasyLoading.show(maskType: EasyLoadingMaskType.black);
+
     try {
       await auth.currentUser!
           .sendEmailVerification()
-          .then((value) => print("done"));
-    //   await auth.applyActionCode("1312");
+          .then((value) => EasyLoading.showSuccess("Check Your Email"));
+      //   await auth.applyActionCode("1312");
 
       timer = Timer.periodic(Duration(seconds: 3), (timer) {
         setCountDown();
@@ -49,7 +52,11 @@ class _VertifyEmailScreenState extends State<VertifyEmailScreen> {
     } catch (err) {
       print("error");
       print(err);
+      EasyLoading.showError("");
     }
+    await Future.delayed(Duration(milliseconds: 1500));
+
+    EasyLoading.dismiss();
   }
 
   void setCountDown() {

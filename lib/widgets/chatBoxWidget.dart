@@ -4,6 +4,7 @@ import 'package:app/schemas/chatSchema.dart';
 import 'package:app/schemas/userSchema.dart';
 import 'package:app/screens/massagesScreen.dart';
 import "package:flutter/material.dart";
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -22,11 +23,16 @@ class ChatBoxWidget extends StatelessWidget {
 
     return InkWell(
       onTap: () async {
+        EasyLoading.show();
         chatprovider.chat = chat;
-        await Navigator.pushNamed(context, MassagesScreen.router,
-            arguments: chat);
+        Navigator.pushNamed(context, MassagesScreen.router, arguments: chat);
+        EasyLoading.dismiss();
       },
       child: Container(
+        decoration: BoxDecoration(
+            border: Border.symmetric(
+                horizontal: BorderSide(color: Color(0xFFF5F5F5), width: 1))),
+        width: MediaQuery.of(context).size.width,
         padding: EdgeInsets.all(10),
         child: Row(
           children: [
@@ -36,41 +42,82 @@ class ChatBoxWidget extends StatelessWidget {
             const SizedBox(
               width: 15,
             ),
-            Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      user.name.toString(),
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    Text(
-                      chat.massages?[0] != null
-                          ? DateFormat('dd MM yyyy').format(
-                              DateTime.fromMillisecondsSinceEpoch(
-                                  chat.massages![0].createdAt))
-                          : "",
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey,
-                            overflow: TextOverflow.ellipsis,
+            Expanded(
+              child: Column(
+                // crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        user.name.toString(),
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium!
+                            .copyWith(fontWeight: FontWeight.bold),
+                      ),
+
+                      Row(
+                        children: [
+                          if (chat.massages != null &&
+                              chat.massages!.length > 0)
+                            Text(
+                              chat.massages?[0] != null
+                                  ? DateFormat('dd/MM/yyyy').format(
+                                      DateTime.fromMillisecondsSinceEpoch(
+                                          chat.massages![0].createdAt))
+                                  : "",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                      color: Colors.grey,
+                                      overflow: TextOverflow.ellipsis,
+                                      fontWeight: FontWeight.bold),
+                            ),
+                          SizedBox(
+                            width: 10,
                           ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Text(
-                      chat.massages?[0].massage ?? "",
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                    ),
-                    const Icon(Icons.deblur_sharp, color: Colors.redAccent,)
-                  ],
-                ),
-              ],
+                          if (chat.massages != null &&
+                              chat.massages!.length > 0 &&
+                              chat.unread
+                                  .contains(userProvider.currentUser!.Id))
+                            const Icon(
+                              Icons.fiber_manual_record_sharp,
+                              size: 10,
+                              color: Colors.redAccent,
+                            ),
+                        ],
+                      )
+                      // Expanded(child: SizedBox()),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      if (chat.massages != null && chat.massages!.length > 0)
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              chat.massages?[0].massage ?? "",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    color: Colors.grey,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                              maxLines: 1,
+                            ),
+                          ],
+                        ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),

@@ -3,19 +3,24 @@ import 'package:app/providers/activityProvider.dart';
 import 'package:app/providers/chatProvider.dart';
 import 'package:app/providers/userProvider.dart';
 import 'package:app/schemas/activitySchema.dart';
+import 'package:app/schemas/userSchema.dart';
 import 'package:app/screens/massagesScreen.dart';
+import 'package:app/widgets/DiologsWidgets.dart';
 import 'package:app/widgets/SafeScreen.dart';
 import 'package:app/widgets/activityCardWidget.dart';
 import 'package:app/widgets/appBarWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:whatsapp/whatsapp.dart';
 
 class ContactOwnerScreen extends StatelessWidget {
   static String router = "contactOwner";
   const ContactOwnerScreen({super.key});
 
-  void _gotoChat({
+  Future _gotoChat({
     required BuildContext context,
     required String userId,
     required String activityId,
@@ -27,11 +32,13 @@ class ContactOwnerScreen extends StatelessWidget {
 
       // final userProvider = Provider.of<UserProvider>(context, listen: false);
 
-      String s = await chatProvider.addChat(context: context, userId: userId, activityId: activityId);
+      String s = await chatProvider.addChat(
+          context: context, userId: userId, activityId: activityId);
       if (chatProvider.chat != null) {
         if (chatProvider.chat!.users.contains(userId) &&
             chatProvider.chat!.users.contains(userProvider.currentUser!.Id)) {
-          await Navigator.pushNamed(context, MassagesScreen.router,
+          print(chatProvider.chat);
+          Navigator.pushNamed(context, MassagesScreen.router,
               arguments: chatProvider.chat);
         }
       }
@@ -44,6 +51,10 @@ class ContactOwnerScreen extends StatelessWidget {
     ActivityProvider activityProvider = Provider.of<ActivityProvider>(context);
     ActivitySchema activitySchema =
         ModalRoute.of(context)?.settings.arguments as ActivitySchema;
+    print(activitySchema.phoneNumberWhatsapp);
+
+    print(activitySchema.phoneNumberWhatsapp == null ||
+        activitySchema.phoneNumberWhatsapp == "");
     return SafeScreen(
       padding: 0,
       child: Column(children: [
@@ -56,8 +67,21 @@ class ContactOwnerScreen extends StatelessWidget {
           child: Column(children: [
             ElevatedButton(
               onPressed: () async {
-                await activityProvider.addChatsCountActivity(activitySchema.Id);
-                _gotoChat(context: context, userId: activitySchema.userId, activityId: activitySchema.Id);
+                if (userProvider.currentUser == null) {
+                  DialogWidgets.mustSginin(context);
+                  return;
+                }
+                EasyLoading.show(maskType: EasyLoadingMaskType.black);
+                activityProvider.addChatsCountActivity(
+                    activitySchema.storeId, activitySchema.Id);
+                await _gotoChat(
+                    context: context,
+                    userId: activitySchema.userId,
+                    activityId: activitySchema.Id);
+
+                await Future.delayed(Duration(milliseconds: 2000));
+
+                EasyLoading.dismiss();
               },
               style: ElevatedButton.styleFrom(
                 primary: ColorsHelper.yellow,
@@ -90,8 +114,16 @@ class ContactOwnerScreen extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () async {
-                                await activityProvider.addCallsCountActivity(activitySchema.Id);
+                final Uri _url =
+                    Uri.parse("tel:${activitySchema.phoneNumberCall}");
 
+                final Uri telLaunchUri = Uri(
+                  scheme: 'tel',
+                  path: activitySchema.phoneNumberCall,
+                );
+                launchUrl(telLaunchUri);
+                await activityProvider.addCallsCountActivity(
+                    activitySchema.storeId, activitySchema.Id);
               },
               style: ElevatedButton.styleFrom(
                 primary: ColorsHelper.green,
@@ -122,7 +154,23 @@ class ContactOwnerScreen extends StatelessWidget {
               height: 10,
             ),
             ElevatedButton(
-              onPressed: () async {},
+              onPressed: activitySchema.phoneNumberWhatsapp == null ||
+                      activitySchema.phoneNumberWhatsapp == ""
+                  ? null
+                  : () async {
+                      final Uri _url = Uri.parse(
+                          "https://wa.me/${activitySchema.phoneNumberWhatsapp}");
+                      // ' https://wa.me/${activitySchema.phoneNumberWhatsapp}?text=Hello');
+                      launchUrl(_url,
+                          mode: LaunchMode.externalNonBrowserApplication);
+//                 WhatsApp whatsapp = WhatsApp();
+
+//                 whatsapp.messagesTemplate(
+// 	to: int.tryParse(activitySchema.phoneNumberWhatsapp.toString()) ?? 0,
+// 	templateName: "Hey,",
+
+// );
+                    },
               style: ElevatedButton.styleFrom(
                 primary: ColorsHelper.green,
                 padding:
@@ -187,8 +235,27 @@ class ContactOwnerScreen extends StatelessWidget {
                       ),
                     );
                   }
+                  UserSchema? userSchema;
+                  if (snapshot.data is UserSchema) {
+                    userSchema = snapshot.data as UserSchema;
+                  }
+                  print(userSchema?.proAccount?["instagram"]);
+
                   return ElevatedButton(
-                    onPressed: () async {},
+                    onPressed: userSchema?.proAccount?["instagram"] == null ||
+                            userSchema?.proAccount?["instagram"] == ""
+                        ? null
+                        : () async {
+                            final Uri _url = Uri.parse(
+                                'https://instagram.com/${userSchema?.proAccount?["instagram"]}');
+                            if (await canLaunchUrl(_url)) {
+                              await launchUrl(_url,
+                                  mode:
+                                      LaunchMode.externalNonBrowserApplication);
+                            } else {
+                              throw 'Could not launch $_url';
+                            }
+                          },
                     style: ElevatedButton.styleFrom(
                       primary: ColorsHelper.green,
                       padding: const EdgeInsets.symmetric(

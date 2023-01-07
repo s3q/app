@@ -1,12 +1,16 @@
 import 'dart:io';
 
+import 'package:app/helpers/appHelper.dart';
+import 'package:app/helpers/colorsHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class UploadImagePagesWidget extends StatefulWidget {
   Function(Map<int, String>) onImageAdded;
-  UploadImagePagesWidget({super.key, required this.onImageAdded});
+  Map<int, String> imagesPath;
+  UploadImagePagesWidget(
+      {super.key, required this.onImageAdded, required this.imagesPath});
 
   @override
   State<UploadImagePagesWidget> createState() => _UploadImagePagesWidgetState();
@@ -46,6 +50,23 @@ class _UploadImagePagesWidgetState extends State<UploadImagePagesWidget> {
 //   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    setState(() {
+      _uploadedImagesPath = widget.imagesPath;
+    //   widget.imagesPath.forEach((key, value) {
+    //     _uploadedImagesPath[key] = value;
+
+    //     //   return MapEntry(key, value);
+    //   });
+    });
+
+    print(_uploadedImagesPath);
+  }
+
+  @override
   Widget build(BuildContext context) {
     // print(_uploadedImagesPath);
     return SingleChildScrollView(
@@ -77,9 +98,18 @@ class _UploadImagePagesWidgetState extends State<UploadImagePagesWidget> {
                     child: Icon(Icons.photo),
                   ),
                 ),
-                if (_uploadedImagesPath[1] != "")
+                if (_uploadedImagesPath[1] != "" &&
+                    !_uploadedImagesPath[1]!.startsWith("http"))
                   Image.file(
                     File(_uploadedImagesPath[1]!),
+                    width: 200,
+                    height: 200,
+                    fit: BoxFit.cover,
+                  ),
+                if (_uploadedImagesPath[1] != "" &&
+                    _uploadedImagesPath[1]!.startsWith("http"))
+                  Image.network(
+                    _uploadedImagesPath[1]!,
                     width: 200,
                     height: 200,
                     fit: BoxFit.cover,
@@ -92,6 +122,7 @@ class _UploadImagePagesWidgetState extends State<UploadImagePagesWidget> {
                   Align(
                     alignment: Alignment.topRight,
                     child: IconButton(
+                        color: ColorsHelper.grey,
                         onPressed: () {
                           setState(() {
                             _uploadedImagesPath[1] = "";
@@ -139,9 +170,18 @@ class _UploadImagePagesWidgetState extends State<UploadImagePagesWidget> {
                             child: Icon(Icons.photo),
                           ),
                         ),
-                        if (_uploadedImagesPath[e] != "")
+                        if (_uploadedImagesPath[e] != "" &&
+                            !_uploadedImagesPath[e]!.startsWith("http"))
                           Image.file(
                             File(_uploadedImagesPath[e]!),
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                          ),
+                        if (_uploadedImagesPath[e] != "" &&
+                            _uploadedImagesPath[e]!.startsWith("http"))
+                          Image.network(
+                            _uploadedImagesPath[e]!,
                             width: 100,
                             height: 100,
                             fit: BoxFit.cover,

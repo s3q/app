@@ -1,6 +1,15 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    match /_counter_shards_/{shardId} {
+      allow get;
+        allow write: if (request.resource.data.keys() == ["likesCount"] ||  request.resource.data.keys() == ["chatsCount"] ||  request.resource.data.keys() == ["viewsCount"] ||  request.resource.data.keys() == ["sharesCount"] ) 
+        && resource == null;
+      // allow write: if request.resource.data.keys() == ["visits"]
+      //   && (resource == null || request.resource.data.visits ==
+      // resource.data.visits + 1);
+    }
     match /{document=**} {
       allow read, write: if true;
     }

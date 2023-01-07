@@ -1,73 +1,81 @@
-edit activities 
-vertify email and number [ account, switch to profitional ]
-statistics for activities and profitional accounts (click chat or contacts way, view counts every day, likes counts, )
-search for activities 
-search for places 
-display activities
-error databases
-notifications
-ads (emails) -
-load widget (login, signup, create activities, switch to pro, )
-
-success login page
-
-firebase function:
-// 
-
-
-Chat: 
-last massage 
-activity
-is readed, recived
-received time, 
-sned photo, audio, location, contacts, his ads,
-# fillter barc  
-# replay time 
-% block user
-delete chat 
-sort chats with new massage
-
-
-activity :
-upload images -
-pick lovcation zome 
-
-Photos:
-delete photo, main photo, zome photos -
-minimum 1, maximum 8, - 
-choose one from calls way -
-call req -
-
-prices - description max 20  -> get start from price ( 4 ) + add button min 1 -
-prices note, max 50, min 0 -
-
-report page -
-review page -
-contact woner page - 
-wishlist -
-
-
-contacts us -
-edit activity 
-my activities screen -
-activity statistics : -
-    - 
-    -
-    -
-    -
-before publich activity screen
 
 
 
-reset password page
-vertify pro account 
-edit pro account 
-set lang
+
+chats:
+delete - f
+sort chat - 
+dates - 
+
+activities:
+freeze - 
+edit 
+delete - 
+
+edit activities:
+delete images
+
+edit profile:
+delete images
+
+
+
+statistics:
+likes
+class
+shares
+chats
+views
+
+accounts:
+    edit profile:
+        change, remove profile image,-
+    show birthday -
+        
+edit pro account -
+
+
+
+set language
 notifications
 
+edit Activities
+serach
 
-chatsCount: d.data()["chatsCount"]
-callsCount: d.data()["callsCount"]
-viewsCount: d.data()["viewsCount"]
-likesCount: d.data()["likesCount"]
-sharesCount: d.data()["sharesCount"]
+
+delete replaced images 
+
+switch to pro account -> problem
+
+add activites :
+choose only days or dates 0 
+have to fill all prices inputes 0 
+have to write phone number -- call 0
+have to write age 0
+problem with location detected 
+submit loading 0
+when add activity don't show in home screen 0
+
+
+tell the user to login to like activities 0
+
+
+log out appear but user didnt sgin in 0 
+
+
+
+float share button
+
+whatsapp 
+instagram 
+app chat :
+    loading 
+
+create activity preview 
+
+
+loading in catogry search
+radiobutton
+chat
+
+Another exception was thrown: RangeError (index): Invalid value: Valid value range is empty: 0

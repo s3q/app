@@ -1,21 +1,30 @@
 import 'package:app/helpers/appHelper.dart';
 import 'package:app/helpers/colorsHelper.dart';
+import 'package:app/providers/activityProvider.dart';
 import 'package:app/providers/settingsProvider.dart';
 import 'package:app/providers/userProvider.dart';
+import 'package:app/schemas/activitySchema.dart';
+import 'package:app/screens/activityDetailsScreen.dart';
 import 'package:app/screens/bookingScreen.dart';
 import 'package:app/screens/chatScreen.dart';
 import 'package:app/screens/discoverScreen.dart';
 import 'package:app/screens/getStartedScreen.dart';
+import 'package:app/screens/notificationSceen.dart';
 import 'package:app/screens/overViewScreen.dart';
+import 'package:app/screens/ownerActivitiesScreen.dart';
 import 'package:app/screens/profileScreen.dart';
 import 'package:app/screens/wishlistScreen.dart';
 import 'package:app/widgets/SafeScreen.dart';
 import 'package:app/widgets/activityCardWidget.dart';
 import 'package:app/widgets/categoryCardWidget.dart';
+import 'package:app/widgets/loadingWidget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import "package:flutter/material.dart";
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_share/flutter_share.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
@@ -37,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
   PageController _pageController = PageController(initialPage: 0);
 
   void autoSignin(context) async {
+    // EasyLoading.show(status: "Loading")
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     await userProvider.saveSignInUserData(context, userProvider.credentialUser!,
         sginup: false);
@@ -45,14 +55,64 @@ class _HomeScreenState extends State<HomeScreen> {
   Future signout(UserProvider userProvider) async {
     await userProvider.signout();
 
-    await Navigator.pushNamedAndRemoveUntil(
+    Navigator.pushNamedAndRemoveUntil(
         context, OverviewScreen.router, (route) => false);
+  }
+
+  Future getNofitication() async {
+    UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
+
+    await userProvider.fetchNotifications();
+  }
+
+  void initDynamicLink() async {
+    FirebaseDynamicLinks.instance.onLink.listen((event) {
+      if (event.link.path.isNotEmpty) {
+        // * link navigator
+        linkNavigator(event.link.path);
+      }
+    }).onError((err) {
+      print(err);
+    });
+  }
+
+  Future linkNavigator(String path) async {
+    EasyLoading.show();
+    try {
+      print(path);
+      final activityProvider =
+          Provider.of<ActivityProvider>(context, listen: false);
+
+      if (path.startsWith("/post")) {
+        ActivitySchema activitySchema =
+            await activityProvider.fetchActivityWStore(path.split("/post")[1]);
+        Navigator.pushNamed(context, ActivityDetailsScreen.router,
+            arguments: activitySchema);
+      }
+    } catch (err) {
+      print(err);
+    }
+
+    await Future.delayed(Duration(milliseconds: 1500));
+    EasyLoading.dismiss();
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    Future.delayed(Duration(seconds: 5), () {
+      //   int index = ModalRoute.of(context)!.settings.arguments as int;
+      //   setState(() {
+      //     _currentTab = index;
+      //   });
+
+      getNofitication();
+    });
+
+    initDynamicLink();
 
     // WidgetsBinding.instance.addPostFrameCallback((_) {
     //   print("SchedulerBinding");
@@ -81,22 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (userProvider.currentUser == null &&
           userProvider.credentialUser != null) {
         autoSignin(context);
-        return SafeScreen(
-          child: Center(
-              child: Column(
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(
-                height: 30,
-              ),
-              TextButton(
-                  onPressed: () async {
-                    await signout(userProvider);
-                  },
-                  child: Text("sign out"))
-            ],
-          )),
-        );
+        return const LoadingWidget();
       }
 
       return Scaffold(
@@ -104,7 +149,9 @@ class _HomeScreenState extends State<HomeScreen> {
           automaticallyImplyLeading: false,
           backgroundColor: Colors.white,
           leading: TextButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, NotificationScreen.router);
+            },
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all(Colors.transparent),
             ),
@@ -132,15 +179,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 backgroundColor: MaterialStateProperty.all(Colors.transparent),
               ),
               child: Badge(
-                badgeContent: 
-                    userProvider.islogin() && auth.currentUser?.emailVerified == true
-                        ? null
-                        : const Icon(
-                            Icons.error_outline_rounded,
-                            size: 13,
-                            color: Colors.white,
-                          )
-                    ,
+                badgeContent: userProvider.islogin() &&
+                        auth.currentUser?.emailVerified == true
+                    ? null
+                    : const Icon(
+                        Icons.error_outline_rounded,
+                        size: 13,
+                        color: Colors.white,
+                      ),
                 badgeColor: ColorsHelper.orange,
                 elevation: 1,
                 child: const Icon(
@@ -164,30 +210,62 @@ class _HomeScreenState extends State<HomeScreen> {
                 _currentTab = i;
               });
             },
-            children: const [
-              DiscoverScreen(),
-              ChatScreen(),
-              BookingScreen(),
-              WishlistScreen(),
+            children: [
+              const DiscoverScreen(),
+              const ChatScreen(),
+              const BookingScreen(),
+              if (userProvider.currentUser != null)
+                if (userProvider.currentUser!.isProAccount == true)
+                  const OwnerActivitesScreen(),
+              const WishlistScreen(),
             ],
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: ColorsHelper.grey,
+          onPressed: () async {
+            EasyLoading.show();
+            String url = await AppHelper.buildDynamicLink(
+                title: 'Trippoint Oman || عمان', Id: "app");
+            await FlutterShare.share(
+              title: 'Trippoint Oman || عمان',
+              // text: args.title,
+              linkUrl: url,
+            );
+
+            EasyLoading.dismiss();
+          },
+          child: const SizedBox(
+            width: 60,
+            height: 60,
+            child: Icon(
+              Icons.share_rounded,
+              size: 30,
+            ),
           ),
         ),
         bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
+          items: <BottomNavigationBarItem>[
+            const BottomNavigationBarItem(
               icon: Icon(Icons.search),
               label: "Discover",
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.chat_rounded),
               label: "chat",
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.shopping_cart),
               label: "Booking",
             ),
-            BottomNavigationBarItem(
+            if (userProvider.currentUser != null)
+              if (userProvider.currentUser!.isProAccount == true)
+                const BottomNavigationBarItem(
+                  icon: Icon(Icons.assessment_rounded),
+                  label: "Ads",
+                ),
+            const BottomNavigationBarItem(
               icon: Icon(Icons.bookmark_added_rounded),
               label: "Wishlist",
             ),

@@ -2,10 +2,12 @@ import 'package:app/helpers/appHelper.dart';
 import 'package:app/providers/settingsProvider.dart';
 import 'package:app/providers/userProvider.dart';
 import 'package:app/schemas/ReportSchema.dart';
+import 'package:app/screens/getStartedScreen.dart';
 import 'package:app/widgets/SafeScreen.dart';
 import 'package:app/widgets/appBarWidget.dart';
 import 'package:app/widgets/inputTextFieldWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -22,25 +24,35 @@ class _ReportActivityScreenState extends State<ReportActivityScreen> {
   Map data = {};
 
   Future _submit(context, String activityId) async {
-    UserProvider userProvider =
-        Provider.of<UserProvider>(context, listen: false);
-    SettingsProvider settingsProvider =
-        Provider.of<SettingsProvider>(context, listen: false);
-    bool validation = _formKey.currentState!.validate();
+    EasyLoading.show(maskType: EasyLoadingMaskType.black);
+    try {
+      UserProvider userProvider =
+          Provider.of<UserProvider>(context, listen: false);
+      SettingsProvider settingsProvider =
+          Provider.of<SettingsProvider>(context, listen: false);
+      bool validation = _formKey.currentState!.validate();
 
-    if (validation && userProvider.islogin()) {
-              _formKey.currentState?.save();
+      if (validation && userProvider.islogin()) {
+        _formKey.currentState?.save();
 
-      ReportSchema reportSchema = ReportSchema(
-          Id: Uuid().v4(),
-          activityId: activityId,
-          userId: userProvider.currentUser!.Id,
-          phoneNumber: data["phoneNumber"],
-          report: data["report"],
-          reportFor: "activity",
-          createdAt: DateTime.now().millisecondsSinceEpoch);
-      await settingsProvider.sendReport(reportSchema);
+        ReportSchema reportSchema = ReportSchema(
+            Id: Uuid().v4(),
+            activityId: activityId,
+            userId: userProvider.currentUser!.Id,
+            phoneNumber: data["phoneNumber"],
+            report: data["report"],
+            reportFor: "activity",
+            createdAt: DateTime.now().millisecondsSinceEpoch);
+        bool done = await settingsProvider.sendReport(reportSchema);
+        assert(done != false);
+        EasyLoading.showSuccess("");
+      }
+    } catch (err) {
+      print(err);
+      EasyLoading.showError("");
     }
+    await Future.delayed(Duration(milliseconds: 1500));
+    EasyLoading.dismiss();
   }
 
   @override
@@ -56,70 +68,86 @@ class _ReportActivityScreenState extends State<ReportActivityScreen> {
       child: Column(
         children: [
           AppBarWidget(title: "Report"),
-          if (userProvider.islogin())
-            Expanded(
-              child: ListView(
-                children: [
-                  SizedBox(
-                    height: 30,
+          userProvider.islogin()
+              ? Expanded(
+                  child: ListView(
+                    children: [
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            InputTextFieldWidget(
+                              keyboardType: TextInputType.number,
+                              text: data["phoneNumber"],
+                              labelText: "Phone Number",
+                              //   labelStyle:,
+                              helperText:
+                                  "Add Your Phone Number to recive calls.",
+
+                              validator: (val) {
+                                AppHelper.checkPhoneValidation(context, val);
+                                if (val?.length != 8) {
+                                  return "invalid phone number";
+                                }
+                              },
+                              onSaved: (val) {
+                                data["phoneNumber"] = val?.trim();
+                              },
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            InputTextFieldWidget(
+                              text: data["report"],
+                              labelText: "Report",
+                              minLines: 4,
+                              helperText: "be honest ",
+                              validator: (val) {
+                                if (val == null)
+                                  return "Use 3 characters or more";
+                                if (val.trim() == "" || val.length < 10)
+                                  return "Use 3 characters or more";
+
+                                if (val.length > 200) return "too long";
+
+                                return null;
+                              },
+                              onSaved: (val) {
+                                data["report"] = val?.trim();
+                              },
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            ElevatedButton(
+                              onPressed: () async {
+                                await _submit(context, activityId);
+                              },
+                              child: const Text("Send"),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        InputTextFieldWidget(
-                          keyboardType: TextInputType.number,
-                          text: data["phoneNumber"],
-                          labelText: "Phone Number",
-                          //   labelStyle:,
-                          helperText: "Add Your Phone Number to recive calls.",
-
-                          validator: (val) {
-                            AppHelper.checkPhoneValidation(context, val);
-                            if (val?.length != 8) {
-                              return "invalid phone number";
-                            }
-                          },
-                          onSaved: (val) {
-                            data["phoneNumber"] = val?.trim();
-                          },
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        InputTextFieldWidget(
-                          text: data["report"],
-                          labelText: "Report",
-                          minLines: 4,
-                          helperText: "be honest ",
-                          validator: (val) {
-                            if (val == null) return "Use 3 characters or more";
-                            if (val.trim() == "" || val.length < 10)
-                              return "Use 3 characters or more";
-
-                            if (val.length > 200) return "too long";
-
-                            return null;
-                          },
-                          onSaved: (val) {
-                            data["report"] = val?.trim();
-                          },
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        ElevatedButton(
-                          onPressed: () async {
-                            await _submit(context, activityId);
-                          },
-                          child: const Text("Send"),
-                        ),
-                      ],
+                )
+              : Expanded(
+                  child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 100,
                     ),
-                  ),
-                ],
-              ),
-            ),
+                    const Text("You should login first"),
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, GetStartedScreen.router);
+                        },
+                        child: const Text("Login")),
+                  ],
+                )),
         ],
       ),
     );

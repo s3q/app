@@ -11,6 +11,7 @@ class BookingScreen extends StatelessWidget {
       child: ListView(
           children: [
               Text("Booking", style: Theme.of(context).textTheme.titleLarge,),
+              Center(child: Text("Coming soon"),)
           ],
       ),
     );

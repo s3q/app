@@ -80,22 +80,25 @@ class SendReviewScreen extends StatelessWidget {
                     SizedBox(
                       height: 20,
                     ),
-                    InputTextFieldWidget(
-                      text: data["review"],
-                      labelText: "Review",
-                      minLines: 4,
-                      helperText: "review this activity",
-                      validator: (val) {
-                        if (val == null) return "Use 3 characters or more";
-                        if (val.trim() == "" || val.length < 3)
-                          return "Use 3 characters or more";
+                    Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: InputTextFieldWidget(
+                        text: data["review"],
+                        labelText: "Review",
+                        minLines: 4,
+                        helperText: "review this activity",
+                        validator: (val) {
+                          if (val == null) return "Use 3 characters or more";
+                          if (val.trim() == "" || val.length < 3)
+                            return "Use 3 characters or more";
 
-                        if (val.length > 200) return "too long";
-                        return null;
-                      },
-                      onSaved: (val) {
-                        data["review"] = val?.trim();
-                      },
+                          if (val.length > 200) return "too long";
+                          return null;
+                        },
+                        onSaved: (val) {
+                          data["review"] = val?.trim();
+                        },
+                      ),
                     ),
                     SizedBox(
                       height: 30,

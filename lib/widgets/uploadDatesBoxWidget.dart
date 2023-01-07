@@ -5,17 +5,32 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class UploadDatesBoxWidget extends StatefulWidget {
-  Function(List<int>) onDatesSelected;
-  UploadDatesBoxWidget({super.key, required this.onDatesSelected});
+  Function(List) onDatesSelected;
+  List dates;
+  UploadDatesBoxWidget(
+      {super.key, required this.onDatesSelected, required this.dates});
 
   @override
   State<UploadDatesBoxWidget> createState() => _UploadDatesBoxWidgetState();
 }
 
 class _UploadDatesBoxWidgetState extends State<UploadDatesBoxWidget> {
-  List<int> dates = [];
+  List dates = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+      setState(() {
+        dates = widget.dates;
+      });
+    
+  }
+
   @override
   Widget build(BuildContext context) {
+    print(dates);
     UserProvider userProvider =
         Provider.of<UserProvider>(context, listen: false);
     return Column(

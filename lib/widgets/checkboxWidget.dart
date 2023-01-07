@@ -43,6 +43,7 @@ class _CheckboxWidgetState extends State<CheckboxWidget> {
       child: Row(
         children: [
           Checkbox(
+            
             checkColor: Colors.white,
             fillColor: MaterialStateProperty.all(Colors.blue),
             value: _isChecked,

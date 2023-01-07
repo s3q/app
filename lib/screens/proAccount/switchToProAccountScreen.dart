@@ -8,9 +8,12 @@ import 'package:app/screens/profileScreen.dart';
 import 'package:app/widgets/LinkWidget.dart';
 import 'package:app/widgets/SafeScreen.dart';
 import 'package:app/widgets/appBarWidget.dart';
+import 'package:app/widgets/checkboxWidget.dart';
+import 'package:app/widgets/inputTextFieldWidget.dart';
 import 'package:date_field/date_field.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:phone_number/phone_number.dart';
 import 'package:provider/provider.dart';
 import 'package:searchfield/searchfield.dart';
@@ -32,14 +35,17 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
   TextEditingController _emailInput = TextEditingController();
   TextEditingController _phoneNumberInput = TextEditingController();
   TextEditingController _cityInput = TextEditingController();
+  TextEditingController _instagramInput = TextEditingController();
 
   TextEditingController _publicEmailInput = TextEditingController();
   TextEditingController _publicPhoneNumber = TextEditingController();
   Map data = {};
 
   int indexOverView = 0;
-  bool isCheckedCheckbox = false;
+//   bool isCheckedCheckbox = false;
   PhoneNumberUtil _phoneNumber = PhoneNumberUtil();
+
+  final isCheckedCheckbox = ValueNotifier<bool>(false);
 
   RegionInfo region = const RegionInfo(name: "Oman", code: "OM", prefix: 968);
 
@@ -55,35 +61,47 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
   }
 
   Future _submit(BuildContext context) async {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    bool validation = _formKey1.currentState!.validate();
-    bool done = false;
+    try {
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      bool validation = _formKey1.currentState!.validate();
+      bool done = false;
 
-    if (validation) {
-      _formKey1.currentState!.save();
-      print(data);
+      if (validation) {
+        _formKey1.currentState!.save();
+        print(data);
 
-      ProUserSchema proUserData = ProUserSchema(
-        createdAt: DateTime.now().millisecondsSinceEpoch,
-        userId: userProvider.currentUser!.Id,
-        publicPhoneNumber: data["publicPhoneNumber"],
-        publicEmail: data["publicEmail"],
-      );
+        EasyLoading.show(maskType: EasyLoadingMaskType.black);
 
-      await userProvider.switchToProAccount(
-        context: context,
-        proUserData: proUserData,
-        city: data["city"],
-        dateOfBirth: data["dateOfBirth"],
-        name: data["name"],
-      );
+        ProUserSchema proUserData = ProUserSchema(
+            createdAt: DateTime.now().millisecondsSinceEpoch,
+            userId: userProvider.currentUser!.Id,
+            publicPhoneNumber: data["publicPhoneNumber"],
+            publicEmail: data["publicEmail"],
+            instagram: data["instagram"]);
 
-    //   Navigator.pushNamed(context, ProfileScreen.router);
+        bool done = await userProvider.switchToProAccount(
+          context: context,
+          proUserData: proUserData,
+          city: data["city"],
+          dateOfBirth: data["dateOfBirth"],
+          name: data["name"],
+        );
 
-    setState(() {
-      indexOverView += 1;
-    });
+        assert(done != false);
+
+        EasyLoading.showSuccess("");
+
+        //   Navigator.pushNamed(context, ProfileScreen.router);
+
+        setState(() {
+          indexOverView += 1;
+        });
+      }
+    } catch (err) {
+      print(err);
+      EasyLoading.showError("");
     }
+    EasyLoading.dismiss();
   }
 
   @override
@@ -91,8 +109,15 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
     final settingsProvider = Provider.of<SettingsProvider>(context);
     UserProvider userProvider = Provider.of<UserProvider>(context);
     _nameInput.text = userProvider.currentUser!.name ?? data["name"] ?? "";
-    _emailInput.text =
-        userProvider.proCurrentUser?.publicEmail ?? data["email"] ?? "";
+
+    _instagramInput.text =
+        userProvider.proCurrentUser?.instagram ?? data["instagram"] ?? "";
+    _emailInput.text = userProvider.proCurrentUser?.publicEmail ??
+        (data["email"] != null &&
+                userProvider.proCurrentUser?.publicEmail != data["email"]
+            ? data["email"]
+            : null) ??
+        "";
     _phoneNumberInput.text = userProvider.proCurrentUser?.publicPhoneNumber ??
         data["phoneNumber"] ??
         "";
@@ -369,26 +394,36 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                     },
                   ),
                   SizedBox(
+                    height: 15,
+                  ),
+                  InputTextFieldWidget(
+                    text: data["instagram"],
+                    labelText: "Instagram Account",
+                    helperText: "",
+                    validator: (val) {
+                      //   if (val == null)
+                      //     return "Use 3 characters or more for a title";
+                      //   if (val.trim() == "" || val.length < 3)
+                      //     return "Use 3 characters or more for a title";
+                      //   //   if (val.contains(r'[A-Za-z]')) {
+                      //   //     return "The name should only consist of letters";
+                      //   //   }
+                      return null;
+                    },
+                    onSaved: (val) {
+                      data["instagram"] = val?.trim();
+                    },
+                  ),
+                  SizedBox(
                     height: 30,
                   ),
-                  Row(
-                    children: [
-                      Checkbox(
-                        checkColor: Colors.white,
-                        fillColor: MaterialStateProperty.all(Colors.blue),
-                        value: isCheckedCheckbox,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            isCheckedCheckbox = value!;
-                          });
-                        },
-                      ),
-
-                      Text("Agree to"),
-                  LinkWidget(text: "terms and condition", onPressed: () {})
-                    ],
+                  CheckboxWidget(
+                    label: "Agree to our terms and conditions",
+                    isCheck: isCheckedCheckbox.value,
+                    onChanged: (bool? value) {
+                      isCheckedCheckbox.value = value!;
+                    },
                   ),
-                  
                 ],
               ),
             ),
@@ -466,30 +501,39 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                               child: Text("Back"),
                             )
                           : SizedBox(),
-                      ElevatedButton(
-                        onPressed: () async {
-                          if (indexOverView  == 0) {
-                            //!!!!!!!!!
+                      ValueListenableBuilder(
+                          valueListenable: isCheckedCheckbox,
+                          builder: (context, value, child) {
+                            return ElevatedButton(
+                              onPressed: indexOverView == 1 &&
+                                      isCheckedCheckbox.value == false
+                                  ? null
+                                  : () async {
+                                      if (indexOverView == 0) {
+                                        //!!!!!!!!!
 
-                            setState(() {
-                              indexOverView += 1;
-                            });
-                          } else if (indexOverView == 2) {
-                            Navigator.pushReplacementNamed(context, ProfileScreen.router);
-                          } else {
-                            await _submit(context);
-                          } 
-                        },
-                        style: ButtonStyle(
-                          padding: MaterialStateProperty.all(
-                            const EdgeInsets.symmetric(
-                                horizontal: 60, vertical: 20),
-                          ),
-                        ),
-                        child: indexOverView !=  2?  (indexOverView == 1
-                            ? const Text("Get Started")
-                            : const Text("Next")) : Text("Done"),
-                      ),
+                                        setState(() {
+                                          indexOverView += 1;
+                                        });
+                                      } else if (indexOverView == 2) {
+                                        Navigator.pop(context);
+                                      } else {
+                                        await _submit(context);
+                                      }
+                                    },
+                              style: ButtonStyle(
+                                padding: MaterialStateProperty.all(
+                                  const EdgeInsets.symmetric(
+                                      horizontal: 60, vertical: 20),
+                                ),
+                              ),
+                              child: indexOverView != 2
+                                  ? (indexOverView == 1
+                                      ? const Text("Get Started")
+                                      : const Text("Next"))
+                                  : Text("Done"),
+                            );
+                          }),
                     ],
                   ),
                 ),

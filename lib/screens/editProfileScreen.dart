@@ -4,9 +4,12 @@ import 'package:app/screens/updateProfileDataScreen.dart';
 import 'package:app/widgets/LinkWidget.dart';
 import 'package:app/widgets/SafeScreen.dart';
 import 'package:app/widgets/appBarWidget.dart';
+import 'package:app/widgets/inputTextFieldWidget.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -19,6 +22,8 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
+  final ImagePicker _picker = ImagePicker();
+
   TextEditingController _firstNameInput = TextEditingController();
   TextEditingController _secondNameInput = TextEditingController();
   TextEditingController _emailInput = TextEditingController();
@@ -28,7 +33,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _loading = false;
 
-  final Map data = {};
+  final Map<String, dynamic> data = {};
 
   @override
   void initState() {
@@ -36,14 +41,44 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.initState();
   }
 
-  Future _submit() async {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    bool validation = _formKey.currentState!.validate();
-    _loading = true;
+  Future changeProfileImage() async {
+    UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
 
-    if (validation) {
-      print("Good ! we will work in this later");
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      await userProvider.changeProfileImage(image.path);
     }
+  }
+
+  Future removeProfileImage() async {
+    UserProvider userProvider = Provider.of<UserProvider>(context);
+  }
+
+  Future _submit() async {
+    EasyLoading.show(maskType: EasyLoadingMaskType.black);
+
+    try {
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      bool validation = _formKey.currentState!.validate();
+      _loading = true;
+
+      if (validation) {
+        _formKey.currentState!.save();
+        print(data);
+        bool done = await userProvider.updateUserInfo(context, data);
+        assert(done != false);
+
+        EasyLoading.showSuccess("");
+
+        print("Good ! we will work in this later");
+      }
+    } catch (err) {
+      print(err);
+      EasyLoading.showError("");
+    }
+    await Future.delayed(Duration(milliseconds: 1500));
+    EasyLoading.dismiss();
   }
 
   @override
@@ -61,11 +96,74 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           Expanded(
             child: ListView(
               children: [
-                SizedBox(
+                const SizedBox(
                   height: 30,
                 ),
                 Column(
                   children: [
+                    GestureDetector(
+                      onTap: () {
+                        //   changeProfileImage();
+                        showDialog(
+                          context: context,
+                          builder: (context) => SimpleDialog(
+                            //   title: const Text(''),
+                            children: <Widget>[
+                              SimpleDialogOption(
+                                onPressed: () async {
+                                  await changeProfileImage();
+                                  Navigator.pop(context);
+                                },
+                                child: const Text('change profile picture'),
+                              ),
+                              SimpleDialogOption(
+                                onPressed: () async {
+                                  await userProvider.removeProfileImage();
+                                  Navigator.pop(context);
+                                },
+                                child: const Text('Delete profile picture'),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      child: Stack(
+                        children: [
+                          CircleAvatar(
+                            child: userProvider.currentUser!.profileImagePath ==
+                                    null
+                                ? Icon(
+                                    Icons.person,
+                                    size: 50,
+                                  )
+                                : null,
+                            backgroundImage: userProvider
+                                        .currentUser!.profileImagePath !=
+                                    null
+                                ? NetworkImage(
+                                    userProvider.currentUser!.profileImagePath!)
+                                : null,
+                            backgroundColor: Color(
+                                userProvider.currentUser?.profileColor ??
+                                    0xFFFFE082),
+                            radius: 40,
+                          ),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: const BoxDecoration(
+                                  color: Colors.black38,
+                                  borderRadius: BorderRadius.only(
+                                      bottomLeft: Radius.circular(100),
+                                      bottomRight: Radius.circular(100))),
+                              child: Center(child: const Text("Edit")),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
                     Container(
                       height: 200,
                       padding: EdgeInsets.all(20),
@@ -74,34 +172,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         child: SizedBox.expand(
                           child: Column(
                             children: [
-                              TextFormField(
-                                controller: _firstNameInput,
+                              InputTextFieldWidget(
+                                text: userProvider.currentUser!.name,
                                 keyboardType: TextInputType.name,
-                                obscureText: false,
-                                decoration: const InputDecoration(
-                                  suffixText: "Fisrt Name",
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  prefixIcon: Icon(
-                                    Icons.person,
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Colors.black45,
-                                      width: 1,
-                                    ),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(16)),
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Colors.black45,
-                                      width: 1,
-                                    ),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(16)),
-                                  ),
-                                ),
+                                labelText: "Name",
+                                prefixIcon: Icons.person,
                                 validator: (val) {
                                   if (val == null)
                                     return "Use 3 characters or more for your name";
@@ -113,55 +188,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   return null;
                                 },
                                 onSaved: (val) {
-                                  data["name1"] = val?.trim();
+                                  data["name"] = val?.trim();
                                 },
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Expanded(
-                                child: TextFormField(
-                                  controller: _secondNameInput,
-                                  keyboardType: TextInputType.name,
-                                  obscureText: false,
-                                  decoration: const InputDecoration(
-                                    suffixText: "Second Name",
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    prefixIcon: Icon(
-                                      Icons.person,
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.black45,
-                                        width: 1,
-                                      ),
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(16)),
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.black45,
-                                        width: 1,
-                                      ),
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(16)),
-                                    ),
-                                  ),
-                                  validator: (val) {
-                                    if (val == null)
-                                      return "Use 3 characters or more for your name";
-                                    if (val.trim() == "" || val.length < 3)
-                                      return "Use 3 characters or more for your name";
-                                    //   if (val.contains(r'[A-Za-z]')) {
-                                    //     return "The name should only consist of letters";
-                                    //   }
-                                    return null;
-                                  },
-                                  onSaved: (val) {
-                                    data["name2"] = val?.trim();
-                                  },
-                                ),
                               ),
                             ],
                           ),
@@ -170,10 +198,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
-                Padding(
+                Container(
+                  decoration: const BoxDecoration(
+                      // border: ,
+                      ),
+                  padding: const EdgeInsets.all(20),
+                  child: ElevatedButton(
+                    child: const Text("save"),
+                    onPressed: () async {
+                      await _submit();
+                    },
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                const Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Divider(
                     height: 1,
@@ -182,19 +225,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ListTile(
                   title: Text("Email"),
                   subtitle: Text(userProvider.currentUser!.email ?? ""),
-                  trailing: LinkWidget(
-                    text: userProvider.currentUser!.email == null
-                        ? "Add"
-                        : "Edit",
-                    onPressed: () {},
-                  ),
-                  onTap: () {
-                    print("dfdfdf");
-                    Navigator.pushNamed(context, UpdateProfileDataScreen.router,
-                        arguments: true);
-                  },
+                  trailing: userProvider.currentUser!.providerId == "password"
+                      ? LinkWidget(
+                          text: userProvider.currentUser!.email == null
+                              ? "Add"
+                              : "Edit",
+                          onPressed: () {},
+                        )
+                      : null,
+                  onTap: userProvider.currentUser!.providerId == "password"
+                      ? () {
+                          print("dfdfdf");
+                          Navigator.pushNamed(
+                              context, UpdateProfileDataScreen.router,
+                              arguments: true);
+                        }
+                      : null,
                 ),
-                Padding(
+                const Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Divider(
                     height: 1,
@@ -215,20 +263,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         arguments: false);
                   },
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
                   child: Divider(
                     height: 1,
-                  ),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                      // border: ,
-                      ),
-                  padding: EdgeInsets.all(20),
-                  child: ElevatedButton(
-                    child: Text("save"),
-                    onPressed: () {},
                   ),
                 ),
               ],

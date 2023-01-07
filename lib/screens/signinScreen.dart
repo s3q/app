@@ -1,4 +1,6 @@
 import 'package:app/providers/userProvider.dart';
+import 'package:app/screens/accountCreatedScreen.dart';
+import 'package:app/screens/forgotPasswordScreen.dart';
 import 'package:app/screens/homeScreen.dart';
 import 'package:app/screens/policyAndPrivacyScreen.dart';
 import 'package:app/screens/termsAndConditionsScreen.dart';
@@ -9,6 +11,7 @@ import 'package:app/widgets/inputTextFieldWidget.dart';
 import 'package:app/widgets/textButtonWidget.dart';
 import 'package:email_validator/email_validator.dart';
 import "package:flutter/material.dart";
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 import "package:easy_localization/easy_localization.dart";
 
@@ -29,42 +32,57 @@ class _SigninScreenState extends State<SigninScreen> {
   bool _islogin = true;
 
   void _submit(context) async {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    bool validation = _formKey.currentState!.validate();
-    bool done = false;
+    EasyLoading.show(maskType: EasyLoadingMaskType.black);
+    try {
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      bool validation = _formKey.currentState!.validate();
+      bool done = false;
 
-    if (validation) {
-      _formKey.currentState!.save();
-      if (data != {}) {
-        if (_islogin) {
-          done = await userProvider.login(
-            context,
-            email: data["email"],
-            password: data["password1"],
-          );
-        } else {
-          if (data["password1"] != data["password2"]) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              backgroundColor: Theme.of(context).errorColor,
-              content: const Text("Those passwords didn't match. Try again."),
-            ));
-            return;
+      if (validation) {
+        _formKey.currentState!.save();
+        if (data != {}) {
+          if (_islogin) {
+            done = await userProvider.login(
+              context,
+              email: data["email"],
+              password: data["password1"],
+            );
+          } else {
+            if (data["password1"] != data["password2"]) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                backgroundColor: Theme.of(context).errorColor,
+                content: const Text("Those passwords didn't match. Try again."),
+              ));
+              return;
+            }
+            done = await userProvider.signup(
+              context,
+              email: data["email"],
+              password: data["password1"],
+              name: "${data["name1"]} ${data["name2"]}",
+            );
           }
-          done = await userProvider.signup(
-            context,
-            email: data["email"],
-            password: data["password1"],
-            name: "${data["name1"]} ${data["name2"]}",
-          );
-        }
-        if (done) {
-          await Navigator.pushNamedAndRemoveUntil(context, HomeScreen.router,
+          assert(done != false);
+
+          EasyLoading.showSuccess("");
+          Navigator.pushNamedAndRemoveUntil(context, HomeScreen.router,
               (route) {
             return false;
           });
         }
       }
+    } catch (err) {
+      print(err);
+      EasyLoading.showError("");
     }
+    await Future.delayed(Duration(milliseconds: 1500));
+    EasyLoading.dismiss();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
@@ -190,13 +208,14 @@ class _SigninScreenState extends State<SigninScreen> {
                               },
                             ),
                             if (_islogin) ...[
-                              SizedBox(
+                              const SizedBox(
                                 height: 10,
                               ),
                               TextButtonWidget(
-                                  text: "forget password?",
+                                  text: "forgot password?",
                                   onPressed: () {
-                                    print("yes ...............");
+                                    Navigator.pushNamed(
+                                        context, ForgotPasswordScreen.router);
                                   }),
                             ],
 
@@ -238,37 +257,38 @@ class _SigninScreenState extends State<SigninScreen> {
                             SizedBox(
                               height: 30,
                             ),
-                           
-                                Text(
-                                  _islogin
-                                      ? "Have an account?"
-                                      : "Don't have an account?",
-                                  // style: Theme.of(context).textTheme.bodyLarge,
-                                ),
 
-                                SizedBox(height: 20,),
-                                OutlinedButton(onPressed: () {
+                            Text(
+                              _islogin
+                                  ? "Have an account?"
+                                  : "Don't have an account?",
+                              // style: Theme.of(context).textTheme.bodyLarge,
+                            ),
 
-                                    setState(() {
-                                       _islogin = !_islogin;
-                                    });
-                                }, child: Text( _islogin ? "Login" : "Sign up")),
-                                // LinkWidget(
-                                //     text: _islogin ? "Login" : "Sign up",
-                                //     onPressed: () {
-                                //       setState(() {
-                                //         _islogin = !_islogin;
-                                //       });
-                                //     })
-                       
+                            SizedBox(
+                              height: 20,
+                            ),
+                            OutlinedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _islogin = !_islogin;
+                                  });
+                                },
+                                child: Text(_islogin ? "Login" : "Sign up")),
+                            // LinkWidget(
+                            //     text: _islogin ? "Login" : "Sign up",
+                            //     onPressed: () {
+                            //       setState(() {
+                            //         _islogin = !_islogin;
+                            //       });
+                            //     })
+
                             SizedBox(
                               height: 40,
                             ),
                           ],
                         ),
                       ),
-
-
                       if (!_islogin)
                         Align(
                           alignment: Alignment.bottomCenter,

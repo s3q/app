@@ -1,3 +1,4 @@
+import 'package:app/helpers/adHelper.dart';
 import 'package:app/helpers/appHelper.dart';
 import 'package:app/helpers/colorsHelper.dart';
 import 'package:app/providers/activityProvider.dart';
@@ -11,6 +12,8 @@ import 'package:app/widgets/categoryCardWidget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import "package:flutter/material.dart";
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -31,20 +34,17 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   List<Widget> activitesCards = [
     SizedBox(),
   ];
+  Map<int, BannerAd> _bannersAd = {};
 
   Future loadActivites() async {
     ActivityProvider activityProvider =
         Provider.of<ActivityProvider>(context, listen: false);
 
-     activityProvider.topActivitesFillter().then((snapshot) {
-      print(snapshot);
+    await activityProvider.topActivitesFillter().then((snapshot) {
       List<ActivitySchema> data = snapshot as List<ActivitySchema>;
-      print(data);
 
       setState(() {
         activitesCards.addAll(data.map((d) {
-          print(d.images);
-
           return ActivityCardWidget(
               activity: d,
               onPressed: () {
@@ -61,10 +61,45 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    // TODO: implement initState<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     super.initState();
     Future.delayed(Duration.zero, () => loadActivites());
+
+    BannerAd(
+      adUnitId: AdHelper.bannerAdUnitId,
+      request: AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            _bannersAd[0] = ad as BannerAd;
+          });
+        },
+        onAdFailedToLoad: (ad, err) {
+          print('Failed to load a banner ad: ${err.message}');
+          ad.dispose();
+        },
+      ),
+    ).load();
+
+    BannerAd(
+      adUnitId: AdHelper.bannerAdUnitId,
+      request: AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            _bannersAd[1] = (ad as BannerAd);
+          });
+        },
+        onAdFailedToLoad: (ad, err) {
+          print('Failed to load a banner ad: ${err.message}');
+          ad.dispose();
+        },
+      ),
+    ).load();
+    // Banner1.load();
 
 //  WidgetsBinding.instance
 //         .addPostFrameCallback((_) => loadActivites());
@@ -79,8 +114,26 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+
+    _bannersAd[0]?.dispose();
+    _bannersAd[1]?.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     ActivityProvider activityProvider = Provider.of<ActivityProvider>(context);
+
+    // final AdWidget adWidget = AdWidget(ad: Banner1);
+
+//     final Container adContainer = Container(
+//   alignment: Alignment.center,
+//   child: adWidget,
+//   width: Banner1.size.width.toDouble(),
+//   height: Banner1.size.height.toDouble(),
+// );
 
     return ListView(
       children: [
@@ -136,6 +189,43 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       ],
                     ),
                     Align(
+                      alignment: AlignmentDirectional(0, -.7),
+                      child: Container(
+                        height: 120,
+                        width: MediaQuery.of(context).size.width,
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 30),
+                                child: Text(
+                                  "Explore",
+                                  style: Theme.of(context).textTheme.titleLarge,
+                                ),
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  ElevatedButton.icon(
+                                      onPressed: () {
+                                        Navigator.pushNamed(
+                                            context, SearchScreen.router);
+                                      },
+                                      icon: Icon(Icons.local_activity_rounded),
+                                      label: Text("Activity")),
+                                  ElevatedButton.icon(
+                                      onPressed: () {},
+                                      icon: Icon(Icons.home_filled),
+                                      label: Text("Chalets")),
+                                ],
+                              )
+                            ]),
+                      ),
+                    ),
+                    Align(
                       alignment: AlignmentDirectional(.8, -.9),
                       child: SmoothPageIndicator(
                         controller: pageViewController,
@@ -180,7 +270,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                   child: InkWell(
                     onTap: () async {
                       await Navigator.pushNamed(context, SearchScreen.router,
-                          arguments: activityProvider.topActivitiesList.values.toList());
+                          arguments: activityProvider.topActivitiesList.values
+                              .toList());
                     },
                     focusColor: Colors.white12,
                     child: Hero(
@@ -261,13 +352,29 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         //     child: Text("sign in")),
 
         SizedBox(
+          height: 20,
+        ),
+
+        //^---------------------- adverticment -----------------------
+
+        if (_bannersAd[0] != null)
+          Container(
+            width: _bannersAd[0]!.size.width.toDouble(),
+            height: _bannersAd[0]!.size.height.toDouble(),
+            child: AdWidget(ad: _bannersAd[0]!),
+          ),
+
+        //^----------------------------------------------------------
+
+        SizedBox(
           height: 30,
         ),
+
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
           child: Text(
-            'cat'.tr(),
-            style: Theme.of(context).textTheme.headlineMedium,
+            'catogry'.tr(),
+            style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
         SingleChildScrollView(
@@ -281,13 +388,31 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                 return CategoryCardWidget(
                     imagePath: e["imagepath"],
                     title: e["title"],
-                    onPressed: () {
-                      print(e["key"]);
+                    onPressed: () async {
+                      EasyLoading.show();
+                      try {
+                        HttpsCallableResult r = await FirebaseFunctions.instance
+                            .httpsCallable("SearchForActivity")
+                            .call(e["title"]);
+
+                        List<ActivitySchema> activitiesList = [];
+                        for (var activityMap in r.data) {
+                          activitiesList
+                              .add(ActivitySchema.toSchema(activityMap));
+                        }
+
+                        Navigator.pushNamed(context, SearchScreen.router,
+                            arguments: activitiesList);
+                      } catch (err) {
+                        print(err);
+                      }
+                      EasyLoading.dismiss();
                     });
               }).toList(),
             ),
           ),
         ),
+        // adContainer,
         SizedBox(
           height: 30,
         ),
@@ -295,7 +420,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
           child: Text(
             'Top things to do',
-            style: Theme.of(context).textTheme.headlineMedium,
+            style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
 
@@ -311,18 +436,24 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         //       );
         //     }),
 
-        TextButton(
-          onPressed: () {
-            Navigator.pushReplacementNamed(context, OverviewScreen.router);
-          },
-          child: Text("signout"),
+        SizedBox(
+          height: 20,
         ),
 
-        TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, AddActivityScreen.router);
-            },
-            child: Text("add activity"))
+        //^---------------------- adverticment -----------------------
+
+        if (_bannersAd[1] != null)
+          Container(
+            width: _bannersAd[1]!.size.width.toDouble(),
+            height: _bannersAd[1]!.size.height.toDouble(),
+            child: AdWidget(ad: _bannersAd[1]!),
+          ),
+
+        //^----------------------------------------------------------
+
+        SizedBox(
+          height: 30,
+        ),
       ],
     );
   }

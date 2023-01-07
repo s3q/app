@@ -1,5 +1,6 @@
 import 'package:app/helpers/colorsHelper.dart';
 import 'package:app/providers/userProvider.dart';
+import 'package:app/screens/accountDeletedScreen.dart';
 import 'package:app/screens/getStartedScreen.dart';
 import 'package:app/screens/homeScreen.dart';
 import 'package:app/widgets/SafeScreen.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -64,41 +66,39 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
               child: Column(
                 children: [
                   if (userProvider.currentUser!.providerId == "password")
-                      Column(
-                          children: [
-                            InputTextFieldWidget(
-                              //   obscureText: true,
-                              labelText: "Password",
-                              prefixIcon: Icons.key_rounded,
-                              validator: (val) {
-                                if (val == null)
-                                  return "Use 6 characters or more for your password";
-                                if (val.trim() == "" || val.length < 6)
-                                  return "Use 6 characters or more for your password";
+                    Column(
+                      children: [
+                        InputTextFieldWidget(
+                          //   obscureText: true,
+                          labelText: "Password",
+                          prefixIcon: Icons.key_rounded,
+                          validator: (val) {
+                            if (val == null)
+                              return "Use 6 characters or more for your password";
+                            if (val.trim() == "" || val.length < 6)
+                              return "Use 6 characters or more for your password";
 
-                                return null;
-                              },
-                              onChanged: (val) {
-                                data["password1"] = val.trim();
-                              },
-                              onSaved: (val) {
-                                data["password1"] = val?.trim();
-                              },
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            TextButtonWidget(
-                                text: "forget password?",
-                                onPressed: () {
-                                  print("yes ...............");
-                                }),
-                          ],
+                            return null;
+                          },
+                          onChanged: (val) {
+                            data["password1"] = val.trim();
+                          },
+                          onSaved: (val) {
+                            data["password1"] = val?.trim();
+                          },
                         ),
-                      
-
+                        SizedBox(
+                          height: 10,
+                        ),
+                        TextButtonWidget(
+                            text: "forget password?",
+                            onPressed: () {
+                              print("yes ...............");
+                            }),
+                      ],
+                    ),
                   Text(
-                          "Your accoiunt will deleted be carful You cant restore data or back to this account."),
+                      "Your accoiunt will deleted be carful You cant restore data or back to this account."),
                   SizedBox(
                     height: 30,
                   ),
@@ -106,21 +106,34 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                       style: ElevatedButton.styleFrom(
                           primary: ColorsHelper.orange),
                       onPressed: () async {
-                        bool islogin = false;
-                        if (userProvider.currentUser!.providerId ==
-                            "password") {
-                          islogin = await _submit(context);
-                        } else {
-                          islogin = true;
-                        }
-                        if (islogin) {
-                          print(islogin);
-                          bool done = await userProvider.deleteAccount(context);
-                          if (done) {
-                            Navigator.pushNamedAndRemoveUntil(context,
-                                GetStartedScreen.router, (route) => false);
+                        try {
+                          bool islogin = false;
+                          if (userProvider.currentUser!.providerId ==
+                              "password") {
+                            islogin = await _submit(context);
+                          } else {
+                            islogin = true;
                           }
+                          if (islogin) {
+                            print(islogin);
+                            bool done =
+                                await userProvider.deleteAccount(context);
+                            assert(done != false);
+                            // Navigator.pushNamedAndRemoveUntil(context,
+                            //     GetStartedScreen.router, (route) => false);
+                            //   Navigator.pushReplacementNamed(context, AccountDeletedScreen.router);
+                            EasyLoading.showSuccess("Deleted");
+                            Navigator.pushNamedAndRemoveUntil(
+                                context, AccountDeletedScreen.router, (route) {
+                              return false;
+                            });
+                          }
+                        } catch (err) {
+                          print(err);
+                          EasyLoading.showError("");
                         }
+                        await Future.delayed(Duration(milliseconds: 1500));
+                        EasyLoading.dismiss();
                       },
                       icon: Icon(Icons.delete),
                       label: Text("delete")),

@@ -2,6 +2,9 @@ import 'package:app/helpers/colorsHelper.dart';
 import 'package:app/providers/activityProvider.dart';
 import 'package:app/providers/userProvider.dart';
 import 'package:app/schemas/activitySchema.dart';
+import 'package:app/screens/activityDetailsScreen.dart';
+import 'package:app/widgets/activityCardWidget.dart';
+import 'package:app/widgets/activityCardWishlistWidget.dart';
 import 'package:app/widgets/textIocnActWidget.dart';
 import 'package:flutter/foundation.dart';
 import "package:flutter/material.dart";
@@ -18,13 +21,13 @@ class _WishlistScreenState extends State<WishlistScreen> {
   @override
   Widget build(BuildContext context) {
     UserProvider userProvider = Provider.of<UserProvider>(context);
-    List<ActivitySchema>? wishlist =
-        userProvider.currentUser?.wishlist as List<ActivitySchema>? ?? [];
     ActivityProvider activityProvider = Provider.of<ActivityProvider>(context);
 
+    List? wishlist = userProvider.currentUser?.wishlist as List?;
     return Padding(
       padding: const EdgeInsets.all(10),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             "Wishlist",
@@ -33,134 +36,61 @@ class _WishlistScreenState extends State<WishlistScreen> {
           SizedBox(
             height: 30,
           ),
-          //   if (wishlist != null)
-          Expanded(
-            child: ListView.builder(
-                itemCount: wishlist.length,
-                itemBuilder: (context, index) {
-                  return FutureBuilder(
-                      future: activityProvider
-                          .fetchActivityWStore(wishlist[index].Id),
-                      builder: (context, snapshot) {
-                        ActivitySchema? activity =
-                            snapshot.data as ActivitySchema?;
+          if (wishlist != null)
+            Expanded(
+              child: ListView.builder(
+                  itemCount: wishlist?.length,
+                  itemBuilder: (context, index) {
+                    return FutureBuilder(
+                        future: activityProvider
+                            .fetchActivityWStore(wishlist?[index]),
+                        builder: (context, snapshot) {
+                          ActivitySchema? activity =
+                              snapshot.data as ActivitySchema?;
 
-                        if (snapshot.connectionState ==
-                                ConnectionState.waiting ||
-                            !snapshot.hasData ||
-                            activity != null) {
-                          return Card(
-                              child: Container(
-                            width: 200,
-                            height: 200,
-                            child: Row(
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: ColorsHelper.grey),
-                                  width: 200,
-                                  height: 200,
-                                  //   child: Image.network(),
-                                ),
-                                Column(children: []),
-                              ],
-                            ),
-                          ));
-                        }
-
-                        return GestureDetector(
-                            onTap: () {
-
-                            },
-                          child: Card(
-                              key: Key(activity?.Id ?? ""),
-                            child: Container(
+                          if (snapshot.connectionState ==
+                                  ConnectionState.waiting ||
+                              !snapshot.hasData ||
+                              activity == null) {
+                            return Card(
+                                child: Container(
                               width: 200,
                               height: 200,
                               child: Row(
                                 children: [
                                   Container(
                                     decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: ColorsHelper.grey),
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: ColorsHelper.grey,
+                                    ),
                                     width: 200,
                                     height: 200,
-                                    child: Image.network(activity?.images
-                                        .where(
-                                            (i) => i.toString().contains("main"))
-                                        .toList()[0]),
+                                    //   child: Image.network(),
                                   ),
-                                  Column(children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          activity!.title,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleMedium,
-                                        ),
-                                       IconButton(
-                                icon: Icon(
-                                  userProvider.currentUser!.wishlist!
-                                          .contains(activity.Id)
-                                      ? Icons.favorite
-                                      : Icons.favorite_border,
-                                ),
-                                onPressed: () async {
-                                  if (userProvider.currentUser!.wishlist!
-                                      .contains(activity.Id)) {
-                                    await userProvider
-                                        .removeFromWishlist(activity.Id);
-                                  } else {
-                                     await userProvider
-                                        .addToWishlist(activity.Id, activityProvider);
-                                  }
-                                  setState(() {});
-                                },
-                              ),
-                                      ],
-                                    ),
-                        
-                                      TextIconInfoActWidget(
-                                text: activity.address,
-                                icon: Icons.location_on_rounded,
-                                //  style: Theme.of(context).textTheme.bodySmall,
-                              ),
-                                SizedBox(
-                                height: 10,
-                              ),
-                        
-                                 TextIconInfoActWidget(
-                                    icon: Icons.star_rounded,
-                                    color: ColorsHelper.yellow,
-                                    text: activityProvider
-                                            .previewMark(activity.reviews)
-                                            .toString() +
-                                        "/5",
-                                  ),
-                                 
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text(
-                                    activity.reviews.length.toString() + " reviews",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall
-                                        ?.copyWith(fontSize: 12),
-                                  ),
-                                  ]),
+                                  Column(children: []),
                                 ],
                               ),
-                            ),
-                          ),
-                        );
-                      });
-                }),
-          ),
+                            ));
+                          }
+
+                          return ActivityCardWishlistWidget(
+                              activity: activity,
+                              onPressed: () {
+                                Navigator.pushNamed(
+                                    context, ActivityDetailsScreen.router,
+                                    arguments: activity);
+                              });
+
+                          return ActivityCardWidget(
+                              activity: activity,
+                              onPressed: () {
+                                Navigator.pushNamed(
+                                    context, ActivityDetailsScreen.router,
+                                    arguments: activity);
+                              });
+                        });
+                  }),
+            ),
         ],
       ),
     );

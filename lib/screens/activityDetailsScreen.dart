@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:app/constants/constants.dart';
+import 'package:app/helpers/adHelper.dart';
+import 'package:app/helpers/appHelper.dart';
 import 'package:app/helpers/colorsHelper.dart';
 import 'package:app/providers/activityProvider.dart';
 import 'package:app/providers/chatProvider.dart';
@@ -9,8 +11,10 @@ import 'package:app/schemas/activitySchema.dart';
 import 'package:app/schemas/userSchema.dart';
 import 'package:app/screens/ContactOwnerScreen.dart';
 import 'package:app/screens/massagesScreen.dart';
+import 'package:app/screens/reportActivityScreen.dart';
 import 'package:app/screens/sendReviewScreen.dart';
 import 'package:app/screens/viewReviewsScreen.dart';
+import 'package:app/widgets/DiologsWidgets.dart';
 import 'package:app/widgets/LinkWidget.dart';
 import 'package:app/widgets/googlemapDescWidget.dart';
 import 'package:app/widgets/orginizerActivityBoxWidget.dart';
@@ -18,6 +22,7 @@ import 'package:app/widgets/ratingBarWidget.dart';
 import 'package:app/widgets/textBoxActWidget.dart';
 import 'package:app/widgets/textCardWidget.dart';
 import 'package:app/widgets/textIocnActWidget.dart';
+import 'package:app/widgets/wishlistIconButtonWidget.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:badges/badges.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -25,9 +30,12 @@ import 'package:expandable/expandable.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_share/flutter_share.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -59,7 +67,8 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
 
       // final userProvider = Provider.of<UserProvider>(context, listen: false);
 
-      String s = await chatProvider.addChat(context: context, userId: userId, activityId: activityId);
+      String s = await chatProvider.addChat(
+          context: context, userId: userId, activityId: activityId);
       if (chatProvider.chat != null) {
         if (chatProvider.chat!.users.contains(userId) &&
             chatProvider.chat!.users.contains(userProvider.currentUser!.Id)) {
@@ -70,10 +79,36 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
     }
   }
 
+  Map<int, BannerAd> _bannersAd = {};
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    BannerAd(
+      adUnitId: AdHelper.bannerAdUnitId,
+      request: AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            _bannersAd[0] = ad as BannerAd;
+          });
+        },
+        onAdFailedToLoad: (ad, err) {
+          print('Failed to load a banner ad: ${err.message}');
+          ad.dispose();
+        },
+      ),
+    ).load();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _bannersAd[0]?.dispose();
   }
 
   @override
@@ -81,12 +116,14 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
     final userProvider = Provider.of<UserProvider>(context);
     ActivityProvider activityProvider = Provider.of<ActivityProvider>(context);
     final args = ModalRoute.of(context)?.settings.arguments as ActivitySchema;
+    print(args.storeId);
 
-    if (!init) {
-      Future.delayed(
-          Duration.zero, () => activityProvider.openActivity(args.Id));
-      init = true;
-    }
+    Future.delayed(Duration.zero,
+        () async => await activityProvider.openActivity(args.storeId, args.Id));
+
+    args.images.removeWhere((e) => e == null || e.toString().trim() == "");
+    args.dates
+        .removeWhere((e) => e == null && e == "" && e.runtimeType == String);
 
     return Scaffold(
       //   appBar: AppBar(
@@ -200,20 +237,26 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                                 children: [
                                   IconButton(
                                     icon: const Icon(Icons.share, size: 28),
-                                    onPressed: () {
-                                      //   Navigator.pop(context);
-                                      activityProvider
-                                          .addSharesCountActivity(args.Id);
+                                    onPressed: () async {
+                                      //   Navigator.pop(context);share
+                                      EasyLoading.show();
+                                      String url =
+                                          await AppHelper.buildDynamicLink(
+                                              title: args.title, Id: args.Id);
+                                      await FlutterShare.share(
+                                        title: 'Trippoint Oman || عمان',
+                                        text: args.title,
+                                        linkUrl: url,
+                                      );
+                                      activityProvider.addSharesCountActivity(
+                                          args.storeId, args.Id);
+
+                                      EasyLoading.dismiss();
                                     },
                                   ),
-                                  IconButton(
-                                    icon: const Icon(Icons.favorite_border,
-                                        size: 28),
-                                    onPressed: () {
-                                      //   Navigator.pop(context);
-                                      userProvider.addToWishlist(
-                                          args.Id, activityProvider);
-                                    },
+                                  WishlistIconButtonWidget(
+                                    activityId: args.Id,
+                                    activityStoreId: args.storeId!,
                                   ),
                                 ],
                               ),
@@ -380,7 +423,9 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                           children: [
                             Column(
                               children: args.dates.map((e) {
-                                if (e != null && e != "") {
+                                if (e != null &&
+                                    e != "" &&
+                                    e.runtimeType != String) {
                                   return Container(
                                     margin:
                                         EdgeInsets.symmetric(horizontal: 10),
@@ -435,6 +480,25 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                           ],
                         ),
                       ])),
+
+              SizedBox(
+                height: 20,
+              ),
+
+              //^---------------------- adverticment -----------------------
+
+              if (_bannersAd[0] != null)
+                Container(
+                  width: _bannersAd[0]!.size.width.toDouble(),
+                  height: _bannersAd[0]!.size.height.toDouble(),
+                  child: AdWidget(ad: _bannersAd[0]!),
+                ),
+
+              //^----------------------------------------------------------
+
+              SizedBox(
+                height: 20,
+              ),
 
               Divider(
                 thickness: 2,
@@ -570,7 +634,6 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                       //       arguments: args);
 
                       // !!!!!!!!!!!!!!!!!!!!!!!!
-                      
                     },
                     child: Icon(
                       Icons.open_in_full_rounded,
@@ -641,9 +704,13 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                         RatingBarWidget(
                           onRated: (val) {
                             print(val);
-                            Navigator.pushNamed(
-                                context, SendReviewScreen.router,
-                                arguments: args);
+                            if (userProvider.islogin()) {
+                              Navigator.pushNamed(
+                                  context, SendReviewScreen.router,
+                                  arguments: args);
+                            } else {
+                              DialogWidgets.mustSginin(context);
+                            }
                           },
                           size: 30,
                         ),
@@ -687,7 +754,12 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                 // color: ColorsHelper.blue.shade400,
               ),
 
-              LinkWidget(text: "! Report this listing ", onPressed: () {}),
+              LinkWidget(
+                  text: "! Report this listing ",
+                  onPressed: () {
+                    Navigator.pushNamed(context, ReportActivityScreen.router,
+                        arguments: args.Id);
+                  }),
 
               const SizedBox(
                 height: 80,

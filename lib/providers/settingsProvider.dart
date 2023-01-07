@@ -19,8 +19,13 @@ class SettingsProvider with ChangeNotifier {
 
   Future sendReport(ReportSchema reportSchema) async {
     // if (reportSchema.userId ==
-
-    await store.collection(reportsCollection).add(reportSchema.toMap());
+    try {
+      await store.collection(reportsCollection).add(reportSchema.toMap());
+      return true;
+    } catch (err) {
+      print(err);
+      return false;
+    }
   }
 
   void update(String key, dynamic value) {

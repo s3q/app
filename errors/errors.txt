@@ -1,0 +1,461 @@
+Launching lib\main.dart on SM A505F in debug mode...
+Note: C:\src\flutter\.pub-cache\hosted\pub.dartlang.org\cloud_functions-3.3.8\android\src\main\java\io\flutter\plugins\firebase\functions\FlutterFirebaseFunctionsPlugin.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: C:\src\flutter\.pub-cache\hosted\pub.dartlang.org\firebase_auth-3.7.0\android\src\main\java\io\flutter\plugins\firebase\auth\FlutterFirebaseAuthPlugin.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: C:\src\flutter\.pub-cache\hosted\pub.dartlang.org\google_maps_flutter_android-2.3.0\android\src\main\java\io\flutter\plugins\googlemaps\Convert.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+√  Built build\app\outputs\flutter-apk\app-debug.apk.
+D/FlutterGeolocator(29727): Attaching Geolocator to activity
+D/FlutterGeolocator(29727): Creating service.
+D/FlutterGeolocator(29727): Binding to location service.
+D/FlutterGeolocator(29727): Geolocator foreground service connected
+D/FlutterGeolocator(29727): Initializing Geolocator services
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+D/SharedPreferencesImpl(29727): Time required to fsync /data/user/0/com.example.app/shared_prefs/com.google.android.gms.appid.xml: [<1: 0, <2: 0, <4: 0, <8: 1, <16: 0, <32: 0, <64: 0, <128: 0, <256: 0, <512: 1, <1024: 0, <2048: 0, <4096: 0, <8192: 0, <16384: 0, >=16384: 0]
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+W/com.example.ap(29727): Accessing hidden method Landroid/os/WorkSource;->add(I)Z (greylist,test-api, reflection, allowed)
+W/com.example.ap(29727): Accessing hidden method Landroid/os/WorkSource;->add(ILjava/lang/String;)Z (greylist,test-api, reflection, allowed)
+W/com.example.ap(29727): Accessing hidden method Landroid/os/WorkSource;->get(I)I (greylist, reflection, allowed)
+W/com.example.ap(29727): Accessing hidden method Landroid/os/WorkSource;->getName(I)Ljava/lang/String; (greylist, reflection, allowed)
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+Connecting to VM Service at ws://127.0.0.1:57203/NyLJEdKMUkg=/ws
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/com.example.ap(29727): Thread[6,tid=30243,WaitingInMainSignalCatcherLoop,Thread*=0x772ea71000,peer=0x142829d0,"Signal Catcher"]: reacting to signal 28
+I/com.example.ap(29727):
+I/com.example.ap(29727): SIGSAVEPRF profile save
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/flutter (29727): [🌎 Easy Localization] [DEBUG] Localization initialized
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/flutter (29727): [🌎 Easy Localization] [DEBUG] Start
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/flutter (29727): [🌎 Easy Localization] [DEBUG] Init state
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/flutter (29727): [🌎 Easy Localization] [DEBUG] Build
+I/flutter (29727): [🌎 Easy Localization] [DEBUG] Init Localization Delegate
+I/flutter (29727): [🌎 Easy Localization] [DEBUG] Init provider
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/flutter (29727): [🌎 Easy Localization] [DEBUG] Load Localization Delegate
+I/flutter (29727): [🌎 Easy Localization] [DEBUG] Load asset from assets/translations
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/flutter (29727): e9QmN2XcQfumxjOQZ343X3:APA91bGT7tjZ6b4R0CHa3iOJORwpPaMsmo69HvNmxKTWFkvcGtXLunXqDP4Uhpxw_yMMat8UPUDvXbqiIA7LpWExyd6Uq5hCKLKtsu5OQy9k-yRMD4TuiXvIastYMrgA0noUqbCOAIk0
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+E/flutter (29727): [ERROR:flutter/runtime/dart_vm_initializer.cc(41)] Unhandled Exception: Null check operator used on a null value
+E/flutter (29727): #0      _MMAppState.NotificationPermission
+E/flutter (29727): <asynchronous suspension>
+E/flutter (29727):
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/flutter (29727): null
+I/flutter (29727): null
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/flutter (29727): [🌎 Easy Localization] [WARNING] Localization key [catogry] not found
+I/DynamiteModule(29727): Considering local module com.google.android.gms.ads.dynamite:0 and remote module com.google.android.gms.ads.dynamite:224400003
+I/DynamiteModule(29727): Selected remote version of com.google.android.gms.ads.dynamite, version >= 224400003
+D/DynamitePackage(29727): Instantiated singleton DynamitePackage.
+D/DynamitePackage(29727): Instantiating com.google.android.gms.ads.ChimeraAdManagerCreatorImpl
+I/Ads     (29727): Updating ad debug logging enablement.
+I/Ads     (29727): Use RequestConfiguration.Builder().setTestDeviceIds(Arrays.asList("E057FD0A0A7779B55527EBD27EC88011")) to get test ads on this device.
+W/ConnectionStatusConfig(29727): Dynamic lookup for intent failed for action: com.google.android.gms.leibniz.events.service.START
+W/GmsClient(29727): unable to connect to service: com.google.android.gms.leibniz.events.service.START on com.google.android.gms
+I/WebViewFactory(29727): Loading com.google.android.webview version 102.0.5005.125 (code 500512533)
+I/Gralloc4(29727): mapper 4.x is not supported
+W/Gralloc3(29727): mapper 3.x is not supported
+I/gralloc (29727): Arm Module v1.0
+W/com.example.ap(29727): Accessing hidden method Landroid/os/Trace;->isTagEnabled(J)Z (greylist, reflection, allowed)
+W/com.example.ap(29727): Accessing hidden method Landroid/os/Trace;->traceBegin(JLjava/lang/String;)V (greylist, reflection, allowed)
+W/com.example.ap(29727): Accessing hidden method Landroid/os/Trace;->traceEnd(J)V (greylist, reflection, allowed)
+W/com.example.ap(29727): Accessing hidden method Landroid/os/Trace;->asyncTraceBegin(JLjava/lang/String;I)V (greylist, reflection, allowed)
+W/com.example.ap(29727): Accessing hidden method Landroid/os/Trace;->asyncTraceEnd(JLjava/lang/String;I)V (greylist, reflection, allowed)
+I/cr_WVCFactoryProvider(29727): Loaded version=102.0.5005.125 minSdkVersion=29 isBundle=true multiprocess=true packageId=2
+I/cr_LibraryLoader(29727): Successfully loaded native library
+I/cr_CachingUmaRecorder(29727): Flushed 8 samples from 8 histograms.
+W/ConnectionStatusConfig(29727): Dynamic lookup for intent failed for action: com.google.android.gms.ads.service.CACHE
+I/Choreographer(29727): Skipped 89 frames!  The application may be doing too much work on its main thread.
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+W/Ads     (29727): Update ad debug logging enablement as false
+I/com.example.ap(29727): Background concurrent copying GC freed 57161(5663KB) AllocSpace objects, 35(1416KB) LOS objects, 50% free, 5929KB/11MB, paused 272us total 233.689ms
+W/DynamiteModule(29727): Local module descriptor class for com.google.android.gms.providerinstaller.dynamite not found.
+I/SurfaceControl(29727): nativeRelease nativeObject s[509684711680]
+I/SurfaceControl(29727): nativeRelease nativeObject e[509684711680]
+I/SurfaceControl(29727): assignNativeObject: nativeObject = 0 Surface(name=null)/@0x843c67b / android.view.SurfaceControl.readFromParcel:1117 android.view.IWindowSession$Stub$Proxy.relayout:1820 android.view.ViewRootImpl.relayoutWindow:9005 android.view.ViewRootImpl.performTraversals:3360 android.view.ViewRootImpl.doTraversal:2618 android.view.ViewRootImpl$TraversalRunnable.run:9971 android.view.Choreographer$CallbackRecord.run:1010 android.view.Choreographer.doCallbacks:809 android.view.Choreographer.doFrame:744 android.view.Choreographer$FrameDisplayEventReceiver.run:995
+I/SurfaceControl(29727): nativeRelease nativeObject s[514428844352]
+I/SurfaceControl(29727): nativeRelease nativeObject e[514428844352]
+I/SurfaceControl(29727): nativeRelease nativeObject s[514428844256]
+I/SurfaceControl(29727): nativeRelease nativeObject e[514428844256]
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): Relayout returned: old=(0,0,810,1755) new=(0,0,810,1755) req=(810,1755)0 dur=52 res=0x3 s={true 511730065408} ch=false fn=1
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): updateBoundsLayer: shouldReparent = false t = android.view.SurfaceControl$Transaction@b1f74e3 sc = Surface(name=Bounds for - com.example.app/com.example.app.MainActivity@0)/@0xc941ee0 frame = 1
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/DynamiteModule(29727): Considering local module com.google.android.gms.providerinstaller.dynamite:0 and remote module com.google.android.gms.providerinstaller.dynamite:0
+W/ProviderInstaller(29727): Failed to load providerinstaller module: No acceptable module com.google.android.gms.providerinstaller.dynamite found. Local version is 0 and remote version is 0.
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] cancelDraw io.flutter.embedding.android.FlutterActivityAndFragmentDelegate$2@9772c98  isViewVisible: true
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] pd() Asnyc report
+I/SurfaceView(29727): setParentSpaceRectangle: useBLAST = false position = Rect(0, 0 - 810, 1726) frameNumber = 1 t = android.view.SurfaceControl$Transaction@9788d40
+I/SurfaceView(29727): applySurfaceTransforms: t = android.view.SurfaceControl$Transaction@9788d40 surfaceControl = Surface(name=SurfaceView - com.example.app/com.example.app.MainActivity@f4ade0a@0)/@0x2ddd479 frame = 1
+I/SurfaceView(29727): applySurfaceTransforms: postScaleX = 1.0 postScaleY = 1.0
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] pdf(0) 1 android.view.ViewRootImpl.lambda$performDraw$1$ViewRootImpl:4668 android.view.-$$Lambda$ViewRootImpl$DJd0VUYJgsebcnSohO6h8zc_ONI.run:6 android.os.Handler.handleCallback:938
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): [DP] rdf()
+V/NativeCrypto(29727): Registering com/google/android/gms/org/conscrypt/NativeCrypto's 295 native methods...
+I/ViewRootImpl@4fcc2aa[MainActivity](29727): MSG_WINDOW_FOCUS_CHANGED 1 1
+D/InputMethodManager(29727): prepareNavigationBarInfo() DecorView@40bce23[MainActivity]
+D/InputMethodManager(29727): getNavigationBarColor() -16711423
+D/InputMethodManager(29727): prepareNavigationBarInfo() DecorView@40bce23[MainActivity]
+D/InputMethodManager(29727): getNavigationBarColor() -16711423
+V/InputMethodManager(29727): Starting input: tba=com.example.app ic=null mNaviBarColor -16711423 mIsGetNaviBarColorSuccess true , NavVisible : true , NavTrans : false
+D/InputMethodManager(29727): startInputInner - Id : 0
+I/InputMethodManager(29727): startInputInner - mService.startInputOrWindowGainedFocus
+W/com.example.ap(29727): Accessing hidden method Ljava/security/spec/ECParameterSpec;->getCurveName()Ljava/lang/String; (greylist, reflection, allowed)
+D/InputTransport(29727): Input channel constructed: 'ClientS', fd=154
+D/InputMethodManager(29727): prepareNavigationBarInfo() DecorView@40bce23[MainActivity]
+D/InputMethodManager(29727): getNavigationBarColor() -16711423
+V/InputMethodManager(29727): Starting input: tba=com.example.app ic=null mNaviBarColor -16711423 mIsGetNaviBarColorSuccess true , NavVisible : true , NavTrans : false
+D/InputMethodManager(29727): startInputInner - Id : 0
+I/ProviderInstaller(29727): Installed default security provider GmsCore_OpenSSL
+I/SurfaceControl(29727): nativeRelease nativeObject s[509684710816]
+I/SurfaceControl(29727): nativeRelease nativeObject e[509684710816]
+I/SurfaceControl(29727): nativeRelease nativeObject s[509684711680]
+I/SurfaceControl(29727): nativeRelease nativeObject e[509684711680]
+W/ConnectionStatusConfig(29727): Dynamic lookup for intent failed for action: com.google.android.gms.ads.service.START
+I/com.example.ap(29727): Background young concurrent copying GC freed 23804(2250KB) AllocSpace objects, 13(2856KB) LOS objects, 44% free, 6758KB/11MB, paused 337us total 109.787ms
+W/com.example.ap(29727): Accessing hidden field Ljava/net/Socket;->impl:Ljava/net/SocketImpl; (greylist, reflection, allowed)
+W/com.example.ap(29727): Accessing hidden method Ldalvik/system/CloseGuard;->get()Ldalvik/system/CloseGuard; (greylist,core-platform-api, linking, allowed)
+W/com.example.ap(29727): Accessing hidden method Ldalvik/system/CloseGuard;->open(Ljava/lang/String;)V (greylist,core-platform-api, linking, allowed)
+W/com.example.ap(29727): Accessing hidden method Landroid/media/AudioManager;->getOutputLatency(I)I (greylist, reflection, allowed)
+W/com.example.ap(29727): Accessing hidden method Ljava/security/spec/ECParameterSpec;->setCurveName(Ljava/lang/String;)V (greylist, reflection, allowed)
+W/cr_media(29727): Requires BLUETOOTH permission
+W/com.example.ap(29727): Accessing hidden method Ldalvik/system/BlockGuard;->getThreadPolicy()Ldalvik/system/BlockGuard$Policy; (greylist,core-platform-api, linking, allowed)
+W/com.example.ap(29727): Accessing hidden method Ldalvik/system/BlockGuard$Policy;->onNetwork()V (greylist, linking, allowed)
+I/flutter (29727): [🌎 Easy Localization] [WARNING] Localization key [catogry] not found
+D/SharedPreferencesImpl(29727): Time required to fsync /data/user/0/com.example.app/shared_prefs/admob.xml: [<1: 0, <2: 0, <4: 0, <8: 1, <16: 0, <32: 0, <64: 0, <128: 0, <256: 0, <512: 1, <1024: 0, <2048: 0, <4096: 0, <8192: 0, <16384: 0, >=16384: 0]
+I/System.out(29727): (HTTPLog)-Static: isSBSettingEnabled false
+I/System.out(29727): (HTTPLog)-Static: isSBSettingEnabled false
+I/System.out(29727): (HTTPLog)-Static: isSBSettingEnabled false
+I/System.out(29727): (HTTPLog)-Static: isSBSettingEnabled false
+I/flutter (29727): [🌎 Easy Localization] [WARNING] Localization key [catogry] not found
+I/PlatformViewsController(29727): Hosting view in view hierarchy for platform view: 0
+W/Gralloc4(29727): allocator 3.x is not supported
+W/Gralloc3(29727): allocator 3.x is not supported
+E/FrameEvents(29727): updateAcquireFence: Did not find frame.
+E/FrameEvents(29727): updateAcquireFence: Did not find frame.
+E/FrameEvents(29727): updateAcquireFence: Did not find frame.
+E/FrameEvents(29727): updateAcquireFence: Did not find frame.
+I/System.out(29727): (HTTPLog)-Static: isSBSettingEnabled false
+I/System.out(29727): (HTTPLog)-Static: isSBSettingEnabled false
+E/FrameEvents(29727): updateAcquireFence: Did not find frame.
+I/Choreographer(29727): Skipped 44 frames!  The application may be doing too much work on its main thread.
+E/FrameEvents(29727): updateAcquireFence: Did not find frame.
+E/FrameEvents(29727): updateAcquireFence: Did not find frame.
+E/FrameEvents(29727): updateAcquireFence: Did not find frame.
+E/FrameEvents(29727): updateAcquireFence: Did not find frame.
+E/FrameEvents(29727): updateAcquireFence: Did not find frame.
+E/FrameEvents(29727): updateAcquireFence: Did not find frame.
+E/FrameEvents(29727): updateAcquireFence: Did not find frame.
+E/FrameEvents(29727): updateAcquireFence: Did not find frame.
+E/FrameEvents(29727): updateAcquireFence: Did not find frame.
+E/FrameEvents(29727): updateAcquireFence: Did not find frame.
+E/FrameEvents(29727): updateAcquireFence: Did not find frame.
+E/FrameEvents(29727): updateAcquireFence: Did not find frame.
+E/FrameEvents(29727): updateAcquireFence: Did not find frame.
+E/FrameEvents(29727): updateAcquireFence: Did not find frame.
+E/FrameEvents(29727): updateAcquireFence: Did not find frame.
+E/FrameEvents(29727): updateAcquireFence: Did not find frame.

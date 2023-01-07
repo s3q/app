@@ -49,12 +49,13 @@ class ChatScreen extends StatelessWidget {
                     );
                   }
 
-                  if (chatProvider.chats == null) {
+                  if (chatProvider.chats == null || chatProvider.chats == []) {
                     return const Center(
                       child: Text("No chats"),
                     );
                   }
 
+                 
                   return Padding(
                     padding: const EdgeInsets.all(10),
                     child: ListView(
@@ -66,13 +67,9 @@ class ChatScreen extends StatelessWidget {
                         Column(
                           children: [
                             ...chatProvider.chats.map((e) {
-                              print("dddddddddddddddddddddd");
-                              print(e.users);
-                              print(auth.currentUser);
+                          
                               String userId = e.users.singleWhere(
                                   (id) => id != auth.currentUser!.uid);
-
-                              print(userId);
 
                               if (userId != null) {
                                 return ChatBoxWidget(

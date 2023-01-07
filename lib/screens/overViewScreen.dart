@@ -122,6 +122,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
                           settingsProvider.update(
                               "language", const Locale("en"));
                           context.setLocale(const Locale("en"));
+                          
                         },
                         style: ElevatedButton.styleFrom(
                           shape: context.locale.toString() == "en"

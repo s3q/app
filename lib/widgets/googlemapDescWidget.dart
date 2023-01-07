@@ -20,14 +20,15 @@ class GooglemapDescWidget extends StatefulWidget {
 }
 
 class _GooglemapDescWidgetState extends State<GooglemapDescWidget> {
-  final Completer<GoogleMapController> _controller = Completer();
+     final Completer<GoogleMapController> _controller =
+      Completer<GoogleMapController>();
 
-  late CameraPosition initialCameraPosition;
+  late CameraPosition  initialCameraPosition = CameraPosition(target: widget.latlan, zoom: 10);
 
   late Marker _marker;
   @override
   Widget build(BuildContext context) {
-    initialCameraPosition = CameraPosition(target: widget.latlan, zoom: 30);
+   
 
     _marker = Marker(
       markerId: MarkerId(Uuid().v4()),

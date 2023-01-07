@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
+	<!-- video player lib -->
+	<key>NSAppTransportSecurity</key>
+
 	<dict>
 		<key>CFBundleDevelopmentRegion</key>
 		<string>$(DEVELOPMENT_LANGUAGE)</string>
@@ -71,5 +74,17 @@
 			</dict>
 		</array>
 		<!-- End of the Google Sign-in Section -->
+			<!-- video player lib -->
+
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+
+<!--url_launcher  -->
+		<key>LSApplicationQueriesSchemes</key>
+		<array>
+			<string>sms</string>
+			<string>tel</string>
+			<string>whatsapp</string>
+		</array>
 	</dict>
 </plist>

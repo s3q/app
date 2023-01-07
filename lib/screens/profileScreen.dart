@@ -1,20 +1,97 @@
+import 'package:app/helpers/adHelper.dart';
 import 'package:app/providers/userProvider.dart';
+import 'package:app/screens/ContactUsScreen.dart';
 import 'package:app/screens/VertifyEmailScreen.dart';
+import 'package:app/screens/changeLanguageScreen.dart';
 import 'package:app/screens/deleteAccountScreen.dart';
 import 'package:app/screens/editProfileScreen.dart';
+import 'package:app/screens/forgotPasswordScreen.dart';
 import 'package:app/screens/getStartedScreen.dart';
+import 'package:app/screens/notificationSceen.dart';
+import 'package:app/screens/overViewScreen.dart';
+import 'package:app/screens/ownerActivitiesScreen.dart';
+import 'package:app/screens/policyAndPrivacyScreen.dart';
 import 'package:app/screens/proAccount/switchToProAccountScreen.dart';
+import 'package:app/screens/supportUsScreen.dart';
+import 'package:app/screens/termsAndConditionsScreen.dart';
 import 'package:app/widgets/LinkWidget.dart';
 import 'package:app/widgets/SafeScreen.dart';
 import 'package:app/widgets/appBarWidget.dart';
 import 'package:app/widgets/listTitleWidget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/material.dart";
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   static String router = "/profile";
   const ProfileScreen({Key? key}) : super(key: key);
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  Map<int, BannerAd> _bannersAd = {};
+
+  Future signout(UserProvider userProvider) async {
+    EasyLoading.show(maskType: EasyLoadingMaskType.black);
+    await userProvider.signout();
+
+    Navigator.pushNamedAndRemoveUntil(
+        context, OverviewScreen.router, (route) => false);
+
+    EasyLoading.dismiss();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    BannerAd(
+      adUnitId: AdHelper.bannerAdUnitId,
+      request: AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            _bannersAd[0] = ad as BannerAd;
+          });
+        },
+        onAdFailedToLoad: (ad, err) {
+          print('Failed to load a banner ad: ${err.message}');
+          ad.dispose();
+        },
+      ),
+    ).load();
+
+    BannerAd(
+      adUnitId: AdHelper.bannerAdUnitId,
+      request: AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            _bannersAd[1] = ad as BannerAd;
+          });
+        },
+        onAdFailedToLoad: (ad, err) {
+          print('Failed to load a banner ad: ${err.message}');
+          ad.dispose();
+        },
+      ),
+    ).load();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _bannersAd[0]?.dispose();
+    _bannersAd[1]?.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,6 +157,22 @@ class ProfileScreen extends StatelessWidget {
                       ],
                     ),
                   ),
+
+                  SizedBox(
+                    height: 20,
+                  ),
+
+                  //^---------------------- adverticment -----------------------
+
+                  if (_bannersAd[0] != null)
+                    Container(
+                      width: _bannersAd[0]!.size.width.toDouble(),
+                      height: _bannersAd[0]!.size.height.toDouble(),
+                      child: AdWidget(ad: _bannersAd[0]!),
+                    ),
+
+                  //^----------------------------------------------------------
+
                   SizedBox(
                     height: 30,
                   ),
@@ -104,6 +197,18 @@ class ProfileScreen extends StatelessWidget {
                         );
                       },
                     ),
+// if (_isLogin)
+//                     ListTitleWidget(
+//                       title: "My Activities",
+//                       icon: Icons.verified,
+//                       onTap: () {
+//                         Navigator.pushNamed(
+//                           context,
+//                           OwnerActivitesScreen.router,
+//                         );
+//                       },
+//                     ),
+
                   if (_isLogin)
                     (userProvider.currentUser?.isProAccount == false &&
                             userProvider.proCurrentUser == null
@@ -118,20 +223,60 @@ class ProfileScreen extends StatelessWidget {
                         : ListTitleWidget(
                             title: "Edit Your Professional Account",
                             icon: Icons.local_police_rounded,
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, SwitchToProAccountScreen.router);
+                            },
                           )),
+                  if (_isLogin &&
+                      userProvider.currentUser?.providerId == "password")
+                    ListTitleWidget(
+                      title: "Reset Password",
+                      icon: Icons.vpn_key_rounded,
+                      onTap: () {
+                        Navigator.pushNamed(
+                            context, ForgotPasswordScreen.router);
+                      },
+                    ),
+                  ListTitleWidget(
+                    title: "support us",
+                    icon: Icons.attach_money_rounded,
+                    onTap: () {
+                      Navigator.pushNamed(context, SupportUsScreen.router);
+                    },
+                  ),
                   ListTitleWidget(
                     title: "Language",
                     icon: Icons.language,
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pushNamed(context, ChangeLanguageScreen.router);
+                    },
                   ),
                   ListTitleWidget(
                     title: "Notification",
                     icon: Icons.notifications_active_outlined,
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pushNamed(context, NotificationScreen.router);
+                    },
                   ),
+
                   SizedBox(
                     height: 20,
+                  ),
+
+                  //^---------------------- adverticment -----------------------
+
+                  if (_bannersAd[1] != null)
+                    Container(
+                      width: _bannersAd[1]!.size.width.toDouble(),
+                      height: _bannersAd[1]!.size.height.toDouble(),
+                      child: AdWidget(ad: _bannersAd[1]!),
+                    ),
+
+                  //^----------------------------------------------------------
+
+                  SizedBox(
+                    height: 30,
                   ),
                   Padding(
                     padding: const EdgeInsets.all(10),
@@ -154,7 +299,9 @@ class ProfileScreen extends StatelessWidget {
                   ListTitleWidget(
                       title: "Contact us",
                       icon: Icons.contact_support_outlined,
-                      onTap: () {}),
+                      onTap: () {
+                        Navigator.pushNamed(context, ContactUsScreen.router);
+                      }),
                   SizedBox(
                     height: 20,
                   ),
@@ -171,11 +318,17 @@ class ProfileScreen extends StatelessWidget {
                   ListTitleWidget(
                       title: "Privacy Policy",
                       icon: Icons.help_outline_rounded,
-                      onTap: () {}),
+                      onTap: () {
+                        Navigator.pushNamed(
+                            context, PolicyAndPrivacyScreen.router);
+                      }),
                   ListTitleWidget(
                       title: "Terms of Service",
                       icon: Icons.contact_support_outlined,
-                      onTap: () {}),
+                      onTap: () {
+                        Navigator.pushNamed(
+                            context, TermsAndConditionsScreen.router);
+                      }),
                   const SizedBox(
                     height: 40,
                   ),
@@ -192,10 +345,13 @@ class ProfileScreen extends StatelessWidget {
                   SizedBox(
                     height: 40,
                   ),
-                  LinkWidget(
-                    text: "Log out",
-                    onPressed: () {},
-                  ),
+                  if (userProvider.currentUser != null)
+                    LinkWidget(
+                      text: "Log out",
+                      onPressed: () {
+                        signout(userProvider);
+                      },
+                    ),
                 ],
               ),
             ),

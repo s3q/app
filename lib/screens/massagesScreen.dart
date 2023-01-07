@@ -44,26 +44,24 @@ class _MassagesScreenState extends State<MassagesScreen> {
     bool validate = formKey.currentState!.validate();
     if (validate) {
       formKey.currentState!.save();
-      print(massage);
-      print(massage != "");
-      print(massage == "");
       if (massage != "") {
-        await chatProvider.sendMassage(text: massage!);
+        await chatProvider.sendMassage(context: context, text: massage!);
       }
     }
   }
 
   List scrollTo(int index) {
-    if (_scrollController.isAttached) {
+    Future.delayed(Duration.zero, () {
       _scrollController.scrollTo(
           index: index, duration: const Duration(seconds: 1));
-    } else {
-      if (_scrollController.isAttached) {
-        Future.delayed(Duration(seconds: 4), () {
-          scrollTo(index);
-        });
-      }
-    }
+    });
+    // }
+    //   if (_scrollController.isAttached) {
+    // Future.delayed(Duration(seconds: 4), () {
+    //   scrollTo(index);
+    // });
+    //   }
+
     return [];
   }
 
@@ -86,24 +84,37 @@ class _MassagesScreenState extends State<MassagesScreen> {
     if (images != null) {
       _uploadedImagesPath.addAll(images.map((e) => e.path));
 
-      await _uploadedImagesPath.map((e) async {
+      _uploadedImagesPath.forEach((e) async {
         await chatProvider.sendImageMessage(imagePath: e);
       });
     }
   }
 
-  void _sortMessages(List<QueryDocumentSnapshot<Map<String, dynamic>>> docs) {
-    int previousVarCreatedAt = 0;
+  void _sortMessages(BuildContext context,
+      List<QueryDocumentSnapshot<Map<String, dynamic>>> docs) {
+    ChatProvider chatProvider = Provider.of(context, listen: false);
+
+    chatProvider.readMessages(context: context);
+    String previousVarCreatedAtDay = "";
 
     docs.asMap().forEach((i, m) {
-      int createdAt = m.data()["createdAt"];
+      String createdAtDay = DateFormat('dd/MM/yyyy')
+          .format(DateTime.fromMillisecondsSinceEpoch(m.data()["createdAt"]));
 
       // print(createdAt);
-      if (createdAt != previousVarCreatedAt) {
-        previousVarCreatedAt = createdAt;
+      if (createdAtDay != previousVarCreatedAtDay) {
+        previousVarCreatedAtDay = createdAtDay;
         massegesDateIndex.add(i);
       }
     });
+  }
+
+  Future deleteChat(String chatId) async {
+    UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    ChatProvider chatProvider = Provider.of<ChatProvider>(context , listen: false);
+    await chatProvider.deleteChatOneSide( context: context,
+        chatId: chatId);
   }
 
   @override
@@ -123,7 +134,6 @@ class _MassagesScreenState extends State<MassagesScreen> {
     String userId = args.users[0];
     String activityId = args.activityId;
     UserSchema user = userProvider.users[userId]!;
-
 
     return FutureBuilder(
         future:
@@ -155,7 +165,7 @@ class _MassagesScreenState extends State<MassagesScreen> {
                   return const SizedBox();
                 }
 
-                _sortMessages(snapshot.data!.docs);
+                _sortMessages(context, snapshot.data!.docs);
                 return Scaffold(
                   appBar: AppBar(
                     backgroundColor: Colors.white,
@@ -176,14 +186,64 @@ class _MassagesScreenState extends State<MassagesScreen> {
                         IconButton(
                             onPressed: () {
                               Navigator.pop(context);
+                              chatProvider.sortChats();
                             },
                             icon: Icon(Icons.arrow_back_rounded)),
                       ],
                     ),
                     actions: [
-                      IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.mode_standby_outlined)),
+                      DropdownButton(
+                        // Initial Value
+                        //   value: dropdownvalue,
+
+                        // Down Arrow Icon
+                        icon: const Icon(Icons.keyboard_arrow_down),
+
+                        // Array list of items
+                        //   items: items.map((String items) {
+                        //     return DropdownMenuItem(
+                        //       value: items,
+                        //       child: Text(items),
+                        //     );
+                        //   }).toList(),
+                        items: [
+                          DropdownMenuItem(
+                            value: 1,
+                            child: TextButton.icon(
+                                onPressed: () {
+                                  showDialog<void>(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return SimpleDialog(
+                                        title: const Text(''),
+                                        children: <Widget>[
+                                          SimpleDialogOption(
+                                            onPressed: () async {
+                                              await deleteChat(activityId);
+                                            },
+                                            child: const Text("Delete Chat"),
+                                          ),
+                                          SimpleDialogOption(
+                                            onPressed: () {},
+                                            //   child: const Text('Option 2'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                                label: Text("Delete"),
+                                icon: const Icon(Icons.delete_rounded)),
+                          )
+                        ],
+                        // After selecting the desired option,it will
+                        // change button value to selected value
+                        onChanged: (newValue) {
+                          // setState(() {
+                          //   dropdownvalue = newValue!;
+                          // });
+                        },
+                      ),
                     ],
                   ),
                   body: Container(
@@ -191,29 +251,51 @@ class _MassagesScreenState extends State<MassagesScreen> {
                     child: Column(
                       children: [
                         Container(
+                            color: Colors.grey[100],
                             child: ListTile(
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, ActivityDetailsScreen.router,
-                                arguments:
-                                    activityProvider.activities[activityId]);
-                          },
-                          leading: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: ColorsHelper.grey),
-                            width: 100,
-                            height: 100,
-                            child: Image.network(activityProvider
-                                .activities[activityId]?.images
-                                .where((i) => i.toString().contains("main"))
-                                .toList()[0]),
-                          ),
-                          title: Text(
-                            activityProvider.activities[activityId]!.title,
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                        )),
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, ActivityDetailsScreen.router,
+                                    arguments: activityProvider
+                                        .activities[activityId]);
+                              },
+                              leading: Container(
+                                clipBehavior: Clip.antiAliasWithSaveLayer,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: ColorsHelper.grey),
+                                width: 100,
+                                height: 100,
+                                child: Image.network(
+                                  activityProvider.mainDisplayImage(activityProvider.activities[activityId]?.images ?? [])
+                                    ,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    activityProvider
+                                        .activities[activityId]!.title,
+                                    style:
+                                        Theme.of(context).textTheme.titleMedium,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    activityProvider
+                                        .activities[activityId]!.category,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall!
+                                        .copyWith(color: ColorsHelper.grey),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            )),
                         Expanded(
                             child: ScrollablePositionedList.builder(
                           // !!!!!!!!!!!! PROBLEM !!!!!!!!!!!!!!!!
@@ -222,7 +304,9 @@ class _MassagesScreenState extends State<MassagesScreen> {
                               vertical: 20, horizontal: 10),
                           itemScrollController: _scrollController,
                           itemCount: snapshot.data!.docs.length,
-                          initialScrollIndex: snapshot.data!.docs.length - 1,
+                          initialScrollIndex: snapshot.data!.docs.length - 1 < 0
+                              ? snapshot.data!.docs.length - 1
+                              : 0,
                           itemBuilder: (context, index) {
                             QueryDocumentSnapshot<Map<String, dynamic>>
                                 massageData = snapshot.data!.docs[index];
@@ -244,12 +328,15 @@ class _MassagesScreenState extends State<MassagesScreen> {
                                 key: Key(massageData.id),
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
+                                  SizedBox(
+                                    height: 15,
+                                  ),
                                   Center(
-                                    child: Text(DateFormat('dd MM yyyy').format(
+                                    child: Text(DateFormat('dd/MM/yyyy').format(
                                         DateTime.fromMillisecondsSinceEpoch(
                                             massage.createdAt))),
                                   ),
-                                    MassageBoxWidget(massage: massage)
+                                  MassageBoxWidget(massage: massage)
                                 ],
                               );
                             }
@@ -322,48 +409,59 @@ class _MassagesScreenState extends State<MassagesScreen> {
                                 children: [
                                   Container(
                                     width: double.infinity,
-                                    height: 58,
-                                    child: TextFormField(
-                                      scrollPadding: EdgeInsets.all(0),
-                                      controller: textController,
-                                      onSaved: (t) {
-                                        // setState(() {
-                                        if (t?.trim() != "") {
-                                          massage = t?.trim();
-                                        }
-                                        textController.text = "";
-                                        // });
-                                      },
-                                      keyboardType: TextInputType.name,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium,
-                                      decoration: InputDecoration(
-                                        contentPadding:
-                                            EdgeInsets.only(right: 50, left: 8),
+                                    height: 60,
+                                    child: SizedBox.expand(
+                                      child: TextFormField(
+                                        scrollPadding: EdgeInsets.all(0),
+                                        controller: textController,
+                                        onSaved: (t) {
+                                          // setState(() {
+                                          if (t?.trim() != "") {
+                                            massage = t?.trim();
+                                          }
+                                          textController.text = "";
+                                          // });
+                                        },
+                                        keyboardType: TextInputType.name,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium,
+                                        decoration: InputDecoration(
+                                          contentPadding: EdgeInsets.only(
+                                              right: 50, left: 8),
 
-                                        hintText: " Message ...",
-                                        filled: true,
-                                        fillColor: ColorsHelper.whiteBlue,
-                                        //   prefixIcon: Icon(
-                                        //     Icons.person,
-                                        //   ),
-                                        focusedBorder: const OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                            color: Colors.black45,
-                                            width: 1,
+                                          hintText: " Message ...",
+                                          filled: true,
+                                          fillColor: ColorsHelper.whiteBlue,
+                                          //   prefixIcon: Icon(
+                                          //     Icons.person,
+                                          //   ),
+                                          enabledBorder:
+                                              const OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Colors.white,
+                                              width: 1,
+                                            ),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(16)),
                                           ),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(16)),
-                                        ),
-
-                                        border: const OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                            color: Colors.black45,
-                                            width: 1,
+                                          focusedBorder:
+                                              const OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Colors.white,
+                                              width: 1,
+                                            ),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(16)),
                                           ),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(16)),
+                                          border: const OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Colors.white,
+                                              width: 1,
+                                            ),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(16)),
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -376,28 +474,32 @@ class _MassagesScreenState extends State<MassagesScreen> {
                                         children: [
                                           Container(
                                             height: 40,
-                                            margin: const EdgeInsets.symmetric(
-                                                horizontal: 5),
+                                            // margin: const EdgeInsets.symmetric(
+                                            //     horizontal: 5),
                                             decoration: BoxDecoration(
                                                 color: ColorsHelper.grey,
                                                 borderRadius:
-                                                    const BorderRadius.all(
-                                                        Radius.circular(50))),
+                                                    const BorderRadius.only(
+                                                        topLeft:
+                                                            Radius.circular(16),
+                                                        bottomLeft:
+                                                            Radius.circular(
+                                                                16))),
                                             child: Row(
                                               children: [
-                                                IconButton(
-                                                    onPressed: () async {
-                                                      // _scrollController.scrollTo(index: snapshot.data!.docs.length-1, duration: Duration(seconds: 1));
-                                                    },
-                                                    icon: const Icon(
-                                                      Icons
-                                                          .keyboard_voice_rounded,
-                                                      size: 18,
-                                                    )),
+                                                // IconButton(
+                                                //     onPressed: () async {
+                                                //       // _scrollController.scrollTo(index: snapshot.data!.docs.length-1, duration: Duration(seconds: 1));
+                                                //     },
+                                                //     icon: const Icon(
+                                                //       Icons
+                                                //           .keyboard_voice_rounded,
+                                                //       size: 18,
+                                                //     )),
                                                 IconButton(
                                                     onPressed: () async {
                                                       await _uploadImages();
-                                                      // _scrollController.scrollTo(index: snapshot.data!.docs.length-1, duration: Duration(seconds: 1));
+                                                      //   _scrollController.scrollTo(index: snapshot.data!.docs.length-1, duration: Duration(seconds: 1));
                                                     },
                                                     icon: const Icon(
                                                       Icons.camera_alt_rounded,
@@ -408,17 +510,23 @@ class _MassagesScreenState extends State<MassagesScreen> {
                                           ),
                                           Container(
                                             height: 40,
-                                            margin: const EdgeInsets.symmetric(
+                                            padding: EdgeInsets.symmetric(
                                                 horizontal: 5),
+                                            margin:
+                                                const EdgeInsets.only(right: 5),
                                             decoration: BoxDecoration(
                                                 color: ColorsHelper.yellow,
                                                 borderRadius:
-                                                    const BorderRadius.all(
-                                                        Radius.circular(50))),
+                                                    const BorderRadius.only(
+                                                        topRight:
+                                                            Radius.circular(16),
+                                                        bottomRight:
+                                                            Radius.circular(
+                                                                16))),
                                             child: IconButton(
                                                 onPressed: () async {
                                                   await sendMassage(context);
-                                                  // _scrollController.scrollTo(index: snapshot.data!.docs.length-1, duration: Duration(seconds: 1));
+                                                  //   await _scrollController.scrollTo(index: snapshot.data!.docs.length-1, duration: Duration(seconds: 1));
                                                 },
                                                 icon: const Icon(
                                                   Icons.send,

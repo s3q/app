@@ -1,10 +1,15 @@
+import 'dart:io';
+
 import 'package:app/constants/constants.dart';
 import 'package:app/helpers/errorsHelper.dart';
 import 'package:app/providers/activityProvider.dart';
+import 'package:app/schemas/notificationPieceSchema.dart';
 import 'package:app/schemas/proUserSchema.dart';
 import 'package:app/schemas/userSchema.dart';
+import 'package:app/screens/accountCreatedScreen.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -13,16 +18,20 @@ import "package:firebase_auth/firebase_auth.dart";
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dart_ipify/dart_ipify.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 class UserProvider with ChangeNotifier {
   User? credentialUser;
   UserSchema? currentUser;
   Map<String, UserSchema> users = {};
+  Map<String, List<NotificationPieceSchema>> notificationMap = {};
 
   ProUserSchema? proCurrentUser;
   static String collection = CollectionsConstants.users;
   static final auth = FirebaseAuth.instance;
   static final store = FirebaseFirestore.instance;
+  static final storage = FirebaseStorage.instance;
+
   final googleSignin = GoogleSignIn();
 
   static List fields = [
@@ -52,27 +61,27 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<UserSchema?> fetchUserData({required String userId}) async {
-    print(users[userId]);
-    print(users);
     if (users[userId] == null) {
       QuerySnapshot<Map<String, dynamic>> u = await store
           .collection(UserProvider.collection)
           .where("Id", isEqualTo: userId.trim())
           .get();
+
       Map<String, dynamic> user = u.docs.single.data();
 
-      Map proAccount = user["proAccount"];
+      Map? proAccount = user["proAccount"];
       ProUserSchema? proUserSchema;
 
-      if (proAccount["createdAt"] != null) {
+      if (proAccount != null && user["isProAccount"]) {
         proUserSchema = ProUserSchema(
-            createdAt: proAccount["createdAt"],
-            userId: proAccount["userId"],
-            publicPhoneNumber: proAccount["publicPhoneNumber"],
-            instagram: proAccount["instagram"],
-            publicEmail: proAccount["publicEmail"]);
+          createdAt: proAccount["createdAt"],
+          userId: proAccount["userId"],
+          publicPhoneNumber: proAccount["publicPhoneNumber"],
+          instagram: proAccount["instagram"],
+          publicEmail: proAccount["publicEmail"],
+        );
       }
-
+      print(proUserSchema?.toMap());
       users[userId] = UserSchema(
         // wishlist: ,
         proAccount: proUserSchema != null ? proUserSchema.toMap() : {},
@@ -83,8 +92,7 @@ class UserProvider with ChangeNotifier {
         profileImagePath: user["profileImagePath"],
       );
     }
-    print(userId);
-    print(users[userId]);
+
     return users[userId];
   }
 
@@ -101,11 +109,10 @@ class UserProvider with ChangeNotifier {
     return true;
   }
 
-  Future<UserCredential?> signInWithGoogle(BuildContext context) async {
+  Future<bool> signInWithGoogle(BuildContext context) async {
     try {
-      print("DDDone 00");
       final GoogleSignInAccount? googleUser = await googleSignin.signIn();
-      print("DDDone 11");
+
       if (googleUser != null) {
         // bool _usedEmail = await checkEmailNotused(googleUser.email);
 
@@ -135,21 +142,22 @@ class UserProvider with ChangeNotifier {
           ));
         }
 
-        return _credentialUser;
+        return true;
+
         // }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           backgroundColor: Theme.of(context).errorColor,
           content: const Text("You haven't signed in google"),
         ));
-        return null;
+        return false;
       }
     } catch (err) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         backgroundColor: Theme.of(context).errorColor,
         content: Text(err.toString()),
       ));
-      return null;
+      return false;
     }
   }
 
@@ -189,20 +197,23 @@ class UserProvider with ChangeNotifier {
         proCurrentUser = proUserData;
 
         notifyListeners();
+
+        return true;
       } catch (err) {
         print(err);
+        return false;
       }
     }
   }
 
   Future<bool> addToWishlist(
-      activityId, ActivityProvider activityProvider) async {
+      activityStoreId, activityId, ActivityProvider activityProvider) async {
     if (currentUser!.wishlist != null) {
-      await store.collection(collection).doc(currentUser?.Id).update({
+      await store.collection(collection).doc(currentUser!.storeId).update({
         "wishlist": [...currentUser!.wishlist!, activityId]
       });
 
-      await activityProvider.likeActivity(activityId);
+      await activityProvider.likeActivity(activityStoreId, activityId);
 
       // await query.reference.update({
       //   "wishlist": [...query.data()?["wishlist"], activityId]
@@ -217,7 +228,7 @@ class UserProvider with ChangeNotifier {
 
   Future removeFromWishlist(activityId) async {
     if (currentUser!.wishlist != null) {
-      await store.collection(collection).doc(currentUser?.Id).update({
+      await store.collection(collection).doc(currentUser!.storeId).update({
         "wishlist": [
           ...currentUser!.wishlist!.where((e) => e != activityId).toList()
         ]
@@ -239,7 +250,6 @@ class UserProvider with ChangeNotifier {
     String name = "",
     bool signinWithPhoneNumber = false,
   }) async {
-    print(userData);
     CollectionReference usersCollection =
         store.collection(UserProvider.collection);
     QuerySnapshot<Object?> query;
@@ -252,12 +262,10 @@ class UserProvider with ChangeNotifier {
           await usersCollection.where("email", isEqualTo: userData.email).get();
     }
 
-    print(query.docs.asMap());
     if (query.docs.isEmpty || sginup) {
       final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
       BaseDeviceInfo deviceInfo = await deviceInfoPlugin.deviceInfo;
-      print(deviceInfo.toMap());
-      print(this.toString());
+
       final ipv4 = await Ipify.ipv4();
 
       currentUser = UserSchema(
@@ -293,7 +301,7 @@ class UserProvider with ChangeNotifier {
             "${ErrorsHelper.errMultiEmailes} multi users with same email or phone number",
         "page": this.toString(),
         "collections": query.docs.asMap(),
-        "time": DateTime.now().microsecondsSinceEpoch,
+        "date": DateTime.now().microsecondsSinceEpoch,
       });
     } else if ((query.docs[0]["email"] == userData.email ||
             query.docs[0]["phoneNumber"] == userData.phoneNumber) &&
@@ -303,7 +311,6 @@ class UserProvider with ChangeNotifier {
           .update({"lastLogin": DateTime.now().millisecondsSinceEpoch});
 
       Map userQueryData = query.docs.single.data() as Map;
-      print(userQueryData);
 
       /// ! check user id equal for it in authntication.
 
@@ -371,9 +378,9 @@ class UserProvider with ChangeNotifier {
 
       if (userProvider.currentUser!.providerId == "google.com") {
         // await googleSignin.currentUser!.clearAuthCache();
-        print("DDDone 00");
+
         final GoogleSignInAccount? googleUser = await googleSignin.signIn();
-        print("DDDone 11");
+
         if (googleUser != null) {
           bool _usedEmail = await checkEmailNotused(googleUser.email);
 
@@ -508,7 +515,6 @@ class UserProvider with ChangeNotifier {
   }
 
 //   Future verifyPhoneNumber(String phoneNumber) async {
-
 //   }
 
 //    // signUp
@@ -541,4 +547,108 @@ class UserProvider with ChangeNotifier {
 //     }
 //     return true;
 //   }
+
+  Future<bool> updateEmail(String newEmail) async {
+    await credentialUser!.updateEmail(newEmail);
+    await store.collection(collection).doc(currentUser!.storeId).update({
+      "email": newEmail,
+    });
+    return true;
+  }
+
+  Future<bool> updateUserInfo(
+      BuildContext context, Map<String, dynamic> data) async {
+    Map<String, dynamic> updatedData = {};
+
+    data.map((key, value) {
+      if (["name", "phoneNumber"].contains(key.trim())) {
+        updatedData[key] = value;
+      }
+      return MapEntry(key, value);
+    });
+
+    await store
+        .collection(collection)
+        .doc(currentUser?.storeId)
+        .update(updatedData);
+    return true;
+  }
+
+  Future<bool> forgotPassword(
+      {required BuildContext context, required String email}) async {
+    try {
+      await auth.sendPasswordResetEmail(email: email);
+      return true;
+    } on FirebaseAuthException catch (err) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Theme.of(context).errorColor,
+        content: Text(err.message.toString()),
+      ));
+      return false;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  Future<bool> changeProfileImage(String filePath) async {
+    File file = File(filePath);
+
+    Reference ref =
+        storage.ref("users/${currentUser!.Id}/profileImage/${Uuid().v4()}.jpg");
+    ref.putFile(file).then((taskSnapshot) async {
+      String imageDownloadPath = await taskSnapshot.ref.getDownloadURL();
+
+      await store.collection(collection).doc(currentUser!.storeId).update({
+        "profileImagePath": imageDownloadPath,
+      });
+
+      currentUser!.profileImagePath = imageDownloadPath;
+    });
+    return true;
+  }
+
+  Future<bool> removeProfileImage() async {
+    String imageName = currentUser!.profileImagePath!
+        .split("users/${currentUser!.Id}/profileImage/")[1]
+        .split(".jpg")[0];
+    Reference ref =
+        storage.ref("users/${currentUser!.Id}/profileImage/${imageName}.jpg");
+
+    await store.collection(collection).doc(currentUser!.storeId!).update({
+      "profileImagePath": null,
+    });
+    currentUser!.profileImagePath = null;
+
+    await ref.delete();
+
+    notifyListeners();
+
+    await store
+        .collection(collection)
+        .doc(currentUser?.storeId)
+        .update({"profileImagePath": ""});
+
+    return true;
+  }
+
+  Future fetchNotifications() async {
+    try {
+      assert(currentUser?.Id != null);
+      QuerySnapshot<Map<String, dynamic>> query1 = await store
+          .collection(CollectionsConstants.notifications)
+          .doc(currentUser!.Id)
+          .collection("chat")
+          .get();
+
+      notificationMap["chat"] == null ? notificationMap["chat"] = [] : null;
+      for (var doc in query1.docs) {
+        notificationMap["chat"]
+            ?.add(NotificationPieceSchema.toSchema(doc.data()));
+      }
+
+      return notificationMap["chat"];
+    } catch (err) {
+      return [];
+    }
+  }
 }
