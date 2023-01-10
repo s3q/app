@@ -74,7 +74,7 @@ exports.SearchForActivity = functions.https.onCall(async (data, context) => {
 
       if (keysFinded.length != 0) {
         klist.push(keysFinded);
-        let activity =  a.data();
+        let activity = a.data();
         activity["storeId"] = a.id;
         resultActivityList.push(activity)
       }
@@ -156,24 +156,39 @@ exports.SearchForActivityDirectly = functions.https.onCall(async (data, context)
 
 
 
-exports.notificationFunction = functions.firestore
-  .document("/notifications/{documentId}")
+exports.chatNotificationFunction = functions.firestore
+  .document("/notifications/{documentId}/chat/{cId}")
+  .onCreate((snap, cxt) => {
+    console.log(snap.data());
+    admin.messaging().sendToTopic(snap.data().data.userId, {
+      notification:
+        { title: snap.data().title, body: snap.data().text , clickAction: "FLUTTER_NOTIFICATION_CLICK"}, data: { type: "chat", screen: "massages_screen", chatId: snap.data().data.chatId, }
+    });
+    return 0;
+  });
+
+exports.eventsNotificationFunction = functions.firestore
+  .document("/events/{documentId}")
   .onCreate((snap, cxt) => {
 
-    const messages = [];
-
-    messages.push({
-
-      notification: { title: snap.data().username, body: snap.data().text },
-      topic: "chat",
+    admin.messaging().send({
+      notification:
+        { title: snap.data().title, body: snap.data().text, clickAction: "FLUTTER_NOTIFICATION_CLICK" }, data: { type: "event", screen: "notification"}
     });
+    return 0;
+  });
 
-    admin.messaging().sendToTopic(snap.data()["notificationId"]).sendAll(messages)
-      .then((response) => {
-        console.log(response.successCount.toString() +
-          "messages were sent successfully");
-      });
-});
+  exports.newsNotificationFunction = functions.firestore
+  .document("/news/{documentId}")
+  .onCreate((snap, cxt) => {
+
+    admin.messaging().send({
+      notification:
+        { title: snap.data().title, body: snap.data().text, clickAction: "FLUTTER_NOTIFICATION_CLICK" }, data: { type: "new", screen: ""}
+    });
+    return 0;
+  });
+
 
 
 exports.increaseCountersActivities = functions.https.onCall(async (data, context) => {
@@ -188,8 +203,8 @@ exports.increaseCountersActivities = functions.https.onCall(async (data, context
 
   // Listen to locally consistent values.
   // field_counter.onSnapshot((snap) => {
-    // console.log("Locally consistent view of visits: " + );
-    // return 
+  // console.log("Locally consistent view of visits: " + );
+  // return 
   // });
 
   return await field_counter.get();

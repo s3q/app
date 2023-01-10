@@ -40,6 +40,7 @@ import 'package:app/screens/supportUsScreen.dart';
 import 'package:app/screens/termsAndConditionsScreen.dart';
 import 'package:app/screens/updateProfileDataScreen.dart';
 import 'package:app/screens/viewReviewsScreen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -58,6 +59,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future load(BuildContext context) async {
   await EasyLocalization.ensureInitialized();
@@ -190,12 +192,52 @@ class _MMAppState extends State<MMApp> {
   Map? _fireMessageData;
   double _totalNotifications = 1;
 
-  void NotificationPermission() async {
+  void onSelectNotification(details, context) async {
+    EasyLoading.show();
     try {
-      UserProvider userProvider =
-          Provider.of<UserProvider>(context, listen: false);
+      ChatProvider chatProvider =
+          Provider.of<ChatProvider>(context, listen: false);
+      if (details.payload != null) {
+        List router = details.payload!.split("|||");
+        if (router[0] == "chat") {
+          QuerySnapshot<Map<String, dynamic>> query = await FirebaseFirestore
+              .instance
+              .collection("chat")
+              .where((e) => e["Id"] == router[1])
+              .get();
+          List chatsData =
+              await chatProvider.getChats(query: query, context: context);
+          chatProvider.chat = chatsData[0];
+          Navigator.pushNamed(context, MassagesScreen.router,
+              arguments: chatsData[0]);
+        }
+      }
+
+      // Navigator.push(
+      //                   context,
+      //                   MaterialPageRoute<void>(
+      //                     builder: (BuildContext context) =>
+      //                         MassagesScreen(),
+      //                         settings: RouteSettings(arguments: chatsData[0])
+      //                   ),
+
+      //                 );
+
+    } catch (err) {}
+    await Future.delayed(Duration(milliseconds: 500), () {});
+
+    EasyLoading.dismiss();
+  }
+
+  void NotificationPermission(BuildContext) async {
+    const String chatGroupKey = 'com.app.example.CHAT';
+
+    try {
+      //   UserProvider userProvider =
+      //       Provider.of<UserProvider>(context, listen: false);
       print(await FirebaseMessaging.instance.getToken());
-      assert(userProvider.currentUser != null);
+      print(FirebaseAuth.instance.currentUser?.uid.toString());
+    //   assert(FirebaseAuth.instance.currentUser != null);
 
       // 3. On iOS, this helps to take the user permissions
 
@@ -206,7 +248,11 @@ class _MMAppState extends State<MMApp> {
         sound: true,
       );
 
-      _messaging.subscribeToTopic(userProvider.currentUser!.Id.toString());
+      if (FirebaseAuth.instance.currentUser != null) {
+
+      await _messaging
+          .subscribeToTopic(FirebaseAuth.instance.currentUser!.uid.toString());
+      }
 
       if (settings.authorizationStatus == AuthorizationStatus.authorized) {
         await FirebaseMessaging.instance
@@ -225,6 +271,29 @@ class _MMAppState extends State<MMApp> {
 
         final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
             FlutterLocalNotificationsPlugin();
+
+        //         FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+        // FlutterLocalNotificationsPlugin();
+// initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
+        const AndroidInitializationSettings initializationSettingsAndroid =
+            AndroidInitializationSettings("@mipmap/ic_launcher");
+        final DarwinInitializationSettings initializationSettingsDarwin =
+            DarwinInitializationSettings(
+                // onDidReceiveLocalNotification: onDidReceiveLocalNotification,
+                );
+
+        final InitializationSettings initializationSettings =
+            InitializationSettings(
+          android: initializationSettingsAndroid,
+          iOS: initializationSettingsDarwin,
+        );
+        await flutterLocalNotificationsPlugin.initialize(
+          initializationSettings,
+          onDidReceiveNotificationResponse: (details) {
+            print(details.payload);
+            onSelectNotification(details, context);
+          },
+        );
 
         await flutterLocalNotificationsPlugin
             .resolvePlatformSpecificImplementation<
@@ -250,25 +319,45 @@ class _MMAppState extends State<MMApp> {
         );
         */
           RemoteNotification? notification = m.notification;
+          print(m.data);
           AndroidNotification? androidNotification = m.notification?.android;
           print({
             notification?.title,
             notification?.body,
           });
-
-          await flutterLocalNotificationsPlugin.show(
-            notification.hashCode,
-            notification?.title,
-            notification?.body,
-            NotificationDetails(
-              android: AndroidNotificationDetails(
-                channel.id,
-                channel.name,
-                channelDescription: channel.description,
-                icon: androidNotification?.smallIcon,
+          if (m.data["type"] == "chat") {
+            await flutterLocalNotificationsPlugin.show(
+              notification.hashCode,
+              notification?.title,
+              notification?.body,
+              NotificationDetails(
+                android: AndroidNotificationDetails(
+                  channel.id,
+                  channel.name,
+                  channelDescription: channel.description,
+                  icon: androidNotification?.smallIcon,
+                  groupKey: chatGroupKey,
+                ),
               ),
-            ),
-          );
+              payload: m.data["type"] + "|||" + m.data["chatId"],
+            );
+          } else {
+            await flutterLocalNotificationsPlugin.show(
+              notification.hashCode,
+              notification?.title,
+              notification?.body,
+              NotificationDetails(
+                android: AndroidNotificationDetails(
+                  channel.id,
+                  channel.name,
+                  channelDescription: channel.description,
+                  icon: androidNotification?.smallIcon,
+                  groupKey: chatGroupKey,
+                ),
+              ),
+              payload: "" + "|||" + "",
+            );
+          }
         });
 
         //   Future _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -278,11 +367,12 @@ class _MMAppState extends State<MMApp> {
         //   FirebaseMessaging.onBackgroundMessage(
         //       _firebaseMessagingBackgroundHandler);
 
-        _messaging.subscribeToTopic("chat");
+        // _messaging.subscribeToTopic("chat");
       } else {
         print('User declined or has not accepted permission');
       }
     } catch (err) {
+      print("Error Notification");
       print(err);
     }
   }
@@ -319,7 +409,7 @@ class _MMAppState extends State<MMApp> {
     // TODO: implement initState
     super.initState();
     // doLocationPermission();
-    NotificationPermission();
+    // NotificationPermission();
   }
 
   @override
@@ -337,12 +427,15 @@ class _MMAppState extends State<MMApp> {
       const Color(0xff3700b3), // primaryVariant
       const Color(0xff018786), // secondaryVariant
     ];
+    print("@@@ init main");
+    NotificationPermission(context);
+
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
       },
       child: MaterialApp(
-        title: 'Flutter Demo', // !
+        title: 'Trippoint', // !
         theme: ThemeData(
           primarySwatch: ColorsHelper.green,
           // colorScheme: const ColorScheme.light(
@@ -472,7 +565,8 @@ class _MMAppState extends State<MMApp> {
               color: Colors.black, // Colors.gray[800]
             ),
             bodySmall: TextStyle(
-              fontSize: 14,
+            //   fontSize: 12,
+              fontSize: 12,
               color: Colors.black, // Colors.gray[800]
             ),
             titleLarge: TextStyle(
@@ -530,7 +624,7 @@ class _MMAppState extends State<MMApp> {
               shape: MaterialStateProperty.all(
                 RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),
-                    side: const BorderSide(width: 2)),
+                    side: const BorderSide(color: Colors.black54, width: 2)),
               ),
             ),
           ),
@@ -548,8 +642,7 @@ class _MMAppState extends State<MMApp> {
           PolicyAndPrivacyScreen.router: (_) => const PolicyAndPrivacyScreen(),
           TermsAndConditionsScreen.router: (_) =>
               const TermsAndConditionsScreen(),
-              ContactUsScreen.router:(context) => ContactUsScreen(),
-
+          ContactUsScreen.router: (context) => ContactUsScreen(),
           ActivityDetailsScreen.router: (_) => ActivityDetailsScreen(),
           SigninPhoneNumberScreen.router: (context) =>
               SigninPhoneNumberScreen(),

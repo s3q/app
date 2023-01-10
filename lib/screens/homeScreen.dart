@@ -30,6 +30,7 @@ import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
 import "package:firebase_core/firebase_core.dart";
 import 'package:badges/badges.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -43,13 +44,31 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final auth = FirebaseAuth.instance;
   int _currentTab = 0;
+  bool _isLoading = true;
   PageController _pageController = PageController(initialPage: 0);
 
   void autoSignin(context) async {
     // EasyLoading.show(status: "Loading")
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    await userProvider.saveSignInUserData(context, userProvider.credentialUser!,
-        sginup: false);
+
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    if (sharedPreferences.getBool("first") == null ||
+        sharedPreferences.getBool("first") != false) {
+      await sharedPreferences.setBool("first", false);
+      Navigator.pushNamedAndRemoveUntil(
+          context, OverviewScreen.router, (route) => false);
+      return;
+    }
+    if (userProvider.credentialUser != null) {
+      await userProvider.saveSignInUserData(
+          context, userProvider.credentialUser!,
+          sginup: false);
+    }
+    Future.delayed(Duration(milliseconds: 200), () {
+      setState(() {
+        _isLoading = false;
+      });
+    });
   }
 
   Future signout(UserProvider userProvider) async {
@@ -137,10 +156,17 @@ class _HomeScreenState extends State<HomeScreen> {
     print(auth.currentUser?.emailVerified);
 
     print(userProvider.credentialUser);
+
+    //
     return Builder(builder: (context) {
-      if (userProvider.currentUser == null &&
-          userProvider.credentialUser != null) {
+      if ((userProvider.currentUser == null &&
+          userProvider.credentialUser != null)) {
         autoSignin(context);
+      } else {
+        _isLoading = false;
+      }
+
+      if (_isLoading) {
         return const LoadingWidget();
       }
 

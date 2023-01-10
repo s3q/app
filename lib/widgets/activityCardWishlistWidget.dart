@@ -45,9 +45,8 @@ class ActivityCardWishlistWidget extends StatelessWidget {
                     tag: activity.images[0],
                     child: Image.network(
                       // "",
-                      activity.images
-                          .where((i) => i.toString().contains("main"))
-                          .toList()[0],
+                      activityProvider.mainDisplayImage( activity.images),
+                    
                       width: 80,
                       height: 160,
                       fit: BoxFit.cover,

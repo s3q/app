@@ -102,12 +102,12 @@ class _ResultActivituBoxWidgetState extends State<ResultActivituBoxWidget> {
                           ),
                         ),
                         Container(
-                          margin: EdgeInsets.symmetric(horizontal: 5),
+                          margin: EdgeInsets.symmetric(vertical: 5),
                           child: Row(
                             children: [
                               Container(
-                                margin: EdgeInsets.symmetric(vertical: 5),
-                                child: ElevatedButton(
+                                margin: EdgeInsets.symmetric(horizontal: 5),
+                                child: ElevatedButton.icon(
                                   onPressed: () {
                                     EasyLoading.show();
 
@@ -117,19 +117,23 @@ class _ResultActivituBoxWidgetState extends State<ResultActivituBoxWidget> {
                                     );
                                     EasyLoading.dismiss();
                                   },
-                                  child: Icon(
+                                  label: Text("Google Map"),
+                                  icon: Icon(
                                     Icons.assistant_navigation,
                                     size: 25,
                                   ),
                                 ),
                               ),
                               Container(
-                                margin: EdgeInsets.symmetric(vertical: 5),
-                                child: ElevatedButton(
+                                margin: EdgeInsets.symmetric(horizontal: 5),
+                                child: IconButton(
                                   onPressed: () {
                                     widget.showOnMap();
                                   },
-                                  child: Text("on Map"),
+                                  icon: const Icon(
+                                    Icons.gps_fixed_rounded,
+                                    size: 25,
+                                  ),
                                 ),
                               ),
                             ],

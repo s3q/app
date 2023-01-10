@@ -10,6 +10,7 @@ import 'package:app/screens/activityCreatedScreen.dart';
 import 'package:app/screens/homeScreen.dart';
 import 'package:app/screens/pickLocationScreen.dart';
 import 'package:app/screens/policyAndPrivacyScreen.dart';
+import 'package:app/screens/previewNewActivityScreen.dart';
 import 'package:app/screens/termsAndConditionsScreen.dart';
 import 'package:app/widgets/LinkWidget.dart';
 import 'package:app/widgets/SafeScreen.dart';
@@ -35,6 +36,8 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:translator/translator.dart';
 import 'package:uuid/uuid.dart';
 
+enum BestTutorSite { Days, Dates }
+
 class AddActivityScreen extends StatefulWidget {
   static String router = "add_activity";
   const AddActivityScreen({super.key});
@@ -59,7 +62,9 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
   final _checkboxChatW = ValueNotifier<bool>(false);
   final _checkboxChatC = ValueNotifier<bool>(true);
   final _instagramCheck = ValueNotifier<bool>(false);
-  final _daysOrDatesCheck = ValueNotifier<bool>(false);
+  final _daysOrDatesCheck = ValueNotifier<bool>(true);
+  final _daysContainerSize = ValueNotifier<Size>(Size(0, 0));
+  final _datesContainerSize = ValueNotifier<Size>(Size(0, 0));
   final _avilableDates = ValueNotifier<List>([]);
   bool _checkboxOp_SFC = true;
   bool _checkboxOp_GOA = true;
@@ -69,8 +74,16 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
   List overlay = [];
 
   final _uploadedImagesPath = ValueNotifier<List<String>>([]);
-  Map<int, String> uploadedumagesPath = {};
-
+//   Map<int, String> uploadedumagesPath = {};
+  Map<int, String> uploadedumagesPath = {
+    1: "",
+    2: "",
+    3: "",
+    4: "",
+    5: "",
+    6: "",
+    7: "",
+  };
   String? errorInUploadImages;
   final _errorMassage = ValueNotifier<String?>(null);
 
@@ -135,6 +148,14 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
       if (validation) {
         _formKey.currentState!.save();
 
+        if (_daysOrDatesCheck.value) {
+          dates = [];
+        } else {
+          for (var d in weekDays.keys) {
+            weekDays[d] = false;
+          }
+        }
+
         data["availableDays"] = weekDays.keys.map((v) {
           if (weekDays[v] == true) {
             print(v);
@@ -144,8 +165,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
 
         data["availableDays"]
             .removeWhere((e) => e == null || e?.toString().trim() == "");
-        data["dates"]
-            .removeWhere((e) => e == null || e?.toString().trim() == "");
+        dates.removeWhere((e) => e == null || e?.toString().trim() == "");
 
         List tags = [];
         GoogleTranslator translator = GoogleTranslator();
@@ -272,9 +292,9 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
         EasyLoading.showSuccess('');
 
         //   Navigator.pushReplacementNamed(context, ActivityCreatedScreen.router);
-        Navigator.pushNamedAndRemoveUntil(context, HomeScreen.router, (route) {
+        Navigator.pushNamedAndRemoveUntil(context, PreviewNewActivityScreen.router, (route) {
           return false;
-        });
+        }, arguments: activityData);
       }
     } catch (err) {
       print(err);
@@ -319,6 +339,8 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
       onceCheck == 1;
     }
 
+    final daysContainerKey = GlobalKey();
+    final datesContainerKey = GlobalKey();
     return SafeScreen(
       padding: 0,
       child: Column(
@@ -827,79 +849,22 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                               SizedBox(
                                 height: 20,
                               ),
-                              Container(
-                                padding: EdgeInsets.all(10),
-                                margin: EdgeInsets.all(5),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(
-                                      color: Colors.grey,
-                                      width: 1,
-                                    )),
-                                child: Column(children: [
-                                  CheckboxWidget(
-                                      label: "Days",
-                                      isCheck: _daysOrDatesCheck.value,
-                                      onChanged: (isChecked) {
-                                        _daysOrDatesCheck.value =
-                                            !_daysOrDatesCheck.value;
-                                      }),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  ValueListenableBuilder(
-                                      valueListenable: _daysOrDatesCheck,
-                                      builder: (context, value, child) {
-                                        return AbsorbPointer(
-                                            absorbing: !(value as bool),
-                                            child: Column(
-                                              children: [
-                                                const Text(
-                                                    "chose the days will the activity is visiable"),
-                                                ...weekDays.keys.map((v) {
-                                                  return CheckboxWidget(
-                                                      label: v,
-                                                      isCheck: weekDays[v],
-                                                      onChanged: (isChecked) {
-                                                        print(isChecked);
-                                                        weekDays[v] = isChecked;
-                                                      });
-                                                }).toList(),
-                                              ],
-                                            ));
-                                      }),
-                                  DividerWidget(
-                                    text: "Or",
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  CheckboxWidget(
-                                      label: "Dates",
-                                      isCheck: !_daysOrDatesCheck.value,
-                                      onChanged: (isChecked) {
-                                        _daysOrDatesCheck.value =
-                                            !_daysOrDatesCheck.value;
-                                      }),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  ValueListenableBuilder(
-                                      valueListenable: _daysOrDatesCheck,
-                                      builder: (context, value, child) {
-                                        return AbsorbPointer(
-                                          absorbing: (value as bool),
-                                          child: UploadDatesBoxWidget(
-                                              dates: dates,
-                                              onDatesSelected: (fdates) {
-                                                print(fdates);
-                                                dates = fdates;
-                                              }),
-                                        );
-                                      }),
-                                ]),
-                              ),
 
+                              InputDatesOrDays(
+                                dates: dates,
+                                weekDays: weekDays,
+                                onChangedDates: (d1) {
+                                  print(d1);
+                                  dates = d1;
+                                },
+                                onChangedDays: (d2) {
+                                  print(d2);
+                                  weekDays = d2;
+                                },
+                                onChanged: (c1) {
+                                  _daysOrDatesCheck.value = c1;
+                                },
+                              ),
                               const SizedBox(
                                 height: 20,
                               ),
@@ -1098,6 +1063,137 @@ class UploadContainer extends StatelessWidget {
       child: Text(
         "upload Image",
       ),
+    );
+  }
+}
+
+class RasiedButtonContainer extends StatefulWidget {
+  Function onChanged;
+  RasiedButtonContainer({required this.onChanged});
+
+  @override
+  State<RasiedButtonContainer> createState() => _RasiedButtonContainerState();
+}
+
+class _RasiedButtonContainerState extends State<RasiedButtonContainer> {
+  BestTutorSite _site = BestTutorSite.Days;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: ListTile(
+            title: Text("Days"),
+            leading: Radio(
+              value: BestTutorSite.Days,
+              groupValue: _site,
+              onChanged: (value) {
+                if (value != _site) {
+                  widget.onChanged();
+                }
+                setState(() {
+                  _site = value as BestTutorSite;
+                });
+              },
+            ),
+          ),
+        ),
+        Expanded(
+          child: ListTile(
+            title: Text("Dates"),
+            leading: Radio(
+              value: BestTutorSite.Dates,
+              groupValue: _site,
+              onChanged: (value) {
+                if (value != _site) {
+                  widget.onChanged();
+                }
+                setState(() {
+                  _site = value as BestTutorSite;
+                });
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class InputDatesOrDays extends StatefulWidget {
+  Map weekDays;
+  List dates;
+  Function(Map) onChangedDays;
+  Function(List) onChangedDates;
+  Function(bool) onChanged;
+  InputDatesOrDays({
+    super.key,
+    required this.weekDays,
+    required this.dates,
+    required this.onChangedDates,
+    required this.onChangedDays,
+    required this.onChanged,
+  });
+
+  @override
+  State<InputDatesOrDays> createState() => _InputDatesOrDaysState();
+}
+
+class _InputDatesOrDaysState extends State<InputDatesOrDays> {
+  bool _daysOrDatesCheck = true;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(10),
+      margin: EdgeInsets.all(5),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: Colors.grey,
+            width: 1,
+          )),
+      child: Column(children: [
+        RasiedButtonContainer(
+          onChanged: () {
+            setState(() {
+              _daysOrDatesCheck = !_daysOrDatesCheck;
+            });
+            widget.onChanged(_daysOrDatesCheck);
+          },
+        ),
+
+        SizedBox(
+          height: 10,
+        ),
+        //   absorbing: (value as bool),
+        if (_daysOrDatesCheck == true)
+          Column(
+            children: [
+              const Text("chose the days will the activity is visiable"),
+              ...widget.weekDays.keys.map((v) {
+                return CheckboxWidget(
+                    label: v,
+                    isCheck: widget.weekDays[v] ?? false,
+                    onChanged: (isChecked) {
+                      print(isChecked);
+                      widget.weekDays[v] = isChecked;
+
+                      widget.onChangedDays(widget.weekDays);
+                    });
+              }).toList(),
+            ],
+          ),
+        if (_daysOrDatesCheck == false)
+          UploadDatesBoxWidget(
+              dates: widget.dates,
+              onDatesSelected: (fdates) {
+                print(fdates);
+                widget.onChangedDates(fdates);
+                //   widget.dates = fdates;
+              }),
+      ]),
     );
   }
 }

@@ -5,6 +5,7 @@ import 'package:app/widgets/LinkWidget.dart';
 import 'package:app/widgets/SafeScreen.dart';
 import 'package:app/widgets/appBarWidget.dart';
 import 'package:app/widgets/inputTextFieldWidget.dart';
+import 'package:app/widgets/profileAvatarWidget.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
@@ -84,8 +85,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     UserProvider userProvider = Provider.of<UserProvider>(context);
+    for (var i in userProvider.currentUser!.name.split(" ")) {}
+    List fullName = userProvider.currentUser!.name.split(" ");
+
+    if (fullName.isNotEmpty) {
+
     _firstNameInput.text = userProvider.currentUser!.name.split(" ")[0];
+    }
+    if (fullName.length >= 2) {
+
+
     _secondNameInput.text = userProvider.currentUser!.name.split(" ")[1];
+    }
     _emailInput.text = userProvider.currentUser!.email!;
 
     return SafeScreen(
@@ -129,25 +140,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       },
                       child: Stack(
                         children: [
-                          CircleAvatar(
-                            child: userProvider.currentUser!.profileImagePath ==
-                                    null
-                                ? Icon(
-                                    Icons.person,
-                                    size: 50,
-                                  )
-                                : null,
-                            backgroundImage: userProvider
-                                        .currentUser!.profileImagePath !=
-                                    null
-                                ? NetworkImage(
-                                    userProvider.currentUser!.profileImagePath!)
-                                : null,
-                            backgroundColor: Color(
-                                userProvider.currentUser?.profileColor ??
-                                    0xFFFFE082),
-                            radius: 40,
-                          ),
+                        //       CircleAvatar(
+                        //   child: ClipOval(
+                        //     child: userProvider.currentUser!.profileImagePath?.trim() == "" ||
+                        //             userProvider.currentUser!.profileImagePath == null
+                        //         ? Container(
+                        //             color: Color(userProvider.currentUser!.profileColor ??
+                        //                 Colors.grey.shade400.value))
+                        //         : Image.network(
+                        //             userProvider.currentUser!.profileImagePath!,
+                        //             fit: BoxFit.cover,
+                        //           ),
+                        //   ),
+                        //   maxRadius: 40,
+                        // ),  
+
+                                                       ProfileAvatarWidget(profileColor: userProvider.currentUser?.profileColor, profileImagePath: userProvider.currentUser?.profileImagePath,),
+
                           Align(
                             alignment: Alignment.bottomCenter,
                             child: Container(

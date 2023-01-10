@@ -5,6 +5,7 @@ import 'package:app/schemas/activitySchema.dart';
 import 'package:app/schemas/userSchema.dart';
 import 'package:app/screens/ContactOwnerScreen.dart';
 import 'package:app/screens/massagesScreen.dart';
+import 'package:app/widgets/profileAvatarWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -30,7 +31,7 @@ class _OriginizerActivityBoxWidgetState
 
       // final userProvider = Provider.of<UserProvider>(context, listen: false);
 
-      String s = await chatProvider.addChat(context: context, userId: userId, activityId: activityId);
+     await chatProvider.addChat(context: context, userId: userId, activityId: activityId);
       if (chatProvider.chat != null) {
         if (chatProvider.chat!.users.contains(userId) &&
             chatProvider.chat!.users.contains(userProvider.currentUser!.Id)) {
@@ -149,20 +150,8 @@ class _OriginizerActivityBoxWidgetState
                     // ),
                     Row(
                       children: [
-                        CircleAvatar(
-                          child: ClipOval(
-                            child: userData.profileImagePath?.trim() == "" ||
-                                    userData.profileImagePath == null
-                                ? Container(
-                                    color: Color(userData.profileColor ??
-                                        Colors.grey.shade400.value))
-                                : Image.network(
-                                    userData.profileImagePath!,
-                                    fit: BoxFit.cover,
-                                  ),
-                          ),
-                          maxRadius: 40,
-                        ),
+                                    ProfileAvatarWidget(profileColor: userData.profileColor, profileImagePath: userData.profileImagePath,),
+
                         Padding(
                           padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
                           child: Text(

@@ -10,6 +10,8 @@ import 'package:app/providers/userProvider.dart';
 import 'package:app/schemas/activitySchema.dart';
 import 'package:app/schemas/userSchema.dart';
 import 'package:app/screens/ContactOwnerScreen.dart';
+import 'package:app/screens/editActivityScreen.dart';
+import 'package:app/screens/homeScreen.dart';
 import 'package:app/screens/massagesScreen.dart';
 import 'package:app/screens/reportActivityScreen.dart';
 import 'package:app/screens/sendReviewScreen.dart';
@@ -41,44 +43,19 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-const s =
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
-
-class ActivityDetailsScreen extends StatefulWidget {
-  static String router = "/activity_details";
-  ActivityDetailsScreen({Key? key}) : super(key: key);
+class PreviewNewActivityScreen extends StatefulWidget {
+  static String router = "/preview_new_activity";
+  PreviewNewActivityScreen({Key? key}) : super(key: key);
 
   @override
-  State<ActivityDetailsScreen> createState() => _ActivityDetailsScreenState();
+  State<PreviewNewActivityScreen> createState() => _PreviewNewActivityScreenState();
 }
 
-class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
+class _PreviewNewActivityScreenState extends State<PreviewNewActivityScreen> {
   final store = FirebaseStorage.instance;
   bool init = false;
   PageController pageViewController = PageController(initialPage: 0);
 
-  void _gotoChat({
-    required BuildContext context,
-    required UserProvider userProvider,
-    required String userId,
-    required String activityId,
-  }) async {
-    if (userProvider.islogin()) {
-      final chatProvider = Provider.of<ChatProvider>(context, listen: false);
-
-      // final userProvider = Provider.of<UserProvider>(context, listen: false);
-
-       await chatProvider.addChat(
-          context: context, userId: userId, activityId: activityId);
-      if (chatProvider.chat != null) {
-        if (chatProvider.chat!.users.contains(userId) &&
-            chatProvider.chat!.users.contains(userProvider.currentUser!.Id)) {
-          await Navigator.pushNamed(context, MassagesScreen.router,
-              arguments: chatProvider.chat);
-        }
-      }
-    }
-  }
 
   Map<int, BannerAd> _bannersAd = {};
 
@@ -114,48 +91,20 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
+     final userProvider = Provider.of<UserProvider>(context);
     ActivityProvider activityProvider = Provider.of<ActivityProvider>(context);
-    ActivitySchema args =
-        ModalRoute.of(context)?.settings.arguments as ActivitySchema;
+    final args = ModalRoute.of(context)?.settings.arguments as ActivitySchema;
     print(args.storeId);
 
     Future.delayed(Duration.zero,
         () async => await activityProvider.openActivity(args.storeId, args.Id));
+    
+    args.images.removeWhere((e) => e == null || e.toString().trim() == "");
+    args.dates
+        .removeWhere((e) => e == null && e == "" && e.runtimeType == String);
 
-    List images = [...args.images];
-    List dates = [...args.dates];
-    images.removeWhere((e) => e == null || e.toString().trim() == "");
-    dates.removeWhere((e) => e != null || e != "" || e.runtimeType != String);
-
-    //  dates = args.dates
-    //     .map((e) => e != null && e != "" && e.runtimeType != String)
-    //     .toList();
     return Scaffold(
-      //   appBar: AppBar(
-      //     // automaticallyImplyLeading: false,
-      //     backgroundColor: Colors.white,
-
-      //     // title: Text(
-      //     //   "Trippoint oo",
-      //     //   style: Theme.of(context).textTheme.headlineSmall,
-      //     // ),
-      //     // actions: [
-      //     //   TextButton.icon(
-      //     //     label: Text(""),
-      //     //     icon: const Icon(
-      //     //       Icons.person,
-      //     //       color: Colors.black,
-      //     //       size: 30,
-      //     //     ),
-      //     //     onPressed: () {
-      //     //       print('IconButton pressed ...');
-      //     //     },
-      //     //   ),
-      //     // ],
-      //     // centerTitle: true,
-      //     elevation: 0,
-      //   ),
+   
       body: SafeArea(
         child: Container(
           color: Colors.white,
@@ -178,10 +127,10 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                   child: Stack(
                     children: [
                       Hero(
-                        tag: images,
+                        tag: args.images[0],
                         child: PageView(
                           controller: pageViewController,
-                          children: images.map((e) {
+                          children: args.images.map((e) {
                             return Image.network(
                               e,
                               height: 300,
@@ -194,7 +143,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                         alignment: const AlignmentDirectional(.7, .9),
                         child: SmoothPageIndicator(
                           controller: pageViewController,
-                          count: images.length,
+                          count: args.images.length,
                           axisDirection: Axis.horizontal,
                           onDotClicked: (i) {
                             pageViewController.animateToPage(
@@ -236,7 +185,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                               IconButton(
                                 icon: const Icon(Icons.arrow_back, size: 28),
                                 onPressed: () {
-                                  Navigator.pop(context);
+                                //   Navigator.pop(context);
                                 },
                               ),
                               Row(
@@ -302,20 +251,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                                           .toString() +
                                       "/5",
                                 ),
-                                // Icon(
-                                //   Icons.star_rounded,
-                                //   color: ColorsHelper.yellow,
-                                // ),
-                                // SizedBox(
-                                //   width: 5,
-                                // ),
-                                // Text(
-                                //   activityProvider
-                                //           .previewMark(args.previews)
-                                //           .toString() +
-                                //       "/5",
-                                //   style: Theme.of(context).textTheme.bodySmall,
-                                // ),
+              
                                 SizedBox(
                                   width: 5,
                                 ),
@@ -367,22 +303,6 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                       ],
                     ),
 
-                    // TextBoxActWidget(
-                    //   text: 'book through abb or contact owner',
-                    // ),
-                    // TextBoxActWidget(
-                    //   text: 'Free cancellation up to 24 hours in',
-                    //   icon: Icons.date_range,
-                    // ),
-                    // TextBoxActWidget(
-                    //   text: 'Booking confirmed in 24 hours ',
-                    //   icon: Icons.bookmark,
-                    // ),
-                    // const SizedBox(
-                    //   height: 15,
-                    // ),
-                    // P_TextInfo(text: "Location", icon: Icons.location_on),
-                    // P_TextInfo(text: "3 Hours", icon: Icons.timelapse),
                   ],
                 ),
               ),
@@ -428,7 +348,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                         Column(
                           children: [
                             Column(
-                              children: dates.map((e) {
+                              children: args.dates.map((e) {
                                 if (e != null &&
                                     e != "" &&
                                     e.runtimeType != String) {
@@ -455,7 +375,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                                 return SizedBox();
                               }).toList(),
                             ),
-                            if (dates.isEmpty)
+                            if (args.dates.isEmpty)
                               Row(
                                 children: [
                                   //   if (args.availableDays.contains(String))
@@ -510,8 +430,11 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                 thickness: 2,
                 color: ColorsHelper.blue.shade400,
               ),
-              OriginizerActivityBoxWidget(
-                activitySchema: args,
+              AbsorbPointer(
+                absorbing: false,
+                child: OriginizerActivityBoxWidget(
+                  activitySchema: args,
+                ),
               ),
               Divider(
                 thickness: 1,
@@ -553,7 +476,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                                             padding: EdgeInsets.all(5),
                                             margin: EdgeInsets.symmetric(
                                                 horizontal: 10),
-                                            decoration: BoxDecoration(
+                                                  decoration: BoxDecoration(
                                                 border: Border.all(
                                                     color: ColorsHelper.grey,
                                                     width: 1),
@@ -561,19 +484,14 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                                                     BorderRadius.circular(10)),
                                             child: Row(
                                               children: [
-                                                Text(e["price"].toString()),
                                                 Text(
-                                                  " OMR",
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodySmall
-                                                      ?.copyWith(fontSize: 10),
-                                                )
+                                                    e["price"].toString()),
+                                                    Text(" OMR", style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 10),)
                                               ],
                                             ),
                                           ),
                                         ),
-                                        // Icon(Icons.arrow_forward, size: 35, color:ColorsHelper.grey ,),
+                                                                                // Icon(Icons.arrow_forward, size: 35, color:ColorsHelper.grey ,),
 
                                         Expanded(
                                           flex: 3,
@@ -587,20 +505,12 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                                                     width: 1),
                                                 borderRadius:
                                                     BorderRadius.circular(10)),
-                                            child: Text(
-                                              e["des"].toString(),
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodySmall,
-                                            ),
+                                            child: Text(e["des"].toString(),style: Theme.of(context).textTheme.bodySmall, ),
                                           ),
                                         ),
                                       ],
                                     ),
-                                    if (k != args.prices.length - 1 &&
-                                        (args.prices[k + 1]["price"] != "" &&
-                                            args.prices[k + 1]["price"] !=
-                                                null))
+                                    if (k != args.prices.length - 1 && ( args.prices[k+1]["price"] != "" && args.prices[k+1]["price"] != null))
                                       DividerWidget(),
                                   ],
                                 ));
@@ -660,33 +570,22 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
               SizedBox(
                 height: 10,
               ),
-              //   Stack(
-              //     children: [
-              Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 250,
-                  child: GooglemapDescWidget(
-                    latlan: LatLng(args.lat, args.lng),
-                    activitySchema: args,
-                    onChanged: () {},
-                  )),
-              //   CupertinoButton(
-              //     color: ColorsHelper.red,
-              //     padding: EdgeInsets.all(10),
-              //     borderRadius: BorderRadius.zero,
-              //     onPressed: () {
-              //       //   Navigator.pushNamed(context, MapScreen.router,
-              //       //       arguments: args);
-
-              //       // !!!!!!!!!!!!!!!!!!!!!!!!
-              //     },
-              //     child: Icon(
-              //       Icons.open_in_full_rounded,
-              //       size: 30,
-              //     ),
-              //   ),
-              // ],
-              //   ),
+              Stack(
+                children: [
+                  Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: 250,
+                      child: AbsorbPointer(
+                        absorbing:false ,
+                        child: GooglemapDescWidget(
+                          latlan: LatLng(args.lat, args.lng),
+                          activitySchema: args,
+                          onChanged: () {},
+                        ),
+                      )),
+        
+                ],
+              ),
               // Image.asset(
               //   'assets/images/categories/discover_all.jpg',
               //   width: MediaQuery.of(context).size.width,
@@ -748,14 +647,14 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                         ),
                         RatingBarWidget(
                           onRated: (val) {
-                            print(val);
-                            if (userProvider.islogin()) {
-                              Navigator.pushNamed(
-                                  context, SendReviewScreen.router,
-                                  arguments: args);
-                            } else {
-                              DialogWidgets.mustSginin(context);
-                            }
+                            // print(val);
+                            // if (userProvider.islogin()) {
+                            //   Navigator.pushNamed(
+                            //       context, SendReviewScreen.router,
+                            //       arguments: args);
+                            // } else {
+                            //   DialogWidgets.mustSginin(context);
+                            // }
                           },
                           size: 30,
                         ),
@@ -774,9 +673,9 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
                       padding: EdgeInsetsDirectional.fromSTEB(5, 5, 5, 5),
                       child: OutlinedButton(
                         onPressed: () {
-                          print('Button pressed ...');
-                          Navigator.pushNamed(context, ViewReviewScreen.router,
-                              arguments: args);
+                        //   print('Button pressed ...');
+                        //   Navigator.pushNamed(context, ViewReviewScreen.router,
+                        //       arguments: args);
                         },
                         style: OutlinedButton.styleFrom(
                             // primary: ColorsHelper.green,
@@ -802,8 +701,8 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
               LinkWidget(
                   text: "! Report this listing ",
                   onPressed: () {
-                    Navigator.pushNamed(context, ReportActivityScreen.router,
-                        arguments: args.Id);
+                    // Navigator.pushNamed(context, ReportActivityScreen.router,
+                    //     arguments: args.Id);
                   }),
 
               const SizedBox(
@@ -818,15 +717,29 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
         color: Colors.white38,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: ElevatedButton(
-            onPressed: () {
-              Navigator.pushNamed(context, ContactOwnerScreen.router,
-                  arguments: args);
-            },
-            child: Text("Contact Owner"),
-            style: ElevatedButton.styleFrom(
-              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-            ),
+          child: Row(
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, EditActivityScreen.router,
+                      arguments: args);
+                },
+                child: Text("Edit"),
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                ),
+              ),
+                ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamedAndRemoveUntil(context, HomeScreen.router,
+                      arguments: args, (router) => false);
+                },
+                child: Text("Done"),
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                ),
+              ),
+            ],
           ),
         ),
       ),

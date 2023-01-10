@@ -24,20 +24,31 @@ class ContactOwnerScreen extends StatelessWidget {
     required BuildContext context,
     required String userId,
     required String activityId,
+    required String activityTitle,
   }) async {
     UserProvider userProvider =
         Provider.of<UserProvider>(context, listen: false);
     if (userProvider.islogin()) {
       final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+      String? previousActivityId = chatProvider.chat?.activityId;
 
       // final userProvider = Provider.of<UserProvider>(context, listen: false);
 
-      String s = await chatProvider.addChat(
+      await chatProvider.addChat(
           context: context, userId: userId, activityId: activityId);
       if (chatProvider.chat != null) {
         if (chatProvider.chat!.users.contains(userId) &&
             chatProvider.chat!.users.contains(userProvider.currentUser!.Id)) {
           print(chatProvider.chat);
+          if (previousActivityId != activityId || previousActivityId == null) {
+            await chatProvider.sendMassageNewActivitySelected(
+                context: context,
+                text:
+                    "Start a conversation to ask questions about a tourism activity",
+                activityTitle: (activityTitle.trim().length <= 30
+                    ? activityTitle.trim()
+                    : activityTitle.trim().substring(0, 30).toString()) + "|||" + activityId);
+          }
           Navigator.pushNamed(context, MassagesScreen.router,
               arguments: chatProvider.chat);
         }
@@ -77,7 +88,8 @@ class ContactOwnerScreen extends StatelessWidget {
                 await _gotoChat(
                     context: context,
                     userId: activitySchema.userId,
-                    activityId: activitySchema.Id);
+                    activityId: activitySchema.Id,
+                    activityTitle: activitySchema.title);
 
                 await Future.delayed(Duration(milliseconds: 2000));
 
@@ -144,7 +156,7 @@ class ContactOwnerScreen extends StatelessWidget {
                     width: 10,
                   ),
                   Text(
-                    " Call " + activitySchema.phoneNumberCall.toString(),
+                    " Call ",
                     style: TextStyle(color: Colors.white),
                   ),
                 ]),
@@ -190,8 +202,7 @@ class ContactOwnerScreen extends StatelessWidget {
                     width: 10,
                   ),
                   Text(
-                    " Whatsapp " +
-                        activitySchema.phoneNumberWhatsapp.toString(),
+                    activitySchema.phoneNumberWhatsapp.toString(),
                     style: TextStyle(color: Colors.white),
                   ),
                 ]),

@@ -48,18 +48,17 @@ class _OwnerActivitesScreenState extends State<OwnerActivitesScreen> {
                   bool done = await activityProvider.deleteActivity(
                       context, activityStoreId);
 
-                  assert(done != true);
+                  assert(done == true);
 
                   EasyLoading.showSuccess("");
 
                   Navigator.of(context).pop();
                 } catch (err) {
                   print(err);
-                   EasyLoading.showError("");
+                  EasyLoading.showError("");
                 }
 
-                    await Future.delayed(Duration(milliseconds: 1500));
-
+                await Future.delayed(Duration(milliseconds: 1500));
 
                 EasyLoading.dismiss();
                 setState(() {});
@@ -110,6 +109,16 @@ class _OwnerActivitesScreenState extends State<OwnerActivitesScreen> {
                     const SizedBox(
                       height: 30,
                     ),
+                    OutlinedButton.icon(
+                      icon: const Icon(Icons.add_rounded),
+                      label: const Text("Add Activity"),
+                      onPressed: () async {
+                        Navigator.pushNamed(context, AddActivityScreen.router);
+                      },
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
                     ...activityListSchema.map((a) {
                       return Card(
                         margin: EdgeInsets.symmetric(vertical: 10),
@@ -131,7 +140,8 @@ class _OwnerActivitesScreenState extends State<OwnerActivitesScreen> {
                                     width: 100,
                                     height: 160,
                                     child: Image.network(
-                                      activityProvider.mainDisplayImage(a.images),
+                                      activityProvider
+                                          .mainDisplayImage(a.images),
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -213,7 +223,9 @@ class _OwnerActivitesScreenState extends State<OwnerActivitesScreen> {
                                       text: a.isActive ? "Freeze" : "Activate",
                                       color: Colors.black45,
                                       onPressed: () async {
-                                        EasyLoading.show(maskType: EasyLoadingMaskType.black);
+                                        EasyLoading.show(
+                                            maskType:
+                                                EasyLoadingMaskType.black);
 
                                         if (a.isActive) {
                                           await activityProvider.freezeActivity(
@@ -240,10 +252,12 @@ class _OwnerActivitesScreenState extends State<OwnerActivitesScreen> {
                                     //   T
                                   ],
                                 ),
-                              )
+                              ),
+
                             ]),
                       );
                     }).toList(),
+                    SizedBox(height: 40,),
                   ]));
                 }),
           ],

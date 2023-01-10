@@ -7,12 +7,16 @@ import 'package:app/schemas/chatSchema.dart';
 import 'package:app/schemas/massageSchema.dart';
 import 'package:app/schemas/userSchema.dart';
 import 'package:app/screens/activityDetailsScreen.dart';
+import 'package:app/widgets/LinkWidget.dart';
+import 'package:app/widgets/activitySelectedMessageBox.dart';
 import 'package:app/widgets/massageBoxWidget.dart';
+import 'package:app/widgets/profileAvatarWidget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -109,12 +113,16 @@ class _MassagesScreenState extends State<MassagesScreen> {
     });
   }
 
-  Future deleteChat(String chatId) async {
-    UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
+  Future<bool> deleteChat(String chatId, String chatStoreId) async {
+    UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
 
-    ChatProvider chatProvider = Provider.of<ChatProvider>(context , listen: false);
-    await chatProvider.deleteChatOneSide( context: context,
-        chatId: chatId);
+    ChatProvider chatProvider =
+        Provider.of<ChatProvider>(context, listen: false);
+    bool done = await chatProvider.deleteChatOneSide(
+        context: context, chatId: chatId, chatStoreId: chatStoreId);
+
+    return done;
   }
 
   @override
@@ -174,8 +182,10 @@ class _MassagesScreenState extends State<MassagesScreen> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: CircleAvatar(
-                            backgroundColor: Color(user.profileColor!),
+                          child: ProfileAvatarWidget(
+                            profileColor: user.profileColor,
+                            profileImagePath: user.profileImagePath,
+                            size: 20,
                           ),
                         ),
                         Text(user.name.toString()),
@@ -185,8 +195,8 @@ class _MassagesScreenState extends State<MassagesScreen> {
                       children: [
                         IconButton(
                             onPressed: () {
-                              Navigator.pop(context);
                               chatProvider.sortChats();
+                              Navigator.pop(context);
                             },
                             icon: Icon(Icons.arrow_back_rounded)),
                       ],
@@ -219,7 +229,21 @@ class _MassagesScreenState extends State<MassagesScreen> {
                                         children: <Widget>[
                                           SimpleDialogOption(
                                             onPressed: () async {
-                                              await deleteChat(activityId);
+                                              EasyLoading.show();
+                                              try {
+                                                bool done = await deleteChat(
+                                                    args.Id, args.storeId!);
+                                                chatProvider.sortChats();
+                                                assert(done != false);
+                                                Navigator.pop(context);
+                                                Navigator.pop(context);
+                                              } catch (err) {
+                                                EasyLoading.showError("");
+                                              }
+                                              await Future.delayed(
+                                                  Duration(milliseconds: 500),
+                                                  () {});
+                                              EasyLoading.dismiss();
                                             },
                                             child: const Text("Delete Chat"),
                                           ),
@@ -267,8 +291,10 @@ class _MassagesScreenState extends State<MassagesScreen> {
                                 width: 100,
                                 height: 100,
                                 child: Image.network(
-                                  activityProvider.mainDisplayImage(activityProvider.activities[activityId]?.images ?? [])
-                                    ,
+                                  activityProvider.mainDisplayImage(
+                                      activityProvider
+                                              .activities[activityId]?.images ??
+                                          []),
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -313,6 +339,7 @@ class _MassagesScreenState extends State<MassagesScreen> {
                             MassageSchema massage = MassageSchema(
                               type: massageData.data()["type"],
                               Id: massageData.data()["Id"],
+                              url: massageData.data()["url"],
                               audioPath: massageData.data()["audioPath"],
                               imagePath: massageData.data()["imagePath"],
                               from: massageData.data()["from"],
@@ -323,22 +350,72 @@ class _MassagesScreenState extends State<MassagesScreen> {
                             );
 
                             if (massegesDateIndex.contains(index)) {
+                              if (massage.type == "activity") {
+                                return Column(
+                                    
+                                  children: [
+                                      Align(
+                                        alignment: Alignment.center,
+                                        child: Center(
+                                          child: Text(
+                                            DateFormat('dd/MM/yyyy').format(
+                                                DateTime
+                                                    .fromMillisecondsSinceEpoch(
+                                                        massage.createdAt)),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall,
+                                          ),
+                                        ),
+                                      ), SizedBox(
+                                    height: 15,
+                                  ),
+                                    ActivitySelectedMessageBox(
+                                      date: massage.createdAt,
+                                      text: massage.massage!,
+                                      url: massage.url,
+                                    ),
+                                  ],
+                                );
+                              }
                               return Column(
                                 // !!!!!!!!!!!! PROBLEM !!!!!!!!!!!!!!!!
                                 key: Key(massageData.id),
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
+                                     Align(
+                                        alignment: Alignment.center,
+                                        child: Center(
+                                          child: Text(
+                                            DateFormat('dd/MM/yyyy').format(
+                                                DateTime
+                                                    .fromMillisecondsSinceEpoch(
+                                                        massage.createdAt)),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall,
+                                          ),
+                                        ),
+                                      ),
                                   SizedBox(
                                     height: 15,
-                                  ),
-                                  Center(
-                                    child: Text(DateFormat('dd/MM/yyyy').format(
-                                        DateTime.fromMillisecondsSinceEpoch(
-                                            massage.createdAt))),
                                   ),
                                   MassageBoxWidget(massage: massage)
                                 ],
                               );
+                            }
+
+                            if (massage.type == "activity") {
+                              return Column(
+                                children: [
+                                  ActivitySelectedMessageBox(
+                                      date: massage.createdAt,
+                                      text: massage.massage!,
+                                      url: massage.url,
+                                    ),
+                                ],
+                              );
+                                
                             }
 
                             return MassageBoxWidget(

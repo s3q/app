@@ -115,6 +115,10 @@ class _SearchScreenState extends State<SearchScreen>
     });
   }
 
+//   Map _appCatogeriesSelected =
+//       AppHelper.categories.asMap().map((k, v) => MapEntry(v["title"], false));
+  String categorySelected = "discover_all";
+
   @override
   void initState() {
     // TODO: implement initState
@@ -152,11 +156,17 @@ class _SearchScreenState extends State<SearchScreen>
       } else {
         setState(() {
           activitiesList = args as List<ActivitySchema>;
+        
+          categorySelected = AppHelper.categories
+              .where((e) => e["title"] == activitiesList[0].category)
+              .toList()[0]["key"];
         });
       }
 
       onceCheck = 1;
     }
+
+    print(categorySelected);
     // if (args != null) activitiesList.add(args);
 
     // Marker _marker = Marker(
@@ -283,7 +293,7 @@ class _SearchScreenState extends State<SearchScreen>
 
                       Navigator.pushNamed(context, ActivityDetailsScreen.router,
                           arguments: activitiesList[index]);
-                              await Future.delayed(Duration(milliseconds: 1000));
+                      await Future.delayed(Duration(milliseconds: 1000));
                       EasyLoading.dismiss();
                     },
                     activitySchema: activitiesList[index],
@@ -295,167 +305,115 @@ class _SearchScreenState extends State<SearchScreen>
         ),
         DraggableScrollableSheet(
             controller: draggableScrollableController,
-            initialChildSize: 0.7,
-            maxChildSize: 0.7,
-            minChildSize: 0.1,
-            snapSizes: [0.1, 0.7],
+            initialChildSize: 0.75,
+            maxChildSize: 0.75,
+            minChildSize: 0.12,
+            snapSizes: [0.12, 0.75],
             snap: true,
             builder: (context, scrollController) {
-              return ListView(controller: scrollController, children: [
-                Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(16),
-                      topRight: Radius.circular(16),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        blurRadius: 8,
-                        color: Colors.black12,
-                        spreadRadius: .6,
-                        offset: Offset(0, -8),
-                      )
-                    ],
-                  ),
-                  margin: EdgeInsets.only(top: 30),
-                  padding: EdgeInsets.only(top: 20, bottom: 20),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                    ),
-                    child: Center(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(vertical: 20),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            color: ColorsHelper.grey),
-                        width: 70,
-                        height: 6,
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
+              return Container(
+                decoration: const BoxDecoration(
                   color: Colors.white,
-                  height: MediaQuery.of(context).size.height,
-                  child: SingleChildScrollView(
-                    child: Container(
-                      child:
-                          //   child: ListView.builder(
-                          //       itemCount: activitiesResultList.length,
-                          //       itemBuilder: (context, index) {
-                          //         ActivitySchema a = activitiesResultList[index];
-                          //         return Container(
-                          //           padding: EdgeInsets.all(10),
-                          //           child: ResultActivituBoxWidget(
-                          //             activitySchema: a,
-                          //             showOnMap: () async {
-                          //               draggableScrollableController.animateTo(0.1,
-                          //                   duration: Duration(milliseconds: 500),
-                          //                   curve: Curves.easeInOut);
-
-                          //               GoogleMapController con =
-                          //                   await _controller.future;
-                          //               Marker __markerA = markersList
-                          //                   .where((element) =>
-                          //                       element.markerId == MarkerId(a.Id))
-                          //                   .toList()[0];
-                          //               con.showMarkerInfoWindow(
-                          //                   __markerA.markerId);
-
-                          //               con.animateCamera(
-                          //                   CameraUpdate.newCameraPosition(
-                          //                       CameraPosition(
-                          //                           target: __markerA.position,
-                          //                           zoom: 18)));
-                          //             },
-                          //           ),
-                          //         );
-                          //       }),
-                          Builder(builder: (context) {
-                        return Column(
-                          children: activitiesList.map((a) {
-                            return Column(
-                              children: [
-                                Container(
-                                  key: Key(Uuid().v4()),
-                                  padding: EdgeInsets.all(10),
-                                  child: ResultActivituBoxWidget(
-                                    onClicked: () async {
-                                      EasyLoading.show();
-
-                                      Navigator.pushNamed(
-                                          context, ActivityDetailsScreen.router,
-                                          arguments: a);
-                                                                  await Future.delayed(Duration(milliseconds: 1000));
-
-                                      EasyLoading.dismiss();
-                                    },
-                                    activitySchema: a,
-                                    showOnMap: () async {
-                                      draggableScrollableController.animateTo(
-                                          0.1,
-                                          duration: Duration(milliseconds: 500),
-                                          curve: Curves.easeInOut);
-
-                                      GoogleMapController con =
-                                          await _controller.future;
-                                      Marker __markerA = markersList
-                                          .where((element) =>
-                                              element.markerId ==
-                                              MarkerId(a.Id))
-                                          .toList()[0];
-                                      con.showMarkerInfoWindow(
-                                          __markerA.markerId);
-
-                                      con.animateCamera(
-                                          CameraUpdate.newCameraPosition(
-                                              CameraPosition(
-                                                  target: __markerA.position,
-                                                  zoom: 18)));
-                                    },
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 20,
-                                ),
-                              ],
-                            );
-
-                            // return Container(
-                            //   key: Key(Uuid().v4()),
-                            //   padding: EdgeInsets.all(10),
-                            //   child: ResultActivituBoxWidget(
-                            //     activitySchema: a,
-                            //     showOnMap: () async {
-                            //       draggableScrollableController.animateTo(0.1,
-                            //           duration: Duration(milliseconds: 500),
-                            //           curve: Curves.easeInOut);
-
-                            //       GoogleMapController con =
-                            //           await _controller.future;
-                            //       Marker __markerA = markersList
-                            //           .where((element) =>
-                            //               element.markerId == MarkerId(a.Id))
-                            //           .toList()[0];
-                            //       con.showMarkerInfoWindow(__markerA.markerId);
-
-                            //       con.animateCamera(
-                            //           CameraUpdate.newCameraPosition(
-                            //               CameraPosition(
-                            //                   target: __markerA.position,
-                            //                   zoom: 18)));
-                            //     },
-                            //   ),
-                            // );
-                          }).toList(),
-                        );
-                      }),
-                    ),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 8,
+                      color: Colors.black12,
+                      spreadRadius: .6,
+                      offset: Offset(0, -8),
+                    )
+                  ],
                 ),
-              ]);
+                margin: EdgeInsets.only(top: 30),
+                padding: EdgeInsets.only(top: 20, bottom: 20),
+                child: ListView.builder(
+                  controller: scrollController,
+                  itemCount: activitiesList.length,
+                  itemBuilder: (context, index) {
+                    ActivitySchema a = activitiesList[index];
+                    return Column(
+                      children: [
+                        if (index == 0)
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                            ),
+                            child: Center(
+                              child: Container(
+                                padding: EdgeInsets.symmetric(vertical: 20),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(50),
+                                    color: ColorsHelper.grey),
+                                width: 70,
+                                height: 6,
+                              ),
+                            ),
+                          ),
+                        if (index == 0)
+                          SizedBox(
+                            height: 20,
+                          ),
+                        Container(
+                          key: Key(Uuid().v4()),
+                          padding: EdgeInsets.all(10),
+                          child: ResultActivituBoxWidget(
+                            onClicked: () async {
+                              EasyLoading.show();
+
+                              Navigator.pushNamed(
+                                  context, ActivityDetailsScreen.router,
+                                  arguments: a);
+                              await Future.delayed(
+                                  Duration(milliseconds: 1000));
+
+                              EasyLoading.dismiss();
+                            },
+                            activitySchema: a,
+                            showOnMap: () async {
+                              draggableScrollableController.animateTo(0.1,
+                                  duration: Duration(milliseconds: 500),
+                                  curve: Curves.easeInOut);
+
+                              GoogleMapController con =
+                                  await _controller.future;
+                              Marker __markerA = markersList
+                                  .where((element) =>
+                                      element.markerId == MarkerId(a.Id))
+                                  .toList()[0];
+                              con.showMarkerInfoWindow(__markerA.markerId);
+
+                              con.animateCamera(CameraUpdate.newCameraPosition(
+                                  CameraPosition(
+                                      target: __markerA.position, zoom: 18)));
+                            },
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                // Container(
+                //   decoration: BoxDecoration(
+                //     color: Colors.white,
+                //   ),
+                //   child: Center(
+                //     child: Container(
+                //       padding: EdgeInsets.symmetric(vertical: 20),
+                //       decoration: BoxDecoration(
+                //           borderRadius: BorderRadius.circular(50),
+                //           color: ColorsHelper.grey),
+                //       width: 70,
+                //       height: 6,
+                //     ),
+                //   ),
+                // ),
+              );
             }),
         Container(
           color: Colors.white,
@@ -609,6 +567,8 @@ class _SearchScreenState extends State<SearchScreen>
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     ...AppHelper.categories.map((e) {
+                      print(categorySelected);
+                      print(categorySelected == e["key"]);
                       return Container(
                         margin: EdgeInsets.symmetric(horizontal: 10),
                         child: OutlinedButton(
@@ -622,17 +582,22 @@ class _SearchScreenState extends State<SearchScreen>
 
                             activitiesList = [];
                             for (var activityMap in r.data) {
+                              print(activityMap);
                               activitiesList
                                   .add(ActivitySchema.toSchema(activityMap));
                             }
 
                             setState(() {
                               activitiesList = activitiesList;
+                              categorySelected = e["key"];
                             });
                             EasyLoading.dismiss();
                           },
                           style: OutlinedButton.styleFrom(
                             primary: Colors.black87,
+                            backgroundColor: categorySelected == e["key"]
+                                ? ColorsHelper.yellow.withOpacity(0.4)
+                                : null,
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 8),
                             side: const BorderSide(width: 1),

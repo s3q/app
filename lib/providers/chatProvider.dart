@@ -7,6 +7,7 @@ import 'package:app/schemas/notificationPieceSchema.dart';
 import 'package:app/schemas/notificationsSchema.dart';
 import 'package:app/schemas/userSchema.dart';
 import 'package:app/screens/getStartedScreen.dart';
+import 'package:app/widgets/DiologsWidgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -25,7 +26,7 @@ class ChatProvider with ChangeNotifier {
   static final auth = FirebaseAuth.instance;
   static String collection = CollectionsConstants.chat;
 
-  Future getChats(
+  Future<List> getChats(
       {required QuerySnapshot<Map<String, dynamic>> query,
       required BuildContext context}) async {
     // List users = e["users"]
@@ -92,6 +93,7 @@ class ChatProvider with ChangeNotifier {
       if (lastMassagesQuery.docs.isNotEmpty) {
         lastMassage = MassageSchema(
           Id: lastMassagesQuery.docs[lastMassageIndex].data()["Id"],
+          url: lastMassagesQuery.docs[lastMassageIndex].data()["url"],
           imagePath:
               lastMassagesQuery.docs[lastMassageIndex].data()["imagePath"],
           type: lastMassagesQuery.docs[lastMassageIndex].data()["type"],
@@ -180,6 +182,7 @@ class ChatProvider with ChangeNotifier {
     print(lastMassageIndex);
     if (lastMassagesQuery.docs.isNotEmpty) {
       lastMassage = MassageSchema(
+        url: lastMassagesQuery.docs[lastMassageIndex].data()["url"],
         Id: lastMassagesQuery.docs[lastMassageIndex].data()["Id"],
         imagePath: lastMassagesQuery.docs[lastMassageIndex].data()["imagePath"],
         type: lastMassagesQuery.docs[lastMassageIndex].data()["type"],
@@ -245,6 +248,8 @@ class ChatProvider with ChangeNotifier {
         chats.add(topChats[ckey]!);
       }
     }
+    print("Sort Done");
+    print(chats);
 
     return chats;
   }
@@ -275,6 +280,8 @@ class ChatProvider with ChangeNotifier {
         .toList();
   }
 
+  Future<ChatSchema?> fetchChat(String chatId) async {}
+
   Future<ChatSchema?> fetchSingleChat(ChatSchema chat) async {
     try {
       if (chat.users.contains(auth.currentUser!.uid)) {
@@ -288,6 +295,7 @@ class ChatProvider with ChangeNotifier {
             .map(
               (e) => MassageSchema(
                 Id: e["Id"],
+                url: e["url"],
                 type: e["type"],
                 imagePath: e["imagePath"],
                 audioPath: e["audioPath"],
@@ -342,6 +350,7 @@ class ChatProvider with ChangeNotifier {
           createdAt: DateTime.now().millisecondsSinceEpoch,
           readedAt: 0,
           chatId: chat!.Id,
+          url: "",
         );
 
         //   DocumentReference<Map<String, dynamic>> docRef =
@@ -364,7 +373,7 @@ class ChatProvider with ChangeNotifier {
 
     if (!query1.data()?["unread"].contains(toUserId)) {
       await query1.reference.update({
-        "unread": query1.data()?["unread"].add(toUserId),
+        "unread": [...query1.data()?["unread"], toUserId],
       });
 
       chat?.unread.add(toUserId);
@@ -382,17 +391,14 @@ class ChatProvider with ChangeNotifier {
         .collection(ChatProvider.collection)
         .doc(chat!.storeId!)
         .get();
-
-    if (query1.data()?["unread"].contains(userProvider.currentUser?.Id)) {
+    List unread = query1.data()?["unread"] as List;
+    if (unread.contains(userProvider.currentUser?.Id)) {
       await query1.reference.update({
-        "unread": query1
-            .data()?["unread"]
-            .map((e) => e != userProvider.currentUser?.Id),
+        "unread": unread.map((e) => e != userProvider.currentUser?.Id).toList(),
       });
 
-      chat?.unread = query1
-          .data()?["unread"]
-          .map((e) => e != userProvider.currentUser?.Id);
+      chat?.unread =
+          unread.map((e) => e != userProvider.currentUser?.Id).toList();
     }
   }
 
@@ -409,7 +415,7 @@ class ChatProvider with ChangeNotifier {
       ChatProvider chatProvider =
           Provider.of<ChatProvider>(context, listen: false);
 
-      String toUserId = chatProvider.chat?.users
+      String? toUserId = chatProvider.chat?.users
           .singleWhere((e) => e != userProvider.currentUser!.Id);
 
       //   QuerySnapshot<Map<String, dynamic>> query1 =
@@ -421,6 +427,7 @@ class ChatProvider with ChangeNotifier {
       MassageSchema massage = MassageSchema(
         Id: Uuid().v4(),
         type: "text",
+        url: "",
         from: auth.currentUser!.uid,
         massage: text.trim(),
         createdAt: DateTime.now().millisecondsSinceEpoch,
@@ -431,38 +438,139 @@ class ChatProvider with ChangeNotifier {
       //   DocumentReference<Map<String, dynamic>> docRef =
       await query1.add(massage.toMap());
 
-      DocumentSnapshot<Map<String, dynamic>> query3 = await store
-          .collection(ChatProvider.collection)
-          .doc(chat!.storeId!)
-          .get();
+      //   DocumentSnapshot<Map<String, dynamic>> query3 = await store
+      //       .collection(ChatProvider.collection)
+      //       .doc(chat!.storeId!)
+      //       .get();
 
       //   chats[chats.indexWhere((element) => element.Id == query3.data()?["Id"])] = ChatSchema(createdAt: createdAt, publicKey: publicKey, users: users, Id: Id, activityId: activityId, unread: unread);
+      if (toUserId != null && toUserId != "") {
+        print("STAGE 1");
+        CollectionReference<Map<String, dynamic>> query2 = store
+            .collection(CollectionsConstants.notifications)
+            .doc(toUserId)
+            .collection("chat");
+        print("STAGE 2");
 
-      CollectionReference<Map<String, dynamic>> query2 = store
-          .collection(CollectionsConstants.notifications)
-          .doc(userProvider.currentUser!.Id)
-          .collection("chat");
+        print(toUserId);
 
-      Map<String, dynamic> notificationSchema = NotificationPieceSchema(
-        notificationId: userProvider.currentUser!.Id,
+        NotificationPieceSchema notificationSchema = NotificationPieceSchema(
+          notificationId: Uuid().v4(),
+          data: {
+            "chatId": chat?.Id,
+            "userId": toUserId,
+          },
+          createdAt: DateTime.now().millisecondsSinceEpoch,
+          title: userProvider.currentUser!.name.toString(),
+          text:
+              "${text.trim().length <= 40 ? text.trim() : text.trim().substring(0, 40).toString()}",
+        );
+
+        //   if (query2.data() == null) {
+        //     await query2.reference.set(NotificationsSchema(
+        //         important: [notificationSchema], medium: [], low: []).asMap());
+        //   } else {
+        //     await query2.reference.update({
+        //       "important": [...query2.data()?["important"]]
+        //     });
+        //   }
+
+        print(notificationSchema.toMap());
+
+        query2.add(notificationSchema.toMap());
+        print("STAGE 3");
+
+        await newMassage(context: context, toUserId: toUserId);
+      }
+
+      return massage;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  
+  Future<MassageSchema?> sendMassageNewActivitySelected({
+    required context,
+    required String text,
+    required String activityTitle,
+  }) async {
+    try {
+      assert(chat != null);
+      assert(chat!.storeId != null);
+      assert(text.trim() != "");
+
+      UserProvider userProvider = Provider.of(context, listen: false);
+      ChatProvider chatProvider =
+          Provider.of<ChatProvider>(context, listen: false);
+
+      String? toUserId = chatProvider.chat?.users
+          .singleWhere((e) => e != userProvider.currentUser!.Id);
+
+      //   QuerySnapshot<Map<String, dynamic>> query1 =
+      CollectionReference<Map<String, dynamic>> query1 = store
+          .collection(ChatProvider.collection)
+          .doc(chat!.storeId!)
+          .collection(CollectionsConstants.massages);
+
+      MassageSchema massage = MassageSchema(
+        Id: Uuid().v4(),
+        type: "activity",
+        url: activityTitle,
+        from: auth.currentUser!.uid,
+        massage: text.trim(),
         createdAt: DateTime.now().millisecondsSinceEpoch,
-        description: "",
-        text:
-            "New massage ${text.trim().substring(0, 5)} from ${auth.currentUser!.uid}",
-      ).asMap();
+        readedAt: 0,
+        chatId: chat!.Id,
+      );
 
-      //   if (query2.data() == null) {
-      //     await query2.reference.set(NotificationsSchema(
-      //         important: [notificationSchema], medium: [], low: []).asMap());
-      //   } else {
-      //     await query2.reference.update({
-      //       "important": [...query2.data()?["important"]]
-      //     });
-      //   }
+      //   DocumentReference<Map<String, dynamic>> docRef =
+      await query1.add(massage.toMap());
 
-      query2.add(notificationSchema);
+      //   DocumentSnapshot<Map<String, dynamic>> query3 = await store
+      //       .collection(ChatProvider.collection)
+      //       .doc(chat!.storeId!)
+      //       .get();
 
-      await newMassage(context: context, toUserId: toUserId);
+      //   chats[chats.indexWhere((element) => element.Id == query3.data()?["Id"])] = ChatSchema(createdAt: createdAt, publicKey: publicKey, users: users, Id: Id, activityId: activityId, unread: unread);
+      if (toUserId != null && toUserId != "") {
+        print("STAGE 1");
+        CollectionReference<Map<String, dynamic>> query2 = store
+            .collection(CollectionsConstants.notifications)
+            .doc(toUserId)
+            .collection("chat");
+        print("STAGE 2");
+
+        print(toUserId);
+
+        NotificationPieceSchema notificationSchema = NotificationPieceSchema(
+          notificationId: Uuid().v4(),
+          data: {
+            "chatId": chat?.Id,
+            "userId": toUserId,
+          },
+          createdAt: DateTime.now().millisecondsSinceEpoch,
+          title: userProvider.currentUser!.name.toString(),
+          text:
+              "${text.trim().length <= 40 ? text.trim() : text.trim().substring(0, 40).toString()}",
+        );
+
+        //   if (query2.data() == null) {
+        //     await query2.reference.set(NotificationsSchema(
+        //         important: [notificationSchema], medium: [], low: []).asMap());
+        //   } else {
+        //     await query2.reference.update({
+        //       "important": [...query2.data()?["important"]]
+        //     });
+        //   }
+
+        print(notificationSchema.toMap());
+
+        query2.add(notificationSchema.toMap());
+        print("STAGE 3");
+
+        await newMassage(context: context, toUserId: toUserId);
+      }
 
       return massage;
     } catch (err) {
@@ -496,9 +604,10 @@ class ChatProvider with ChangeNotifier {
     return true;
   }
 
-  Future<String> deleteChatOneSide({
+  Future<bool> deleteChatOneSide({
     required BuildContext context,
     required String chatId,
+    required String chatStoreId,
 
     // required String credentialUserId,
   }) async {
@@ -511,20 +620,45 @@ class ChatProvider with ChangeNotifier {
           .doc(userProvider.currentUser?.storeId)
           .get();
 
-      await store.collection(ChatProvider.collection).doc(chatId).delete();
+      DocumentSnapshot<Map<String, dynamic>> query2 = await store
+          .collection(ChatProvider.collection)
+          .doc(chatStoreId)
+          .get();
+      List chatList = query.data()?["chatList"];
+      List users = query2.data()?["users"];
+      //   await store.collection(ChatProvider.collection).doc(chatId).delete();
+      chatList.removeWhere((e) => e == chatId);
 
       await query.reference.update({
-        "chatList":
-            (query.data()?["chaId"] as List).map((e) => e != chatId).toList(),
+        "chatList": chatList,
       });
 
-      return chatId;
+      users.removeWhere((e) => e == userProvider.currentUser?.Id);
+
+      await query2.reference.update({
+        "users": users,
+      });
+
+      if (chat?.Id == chatId) {
+        // chat?.users = (query.data()?["users"] as List).map((e) {
+        //   if (e != userProvider.currentUser?.Id) {
+        //     return e;
+        //   }
+        // }).toList();
+        chat = null;
+      }
+      chats.removeWhere((e) => e.Id == chatId);
+
+      userProvider.currentUser?.chatList = chatList;
+
+      return true;
     } catch (err) {
-      return "";
+      print(err);
+      return false;
     }
   }
 
-  Future<String> addChat({
+  Future<bool> addChat({
     // required String credentialUserId,
     required BuildContext context,
     required String userId,
@@ -532,17 +666,19 @@ class ChatProvider with ChangeNotifier {
   }) async {
     try {
       if (auth.currentUser == null) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          //   backgroundColor: Theme.of(context).errorColor,
-          content: const Text("you havn't logned "),
-          action: SnackBarAction(
-            onPressed: () async {
-              await Navigator.of(context).pushNamed(GetStartedScreen.router);
-            },
-            label: "login",
-          ),
-        ));
-        return "";
+        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        //   //   backgroundColor: Theme.of(context).errorColor,
+        //   content: const Text("you havn't logned "),
+        //   action: SnackBarAction(
+        //     onPressed: () async {
+        //       await Navigator.of(context).pushNamed(GetStartedScreen.router);
+        //     },
+        //     label: "login",
+        //   ),
+        // ));
+        // return "";
+        DialogWidgets.mustSginin(context);
+        return false;
       }
       assert(auth.currentUser!.uid != userId);
 
@@ -566,7 +702,7 @@ class ChatProvider with ChangeNotifier {
           "activityId": activityId,
         });
 
-        return chat?.Id ?? "";
+        return true;
       }
       QuerySnapshot<Map<String, dynamic>> query0 = await store
           .collection(ChatProvider.collection)
@@ -646,7 +782,7 @@ class ChatProvider with ChangeNotifier {
 
         chat?.storeId = newChatQuery.docs[0].id;
 
-        return chatId;
+        return true;
       } else if (checkingQuery.docs.length == 1) {
         Map chatDataAsMap = checkingQuery.docs.single.data();
 
@@ -666,8 +802,8 @@ class ChatProvider with ChangeNotifier {
     } catch (err) {
       print("ERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
       print(err);
-      return "";
+      return false;
     }
-    return "";
+    return true;
   }
 }

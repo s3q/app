@@ -6,7 +6,7 @@ class AdHelper {
     if (Platform.isAndroid) {
       return 'ca-app-pub-1978882800082850/8694792406';
     } else if (Platform.isIOS) {
-      return '<YOUR_IOS_BANNER_AD_UNIT_ID>';
+      return 'ca-app-pub-1978882800082850/3372721493';
     } else {
       throw UnsupportedError('Unsupported platform');
     }
@@ -26,7 +26,7 @@ class AdHelper {
     if (Platform.isAndroid) {
       return '<ca-app-pub-1978882800082850/8139875165>';
     } else if (Platform.isIOS) {
-      return '<YOUR_IOS_REWARDED_AD_UNIT_ID>';
+      return 'ca-app-pub-1978882800082850/5316923203';
     } else {
       throw UnsupportedError('Unsupported platform');
     }

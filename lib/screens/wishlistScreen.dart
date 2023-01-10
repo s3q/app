@@ -81,13 +81,13 @@ class _WishlistScreenState extends State<WishlistScreen> {
                                     arguments: activity);
                               });
 
-                          return ActivityCardWidget(
-                              activity: activity,
-                              onPressed: () {
-                                Navigator.pushNamed(
-                                    context, ActivityDetailsScreen.router,
-                                    arguments: activity);
-                              });
+                        //   return ActivityCardWidget(
+                        //       activity: activity,
+                        //       onPressed: () {
+                        //         Navigator.pushNamed(
+                        //             context, ActivityDetailsScreen.router,
+                        //             arguments: activity);
+                        //       });
                         });
                   }),
             ),

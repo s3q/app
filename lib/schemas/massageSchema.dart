@@ -6,6 +6,7 @@ class MassageSchema {
   int createdAt;
   int readedAt;
   String type;
+  String url;
   String chatId;
   String Id;
 
@@ -18,6 +19,7 @@ class MassageSchema {
     required this.createdAt,
     required this.readedAt,
     required this.type,
+    required this.url,
     required this.chatId,
   });
 
@@ -30,6 +32,7 @@ class MassageSchema {
       "readedAt": readedAt,
       "chatId": chatId,
       "audioPath": audioPath,
+      "url": url,
       "imagePath": imagePath,
       "type": type,
     };

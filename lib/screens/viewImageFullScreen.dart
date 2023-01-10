@@ -18,9 +18,8 @@ class ViewImageFullScreen extends StatelessWidget {
           Expanded(
               child: Image.network(
             image,
-            fit: BoxFit.cover,
-            height: double.infinity,
-            width: double.infinity,
+            fit: BoxFit.fitWidth,
+            width: MediaQuery.of(context).size.width,
             alignment: Alignment.center,
           ))
         ]));

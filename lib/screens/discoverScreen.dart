@@ -2,11 +2,13 @@ import 'package:app/helpers/adHelper.dart';
 import 'package:app/helpers/appHelper.dart';
 import 'package:app/helpers/colorsHelper.dart';
 import 'package:app/providers/activityProvider.dart';
+import 'package:app/providers/userProvider.dart';
 import 'package:app/schemas/activitySchema.dart';
 import 'package:app/screens/activityDetailsScreen.dart';
 import 'package:app/screens/addActivityScreen.dart';
 import 'package:app/screens/overViewScreen.dart';
 import 'package:app/screens/searchScreen.dart';
+import 'package:app/widgets/DiologsWidgets.dart';
 import 'package:app/widgets/activityCardWidget.dart';
 import 'package:app/widgets/categoryCardWidget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,6 +19,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DiscoverScreen extends StatefulWidget {
   static String router = "/discover";
@@ -34,6 +37,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   List<Widget> activitesCards = [
     SizedBox(),
   ];
+  List newsList = [];
   Map<int, BannerAd> _bannersAd = {};
 
   Future loadActivites() async {
@@ -64,12 +68,24 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     // TODO: implement initState<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     super.initState();
-    Future.delayed(Duration.zero, () => loadActivites());
+    Future.delayed(Duration.zero, () async {
+      loadActivites();
+    });
+    Future.delayed(Duration.zero, () async {
+      QuerySnapshot<Map<String, dynamic>> query1 =
+          await FirebaseFirestore.instance.collection("news").get();
+      for (var doc in query1.docs) {
+        newsList.add({
+          "image": doc["image"],
+          "url": doc["url"],
+        });
+      }
+    });
 
     BannerAd(
       adUnitId: AdHelper.bannerAdUnitId,
       request: AdRequest(),
-      size: AdSize.banner,
+      size: AdSize.fullBanner,
       listener: BannerAdListener(
         onAdLoaded: (ad) {
           setState(() {
@@ -124,6 +140,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
   @override
   Widget build(BuildContext context) {
+    UserProvider userProvider = Provider.of<UserProvider>(context);
     ActivityProvider activityProvider = Provider.of<ActivityProvider>(context);
 
     // final AdWidget adWidget = AdWidget(ad: Banner1);
@@ -174,18 +191,35 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                           height: 100,
                           fit: BoxFit.cover,
                         ),
-                        Image.network(
-                          'https://picsum.photos/seed/248/600',
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.cover,
-                        ),
-                        Image.network(
-                          'https://picsum.photos/seed/656/600',
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.cover,
-                        ),
+                        ...newsList
+                            .map((e) => InkWell(
+                                  onTap: () {
+                                    final Uri _url = Uri.parse(e["url"]);
+                                    // ' https://wa.me/${activitySchema.phoneNumberWhatsapp}?text=Hello');
+                                    launchUrl(_url,
+                                        mode: LaunchMode
+                                            .externalNonBrowserApplication);
+                                  },
+                                  child: Image.asset(
+                                    e["image"],
+                                    width: 100,
+                                    height: 100,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ))
+                            .toList(),
+                        // Image.network(
+                        //   'https://picsum.photos/seed/248/600',
+                        //   width: 100,
+                        //   height: 100,
+                        //   fit: BoxFit.cover,
+                        // ),
+                        // Image.network(
+                        //   'https://picsum.photos/seed/656/600',
+                        //   width: 100,
+                        //   height: 100,
+                        //   fit: BoxFit.cover,
+                        // ),
                       ],
                     ),
                     Align(
@@ -270,8 +304,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                   child: InkWell(
                     onTap: () async {
                       await Navigator.pushNamed(context, SearchScreen.router,
-                          arguments: activityProvider.topActivitiesList.values
-                              .toList());
+                          );
                     },
                     focusColor: Colors.white12,
                     child: Hero(
@@ -351,23 +384,46 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         //     },
         //     child: Text("sign in")),
 
-        SizedBox(
-          height: 20,
-        ),
-
         //^---------------------- adverticment -----------------------
 
         if (_bannersAd[0] != null)
           Container(
+            margin: EdgeInsets.symmetric(vertical: 20),
             width: _bannersAd[0]!.size.width.toDouble(),
             height: _bannersAd[0]!.size.height.toDouble(),
             child: AdWidget(ad: _bannersAd[0]!),
           ),
 
         //^----------------------------------------------------------
-
         SizedBox(
-          height: 30,
+          height: 10,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.add_rounded),
+                label: const Text("Add Activity"),
+                onPressed: () async {
+                  if (!userProvider.islogin()) {
+                    DialogWidgets.mustSginin(context);
+                    return;
+                  }
+                  if (userProvider.islogin() &&
+                      userProvider.currentUser!.isProAccount == true) {
+                    Navigator.pushNamed(context, AddActivityScreen.router);
+                  } else {
+                    DialogWidgets.mustSwitchtoPro(context);
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+        SizedBox(
+          height: 10,
         ),
 
         Padding(

@@ -54,6 +54,8 @@ class UserProvider with ChangeNotifier {
       assert(currentUser != null);
       assert(credentialUser!.uid != null);
       assert(currentUser!.Id != null);
+      assert(credentialUser!.uid != "");
+      assert(currentUser!.Id != "");
       return true;
     } catch (err) {
       return false;
@@ -299,9 +301,9 @@ class UserProvider with ChangeNotifier {
       await errorCollection.add({
         "error":
             "${ErrorsHelper.errMultiEmailes} multi users with same email or phone number",
-        "page": this.toString(),
-        "collections": query.docs.asMap(),
-        "date": DateTime.now().microsecondsSinceEpoch,
+        "page": saveSignInUserData.toString(),
+        "collections": query.docs.map((e) => e.data()).toList(),
+        "date": DateTime.now().microsecondsSinceEpoch.toString(),
       });
     } else if ((query.docs[0]["email"] == userData.email ||
             query.docs[0]["phoneNumber"] == userData.phoneNumber) &&
@@ -634,19 +636,16 @@ class UserProvider with ChangeNotifier {
   Future fetchNotifications() async {
     try {
       assert(currentUser?.Id != null);
-      QuerySnapshot<Map<String, dynamic>> query1 = await store
-          .collection(CollectionsConstants.notifications)
-          .doc(currentUser!.Id)
-          .collection("chat")
-          .get();
+      QuerySnapshot<Map<String, dynamic>> query1 =
+          await store.collection(CollectionsConstants.events).get();
 
-      notificationMap["chat"] == null ? notificationMap["chat"] = [] : null;
+      notificationMap["events"] == null ? notificationMap["events"] = [] : null;
       for (var doc in query1.docs) {
-        notificationMap["chat"]
+        notificationMap["events"]
             ?.add(NotificationPieceSchema.toSchema(doc.data()));
       }
 
-      return notificationMap["chat"];
+      return notificationMap["events"];
     } catch (err) {
       return [];
     }

@@ -93,6 +93,8 @@ dependencies:
   url_launcher: ^6.1.7
   # open_whatsapp: ^0.0.1
   whatsapp: ^2.0.0
+  shared_preferences: ^2.0.15
+  progress_state_button: ^1.0.4
  
  
 

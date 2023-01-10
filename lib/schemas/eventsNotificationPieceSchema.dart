@@ -1,25 +1,25 @@
 import 'package:flutter/cupertino.dart';
 
-class NotificationPieceSchema {
+class EventsNotificationPieceSchema {
   int createdAt;
   String title;
   String text;
-  String notificationId;
+  String url;
   Map data;
 
-  NotificationPieceSchema(
+  EventsNotificationPieceSchema(
       {required this.createdAt,
       required this.title,
       required this.text,
-      required this.notificationId,
+      required this.url,
       required this.data});
 
-  static NotificationPieceSchema toSchema(Map data) {
-    return NotificationPieceSchema(
+  static EventsNotificationPieceSchema toSchema(Map data) {
+    return EventsNotificationPieceSchema(
         createdAt: data["createdAt"],
         title: data["title"],
         text: data["text"],
-        notificationId: data["notificationId"],
+        url: data["url"],
         data: data["data"]);
   }
 
@@ -28,7 +28,7 @@ class NotificationPieceSchema {
       "createdAt": createdAt,
       "title": title,
       "text": text,
-      "notificationId": notificationId,
+      "url": url,
       "data": data,
     };
   }

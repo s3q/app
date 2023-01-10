@@ -18,6 +18,7 @@ import 'package:app/widgets/LinkWidget.dart';
 import 'package:app/widgets/SafeScreen.dart';
 import 'package:app/widgets/appBarWidget.dart';
 import 'package:app/widgets/listTitleWidget.dart';
+import 'package:app/widgets/profileAvatarWidget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/material.dart";
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -34,6 +35,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   Map<int, BannerAd> _bannersAd = {};
+  RewardedAd? _rewardedAd;
 
   Future signout(UserProvider userProvider) async {
     EasyLoading.show(maskType: EasyLoadingMaskType.black);
@@ -45,10 +47,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
     EasyLoading.dismiss();
   }
 
+  void _creatRewardAd() {
+    RewardedAd.load(
+      adUnitId: AdHelper.rewardedAdUnitId,
+      request: const AdRequest(),
+      rewardedAdLoadCallback: RewardedAdLoadCallback(onAdLoaded: (ad) {
+        setState(() {
+          _rewardedAd = ad;
+        });
+      }, onAdFailedToLoad: (err) {
+        setState(() {
+          _rewardedAd = null;
+        });
+      }),
+    );
+  }
+
+  _showRewardedAd() {
+    if (_rewardedAd != null) {
+      _rewardedAd!.fullScreenContentCallback =
+          FullScreenContentCallback(onAdDismissedFullScreenContent: (ad) {
+        ad.dispose();
+        _creatRewardAd();
+      }, onAdFailedToShowFullScreenContent: (ad, err) {
+        ad.dispose();
+        _creatRewardAd();
+      });
+      _rewardedAd!.show(
+        onUserEarnedReward: (ad, reward) {},
+      );
+      _rewardedAd = null;
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    _creatRewardAd();
 
     BannerAd(
       adUnitId: AdHelper.bannerAdUnitId,
@@ -119,16 +156,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            CircleAvatar(
-                              child: Icon(
-                                Icons.person,
-                                size: 50,
-                              ),
-                              backgroundColor: Color(
-                                  userProvider.currentUser?.profileColor ??
-                                      0xFFFFE082),
-                              radius: 40,
+                            ProfileAvatarWidget(
+                              profileColor:
+                                  userProvider.currentUser?.profileColor,
+                              profileImagePath:
+                                  userProvider.currentUser?.profileImagePath,
                             ),
+
+                            // CircleAvatar(
+                            //   child: Icon(
+                            //     Icons.person,
+                            //     size: 50,
+                            //   ),
+                            //   backgroundColor: Color(
+                            //       userProvider.currentUser?.profileColor ??
+                            //           0xFFFFE082),
+                            //   radius: 40,
+                            // ),
                             SizedBox(
                               height: 10,
                             ),
@@ -242,6 +286,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     title: "support us",
                     icon: Icons.attach_money_rounded,
                     onTap: () {
+                      _showRewardedAd();
                       Navigator.pushNamed(context, SupportUsScreen.router);
                     },
                   ),

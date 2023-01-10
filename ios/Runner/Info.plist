@@ -86,5 +86,7 @@
 			<string>tel</string>
 			<string>whatsapp</string>
 		</array>
+		<key>GADApplicationIdentifier</key>
+		<string>ca-app-pub-1978882800082850~7512961261</string>
 	</dict>
 </plist>
