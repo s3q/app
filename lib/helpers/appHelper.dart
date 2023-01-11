@@ -1,3 +1,5 @@
+import 'dart:js';
+
 import 'package:app/schemas/activitySchema.dart';
 import 'package:app/widgets/loadingWidget.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
@@ -7,6 +9,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:localization/colored_print/print_color.dart';
 import 'package:phone_number/phone_number.dart';
 import 'package:uuid/uuid.dart';
+import "package:easy_localization/easy_localization.dart";
+import "package:localization/localization.dart";
 
 class AppHelper {
   static List categories = [
@@ -112,33 +116,43 @@ class AppHelper {
     return [overlayState, overlayEntry];
   }
 
-  
-  static Future<String> buildDynamicLink({required String title, required String Id}) async {
+  static Future<String> buildDynamicLink(
+      {required String title, required String Id}) async {
     String uriPrefix = "https://omantrippoint.page.link";
     final dynamicLinkParams = DynamicLinkParameters(
-  link: Uri.parse("${uriPrefix}/post${Id}"),
-  uriPrefix: uriPrefix,
-  androidParameters: const AndroidParameters(
-    packageName: "com.example.app",
-    minimumVersion: 0,
-  ),
-  iosParameters: const IOSParameters(
-    bundleId: "com.example.app",
-    appStoreId: "123456789",
-    minimumVersion: "1.0.1",
-  ),
+      link: Uri.parse("${uriPrefix}/post${Id}"),
+      uriPrefix: uriPrefix,
+      androidParameters: const AndroidParameters(
+        packageName: "com.example.app",
+        minimumVersion: 0,
+      ),
+      iosParameters: const IOSParameters(
+        bundleId: "com.example.app",
+        appStoreId: "123456789",
+        minimumVersion: "1.0.1",
+      ),
 //   googleAnalyticsParameters: const GoogleAnalyticsParameters(
 //     source: "twitter",
 //     medium: "social",
 //     campaign: "example-promo",
 //   ),
-  socialMetaTagParameters: SocialMetaTagParameters(
-    title: title,
-    imageUrl: Uri.parse("https://raw.githubusercontent.com/s3q/app/main/assets/icons/launch_image.png"),
-  ),
-);
-ShortDynamicLink dynamicLink =
-    await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
-  return dynamicLink.shortUrl.toString();
+      socialMetaTagParameters: SocialMetaTagParameters(
+        title: title,
+        imageUrl: Uri.parse(
+            "https://raw.githubusercontent.com/s3q/app/main/assets/icons/launch_image.png"),
+        // !!!!!!!!!!!!!
+      ),
+    );
+    ShortDynamicLink dynamicLink =
+        await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+    return dynamicLink.shortUrl.toString();
+  }
+
+  static String returnText(BuildContext context, String en, String ar) {
+    if (context.locale.languageCode.toString() == "en") {
+      return en;
+    }
+    
+    return ar;
   }
 }

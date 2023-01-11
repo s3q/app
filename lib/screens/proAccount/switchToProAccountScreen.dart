@@ -1,3 +1,4 @@
+import 'package:app/helpers/appHelper.dart';
 import 'package:app/helpers/colorsHelper.dart';
 import 'package:app/providers/settingsProvider.dart';
 import 'package:app/providers/userProvider.dart';
@@ -10,6 +11,7 @@ import 'package:app/widgets/SafeScreen.dart';
 import 'package:app/widgets/appBarWidget.dart';
 import 'package:app/widgets/checkboxWidget.dart';
 import 'package:app/widgets/inputTextFieldWidget.dart';
+import 'package:app/widgets/snakBarWidgets.dart';
 import 'package:date_field/date_field.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +31,7 @@ class SwitchToProAccountScreen extends StatefulWidget {
 }
 
 class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
+  
   final _formKey1 = GlobalKey<FormState>();
   final _formKey2 = GlobalKey<FormState>();
   TextEditingController _nameInput = TextEditingController();
@@ -53,10 +56,8 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
     bool isValid = await _phoneNumber.validate(val, region.code);
 
     if (!isValid) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        backgroundColor: Theme.of(context).errorColor,
-        content: const Text("invalid phone number, try again, +986 only"),
-      ));
+      SnakbarWidgets.error(
+          context, AppHelper.returnText(context, "Invalid phone number,try again, only +968", "رقم غير صالح, حاول مجددا, 968+ فقط") );
     }
   }
 
@@ -136,14 +137,14 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
             height: 100,
           ),
           Text(
-            "Profissional Account",
+            AppHelper.returnText(context, "Professional Account", "حساب إحترافي") ,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           SizedBox(
             height: 20,
           ),
           Text(
-            "Enjoy adding promotional activities and interaction benefits to the platform",
+             AppHelper.returnText(context, "Enjoy adding promotional activities and interaction benefits to the platform", "استمتع بإضافة أنشطة ترويجية ومزايا تفاعلية إلى المنصة"),
             style: Theme.of(context).textTheme.displaySmall,
           ),
         ],
@@ -162,7 +163,7 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 Text(
-                    " Make sure that the information is correct and all of them must be fill in, and if you don't enter it correctly, the application will be rejected"),
+                   AppHelper.returnText(context, " Make sure that the information is correct and not all of them must be fill in, and if you don't enter it correctly, the application will be rejected", "تأكد من أن المعلومات صحيحة ولا يجب ملؤها كلها ، وإذا لم تدخلها بشكل صحيح ، فسيتم رفض الطلب") ),
               ],
             ),
           ),
@@ -179,21 +180,22 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                     controller: _nameInput,
                     keyboardType: TextInputType.name,
                     obscureText: false,
-                    decoration: const InputDecoration(
-                      labelText: "Name",
+                    decoration:  InputDecoration(
+                    
+                      labelText: AppHelper.returnText(context, "Name: *", "الاسم: *") ,
                       filled: true,
                       fillColor: Colors.white,
-                      prefixIcon: Icon(
+                      prefixIcon: const Icon(
                         Icons.person,
                       ),
-                      focusedBorder: OutlineInputBorder(
+                      focusedBorder: const OutlineInputBorder(
                         borderSide: BorderSide(
                           color: Colors.black45,
                           width: 1,
                         ),
                         borderRadius: BorderRadius.all(Radius.circular(16)),
                       ),
-                      border: OutlineInputBorder(
+                      border: const OutlineInputBorder(
                         borderSide: BorderSide(
                           color: Colors.black45,
                           width: 1,
@@ -203,11 +205,11 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                     ),
                     validator: (val) {
                       if (val == null)
-                        return "Use 3 characters or more for your name";
+                        return AppHelper.returnText(context, "Use 3 characters or more for your name", "استخدم 3 أحرف أو أكثر لاسمك") ;
                       if (val.trim() == "" || val.length < 3)
-                        return "Use 3 characters or more for your name";
+                        return  AppHelper.returnText(context, "Use 3 characters or more for your name", "استخدم 3 أحرف أو أكثر لاسمك");
                       if (val.split(" ").length > 2) {
-                        return "Please write your full name";
+                        return  AppHelper.returnText(context, "Use 3 characters or more for your name", "الرجاء كتابة اسمك الكامل") ;
                       }
                       //   if (val.contains(r'[A-Za-z]')) {
                       //     return "The name should only consist of letters";
@@ -226,15 +228,15 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                     initialValue: DateTime.fromMillisecondsSinceEpoch(
                         userProvider.currentUser!.dateOfBirth ??
                             DateTime.now().millisecondsSinceEpoch),
-                    decoration: const InputDecoration(
-                      focusedBorder: OutlineInputBorder(
+                    decoration:  InputDecoration(
+                      focusedBorder: const OutlineInputBorder(
                         borderSide: BorderSide(
                           color: Colors.black45,
                           width: 1,
                         ),
                         borderRadius: BorderRadius.all(Radius.circular(16)),
                       ),
-                      border: OutlineInputBorder(
+                      border: const OutlineInputBorder(
                         borderSide: BorderSide(
                           color: Colors.black45,
                           width: 1,
@@ -242,8 +244,8 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                         borderRadius: BorderRadius.all(Radius.circular(16)),
                       ),
                       contentPadding: EdgeInsets.all(20),
-                      suffixIcon: Icon(Icons.event_note),
-                      labelText: "Date of Birth",
+                      suffixIcon: const Icon(Icons.event_note),
+                      labelText:  AppHelper.returnText(context, "Date of Birth: *", "تاريخ الميلاد: *"),
                     ),
                     mode: DateTimeFieldPickerMode.date,
                     // autovalidateMode: AutovalidateMode.always,
@@ -254,7 +256,7 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                       if (value.year < (DateTime.now().year - 18)) {
                         print(value);
                       } else {
-                        return "You are under 18";
+                        return AppHelper.returnText(context, "You are under 18", "عمرك أقل من 18") ;
                       }
                     },
                     onSaved: (value) {
@@ -273,7 +275,7 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                         .toList(),
                     suggestionState: Suggestion.expand,
                     textInputAction: TextInputAction.next,
-                    hint: 'City',
+                    hint: AppHelper.returnText(context, 'City: *', 'المدينة: *'),
                     hasOverlay: true,
                     searchStyle: const TextStyle(
                       fontSize: 18,
@@ -281,7 +283,7 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                     ),
                     validator: (x) {
                       if (!_citiesOfOman.contains(x) || x!.isEmpty) {
-                        return 'Please Enter a valid city';
+                        return AppHelper.returnText(context, "The state is incorrect", "الولاية غير صحيحة" );
                       }
                       //   return null;
                     },
@@ -314,8 +316,8 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                     keyboardType: TextInputType.name,
                     autofocus: true,
                     obscureText: false,
-                    decoration: const InputDecoration(
-                      labelText: "Public Email",
+                    decoration:  InputDecoration(
+                      labelText: AppHelper.returnText(context, "Public Email: ", "البريد إلكتروني العام: "),
                       filled: true,
                       fillColor: Colors.white,
                       prefixIcon: Icon(
@@ -357,9 +359,9 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                     keyboardType: TextInputType.name,
                     autofocus: true,
                     obscureText: false,
-                    decoration: const InputDecoration(
+                    decoration:  InputDecoration(
                       //   suffixText: ,
-                      labelText: "Public Phone Number",
+                      labelText:  AppHelper.returnText(context, "Public Phone Number: ", "رقم الهاتف العام :"),
                       filled: true,
                       fillColor: Colors.white,
                       prefixIcon: Icon(
@@ -383,8 +385,8 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                     ),
                     validator: (val) {
                       _checkPhoneValidation(context, val);
-                      if (val?.length != 8) {
-                        return "invalid phone number";
+                      if (val?.trim().length != 8 && val?.trim().length !=  0) {
+                        return AppHelper.returnText(context, "Invalid phone number", "رقم الهاتف غير صحيح");
                       }
 
                       return null;
@@ -398,7 +400,7 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                   ),
                   InputTextFieldWidget(
                     text: data["instagram"],
-                    labelText: "Instagram Account",
+                    labelText: AppHelper.returnText(context, "Instagram Account: ", "حساب الانستجرام: "),
                     helperText: "",
                     validator: (val) {
                       //   if (val == null)
@@ -418,7 +420,7 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                     height: 30,
                   ),
                   CheckboxWidget(
-                    label: "Agree to our terms and conditions",
+                    label: AppHelper.returnText(context, "Agree to terms and conditions", "الموافقة على الشروط والأحكام "),
                     isCheck: isCheckedCheckbox.value,
                     onChanged: (bool? value) {
                       isCheckedCheckbox.value = value!;
@@ -449,10 +451,10 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
             child: Column(
               children: [
                 Text(
-                  "almost we Done \n",
+                  AppHelper.returnText(context, "We almost we Done \n", "لقد انتهينا تقريبًا \n"),
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-                Text(" please wait 6 hours to vertify your infromation"),
+                Text(AppHelper.returnText(context, "Please wait 6 hours to verify your information, until further notice. After that, you will be able to publish your tourist activity ads in the application.", "يرجى الانتظار 6 ساعات للتحقق من معلوماتك ،حتى اشعار اخر. بعدها ستتمكن من نشر اعلانات انشتطك السياحية في التطبيق")),
               ],
             ),
           ),
@@ -467,7 +469,7 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
       padding: 0,
       child: Column(
         children: [
-          AppBarWidget(title: "Profissional Account"),
+          AppBarWidget(title: AppHelper.returnText(context, "Professional Account", "حساب إحترافي") ),
           Expanded(
             child: ListView(
               children: [
@@ -498,7 +500,7 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                                       horizontal: 60, vertical: 20),
                                 ),
                               ),
-                              child: Text("Back"),
+                              child: Text(AppHelper.returnText(context, "Back", "رجوع")),
                             )
                           : SizedBox(),
                       ValueListenableBuilder(
@@ -529,9 +531,9 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                               ),
                               child: indexOverView != 2
                                   ? (indexOverView == 1
-                                      ? const Text("Get Started")
-                                      : const Text("Next"))
-                                  : Text("Done"),
+                                      ?  Text(AppHelper.returnText(context, "Get Started", "البدء"))
+                                      :  Text(AppHelper.returnText(context, "Next", "التالي")))
+                                  : Text(AppHelper.returnText(context, "Done", "تم")),
                             );
                           }),
                     ],

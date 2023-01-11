@@ -67,7 +67,7 @@ class _PreviewNewActivityScreenState extends State<PreviewNewActivityScreen> {
     BannerAd(
       adUnitId: AdHelper.bannerAdUnitId,
       request: AdRequest(),
-      size: AdSize.banner,
+  size: AdSize.fullBanner,
       listener: BannerAdListener(
         onAdLoaded: (ad) {
           setState(() {

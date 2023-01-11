@@ -24,6 +24,7 @@ import "package:flutter/material.dart";
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 class ProfileScreen extends StatefulWidget {
   static String router = "/profile";
@@ -64,6 +65,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   _showRewardedAd() {
+    print(_rewardedAd);
     if (_rewardedAd != null) {
       _rewardedAd!.fullScreenContentCallback =
           FullScreenContentCallback(onAdDismissedFullScreenContent: (ad) {
@@ -90,7 +92,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     BannerAd(
       adUnitId: AdHelper.bannerAdUnitId,
       request: AdRequest(),
-      size: AdSize.banner,
+      size: AdSize.fullBanner,
       listener: BannerAdListener(
         onAdLoaded: (ad) {
           setState(() {
@@ -107,7 +109,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     BannerAd(
       adUnitId: AdHelper.bannerAdUnitId,
       request: AdRequest(),
-      size: AdSize.banner,
+      size: AdSize.fullBanner,
       listener: BannerAdListener(
         onAdLoaded: (ad) {
           setState(() {
@@ -210,6 +212,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                   if (_bannersAd[0] != null)
                     Container(
+                      key: Key(Uuid().v4()),
                       width: _bannersAd[0]!.size.width.toDouble(),
                       height: _bannersAd[0]!.size.height.toDouble(),
                       child: AdWidget(ad: _bannersAd[0]!),
@@ -313,6 +316,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                   if (_bannersAd[1] != null)
                     Container(
+                      key: Key(Uuid().v4()),
                       width: _bannersAd[1]!.size.width.toDouble(),
                       height: _bannersAd[1]!.size.height.toDouble(),
                       child: AdWidget(ad: _bannersAd[1]!),
