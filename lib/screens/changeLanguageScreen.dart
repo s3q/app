@@ -1,3 +1,4 @@
+import 'package:app/helpers/appHelper.dart';
 import 'package:app/providers/settingsProvider.dart';
 import 'package:app/widgets/SafeScreen.dart';
 import 'package:app/widgets/appBarWidget.dart';
@@ -31,7 +32,7 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
     return SafeScreen(
         padding: 0,
         child: Column(children: [
-          AppBarWidget(title: "Language"),
+          AppBarWidget(title: AppHelper.returnText(context, "Language", "اللغة")),
           Expanded(
               child: ListView(children: [
             const SizedBox(
@@ -46,8 +47,8 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value == "ar"
-                        ? "Arabic           "
-                        : "English           "),
+                        ? AppHelper.returnText(context, "Arabic            ", "عربي            "  ) 
+                        : AppHelper.returnText(context, "English           ", "إنجليزي           ")),
                   );
                 }).toList(),
                 onChanged: (_) async {

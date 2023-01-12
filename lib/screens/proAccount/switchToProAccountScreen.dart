@@ -208,8 +208,8 @@ class _SwitchToProAccountScreenState extends State<SwitchToProAccountScreen> {
                         return AppHelper.returnText(context, "Use 3 characters or more for your name", "استخدم 3 أحرف أو أكثر لاسمك") ;
                       if (val.trim() == "" || val.length < 3)
                         return  AppHelper.returnText(context, "Use 3 characters or more for your name", "استخدم 3 أحرف أو أكثر لاسمك");
-                      if (val.split(" ").length > 2) {
-                        return  AppHelper.returnText(context, "Use 3 characters or more for your name", "الرجاء كتابة اسمك الكامل") ;
+                      if (val.split(" ").length < 2) {
+                        return  AppHelper.returnText(context, "Please write your full name", "الرجاء كتابة اسمك الكامل") ;
                       }
                       //   if (val.contains(r'[A-Za-z]')) {
                       //     return "The name should only consist of letters";

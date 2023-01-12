@@ -1,3 +1,4 @@
+import 'package:app/helpers/appHelper.dart';
 import 'package:app/providers/chatProvider.dart';
 import 'package:app/providers/userProvider.dart';
 import 'package:app/schemas/userSchema.dart';
@@ -21,8 +22,8 @@ class ChatScreen extends StatelessWidget {
 
     return Builder(builder: (context) {
       if (auth.currentUser == null) {
-        return const Center(
-          child: Text("You haven't login "),
+        return  Center(
+          child: Text(AppHelper.returnText(context, "You haven't login ", "لم تقم بتسجيل الدخول") ),
         );
       }
       return StreamBuilder(
@@ -50,8 +51,8 @@ class ChatScreen extends StatelessWidget {
                   }
 
                   if (chatProvider.chats == null || chatProvider.chats == []) {
-                    return const Center(
-                      child: Text("No chats"),
+                    return Center(
+                      child: Text(AppHelper.returnText(context, "No chats", "لا توجد محادثات")),
                     );
                   }
 
@@ -61,7 +62,7 @@ class ChatScreen extends StatelessWidget {
                     child: ListView(
                       children: [
                         Text(
-                          "Chat ... ",
+                          AppHelper.returnText(context, "Chat ... ", "دردشة ... "),
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         Column(

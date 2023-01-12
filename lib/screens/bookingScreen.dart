@@ -1,3 +1,4 @@
+import 'package:app/helpers/appHelper.dart';
 import "package:flutter/material.dart";
 
 class BookingScreen extends StatelessWidget {
@@ -10,7 +11,8 @@ class BookingScreen extends StatelessWidget {
       padding: const EdgeInsets.all(10),
       child: ListView(
           children: [
-              Text("Booking", style: Theme.of(context).textTheme.titleLarge,),
+              Text(AppHelper.returnText(context, "Booking", "حجز") , style: Theme.of(context).textTheme.titleLarge,),
+              SizedBox(height: 100,),
               Center(child: Text("Coming soon"),)
           ],
       ),

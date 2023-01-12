@@ -1,11 +1,15 @@
 {
-    
-    "overviewHeader1": "استمتع دائمًا برحلتك",
-    "overviewText1": "سهل الحجز والعثور على أشياء للقيام بها حول عمان",
-
+    "sunday": "الأحد",
+    "monday": "الإثنين",
+    "tuesday": "الثلاثاء",
+    "wednesday": "الأربعاء",
+    "thursday": "الخميس",
+    "friday": "الجمعة",
+    "saturday": "السبت",
 
     "Terms and condition": "الأحكام والشروط",
-    "welcome": "هلا وسهلا",
+    "Policy Privacy": "سياسة الخصوصية",
 
-    "cat": "الاقسام"
+    
+    "Create Activity": "إنشاء النشاط"
 }

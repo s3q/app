@@ -1,3 +1,4 @@
+import 'package:app/helpers/appHelper.dart';
 import 'package:app/providers/activityProvider.dart';
 import 'package:app/schemas/activitySchema.dart';
 import 'package:app/schemas/activityStatisticsSchema.dart';
@@ -26,7 +27,7 @@ class _ActivityStatisticsScreenState extends State<ActivityStatisticsScreen> {
         padding: 0,
         child: Column(
           children: [
-            AppBarWidget(title: "Statistics"),
+            AppBarWidget(title: AppHelper.returnText(context, "Statistics", "إحصائيات")),
             FutureBuilder(
                 future:
                     activityProvider.fetchActivityStatistics(activitySchema.Id),
@@ -74,7 +75,7 @@ class _ActivityStatisticsScreenState extends State<ActivityStatisticsScreen> {
                                     EdgeInsetsDirectional.fromSTEB(8, 0, 0, 0),
                                 child: Text(
                                   activitySchema.reviews.length.toString() +
-                                      ' reviews',
+                                      AppHelper.returnText(context, ' reviews', "تقييمات"),
                                   style: Theme.of(context).textTheme.bodyMedium,
                                 ),
                               ),
@@ -97,7 +98,7 @@ class _ActivityStatisticsScreenState extends State<ActivityStatisticsScreen> {
                                 //   borderRadius: BorderRadius.circular(8),
                                 // ),
                                 ),
-                            child: const Text('see reviews'),
+                            child: Text(AppHelper.returnText(context, 'see reviews', "التقيمات")),
                           ),
                         ),
                         Container(
@@ -112,7 +113,7 @@ class _ActivityStatisticsScreenState extends State<ActivityStatisticsScreen> {
                                       width: 10,
                                     ),
                                     Text(
-                                      "Views Count ",
+                                      AppHelper.returnText(context, "Views Count ", " عدد المشاهدات"),
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleLarge,
@@ -120,7 +121,7 @@ class _ActivityStatisticsScreenState extends State<ActivityStatisticsScreen> {
                                   ],
                                 ),
                                 Text(
-                                    "The number of times your ad was viewed by the customer"),
+                                    AppHelper.returnText(context, "The number of times your tourism activity was viewed by the customer" , " عدد المرات التي شاهد فيها العميل نشاطك السياحي")),
                                 Text(
                                   activityStatisticsSchema.viewsCount
                                       .toString(),
@@ -130,7 +131,7 @@ class _ActivityStatisticsScreenState extends State<ActivityStatisticsScreen> {
                                   thickness: 1,
                                 )
                               ],
-                            )),
+                            ),),
                         Container(
                             padding: EdgeInsets.all(8),
                             margin: EdgeInsets.symmetric(vertical: 10),
@@ -143,15 +144,15 @@ class _ActivityStatisticsScreenState extends State<ActivityStatisticsScreen> {
                                       width: 10,
                                     ),
                                     Text(
-                                      "Calls Count ",
+                                       AppHelper.returnText(context, "Calls Count ", " عدد المكالمات"),
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleLarge,
                                     ),
                                   ],
                                 ),
-                                 const Text(
-                                    "The number of times your ad was viewed by the customer"),
+                                  Text(
+                                    AppHelper.returnText(context, "How many time call button is clicked", "كم مرة يتم النقر على زر الاتصال")),
                                 Text(
                                   activityStatisticsSchema.callsCount
                                       .toString(),
@@ -174,13 +175,13 @@ class _ActivityStatisticsScreenState extends State<ActivityStatisticsScreen> {
                                       width: 10,
                                     ),
                                     Text(
-                                      "Likes Count ",
+                                       AppHelper.returnText(context, "Likes Count ", " عدد مرات الإعجاب"),
                                       style: Theme.of(context).textTheme.titleLarge,
                                     ),
                                   ],
                                 ),
-                                Text(
-                                    "The number of times your ad was viewed by the customer"),
+                                Text(AppHelper.returnText(context, "How many time like button is clicked", "كم مرة يتم النقر على زر أعجبني")
+                                    ),
                                 Text(
                                   activityStatisticsSchema.likesCount
                                       .toString(),
@@ -203,13 +204,13 @@ class _ActivityStatisticsScreenState extends State<ActivityStatisticsScreen> {
                                       width: 10,
                                     ),
                                     Text(
-                                      "Shares Count ",
+                                      AppHelper.returnText(context, "Shares Count ", " عدد المشاركات"),
                                       style: Theme.of(context).textTheme.titleLarge,
                                     ),
                                   ],
                                 ),
                                 Text(
-                                    "The number of times your ad was viewed by the customer"),
+                                    AppHelper.returnText(context, "How many time share button is clicked", "كم مرة يتم النقر على زر المشاركة")),
                                 Text(
                                   activityStatisticsSchema.sharesCount
                                       .toString(),
@@ -232,13 +233,13 @@ class _ActivityStatisticsScreenState extends State<ActivityStatisticsScreen> {
                                       width: 10,
                                     ),
                                 Text(
-                                  "Chats Count ",
+                                  AppHelper.returnText(context, "Chats Count ", " عدد الدردشات"),
                                   style: Theme.of(context).textTheme.titleLarge,
                                 ),
                                   ],
                                 ),
                                 Text(
-                                    "The number of times your ad was viewed by the customer"),
+                                    AppHelper.returnText(context, "How many time chat button is clicked", "كم مرة يتم النقر على زر الدردشة")),
                                 Text(
                                   activityStatisticsSchema.chatsCount
                                       .toString(),

@@ -1,4 +1,5 @@
 import 'package:app/helpers/adHelper.dart';
+import 'package:app/helpers/appHelper.dart';
 import 'package:app/helpers/colorsHelper.dart';
 import 'package:app/widgets/SafeScreen.dart';
 import 'package:app/widgets/appBarWidget.dart';
@@ -53,7 +54,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
     return SafeScreen(
         padding: 0,
         child: Column(children: [
-          AppBarWidget(title: "Contact Us"),
+          AppBarWidget(title: AppHelper.returnText(context, "Contact Us", "اتصل بنا")),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -61,7 +62,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                 SizedBox(
                   height: 30,
                 ),
-                Text("Follow Us"),
+                Text(AppHelper.returnText(context, "Follow Us", "تابعنا")),
                 SizedBox(
                   height: 10,
                 ),
@@ -109,17 +110,17 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                 ),
                 ListTile(
                   onTap: () {},
-                  title: Text("Customers service"),
+                  title: Text(AppHelper.returnText(context, "Customers service", "خدمة العملاء")),
                   trailing: Icon(FontAwesomeIcons.whatsapp),
                 ),
                 ListTile(
                   onTap: () {},
-                  title: Text("Technical support"),
+                  title: Text(AppHelper.returnText(context, "Technical support", "دعم فني")),
                   trailing: Icon(FontAwesomeIcons.whatsapp),
                 ),
                 ListTile(
                   onTap: () {},
-                  title: Text("Complaints and suggeestions"),
+                  title: Text(AppHelper.returnText(context, "Complaints and suggestions", "الشكاوى والاقتراحات")),
                   trailing: Icon(FontAwesomeIcons.whatsapp),
                 ),
                 SizedBox(
@@ -165,7 +166,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                             width: 10,
                           ),
                           Text(
-                            " Whatsapp ",
+                            AppHelper.returnText(context, " Whatsapp ", "  واتساب "),
                             style: TextStyle(color: Colors.white),
                           ),
                         ]),

@@ -68,7 +68,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
 
       // final userProvider = Provider.of<UserProvider>(context, listen: false);
 
-       await chatProvider.addChat(
+      await chatProvider.addChat(
           context: context, userId: userId, activityId: activityId);
       if (chatProvider.chat != null) {
         if (chatProvider.chat!.users.contains(userId) &&
@@ -90,7 +90,7 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
     BannerAd(
       adUnitId: AdHelper.bannerAdUnitId,
       request: AdRequest(),
-size: AdSize.fullBanner,
+      size: AdSize.fullBanner,
       listener: BannerAdListener(
         onAdLoaded: (ad) {
           setState(() {
@@ -320,7 +320,9 @@ size: AdSize.fullBanner,
                                   width: 5,
                                 ),
                                 Text(
-                                  args.reviews.length.toString() + " reviews",
+                                  args.reviews.length.toString() +
+                                      AppHelper.returnText(
+                                          context, " reviews", "مراجعات"),
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodySmall
@@ -342,7 +344,7 @@ size: AdSize.fullBanner,
                           mainAxisSize: MainAxisSize.max,
                           children: [
                             Text(
-                              'From',
+                              AppHelper.returnText(context, 'From', 'من'),
                               style: Theme.of(context).textTheme.bodyMedium,
                             ),
                             Padding(
@@ -399,7 +401,7 @@ size: AdSize.fullBanner,
                           (args.genderSuitability["man"] == false ||
                               args.genderSuitability["man"] == null))
                         TextBoxActWidget(
-                          text: "Women only",
+                          text:  AppHelper.returnText(context, "Women only", "للنساء فقط"),
                         ),
                       if (args.suitableAges["min"] != null &&
                           args.suitableAges["min"].toString().trim() != "")
@@ -408,7 +410,7 @@ size: AdSize.fullBanner,
                         ),
                       if (args.op_GOA == true)
                         TextBoxActWidget(
-                          text: "Private group",
+                          text: AppHelper.returnText(context, "Private group", "متاح للعوائل"),
                         ),
                     ],
                   ),
@@ -424,7 +426,8 @@ size: AdSize.fullBanner,
                       mainAxisSize: MainAxisSize.max,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Dates : "),
+                  
+                        Text(AppHelper.returnText(context, "Avaliable Dates : ", "التواريخ المتاحة:")),
                         Column(
                           children: [
                             Column(
@@ -455,6 +458,9 @@ size: AdSize.fullBanner,
                                 return SizedBox();
                               }).toList(),
                             ),
+                            if (dates.isEmpty)
+                                Text(AppHelper.returnText(context, "Avaliable days : ", "الأيام المتوفرة:")),
+
                             if (dates.isEmpty)
                               Row(
                                 children: [
@@ -526,7 +532,7 @@ size: AdSize.fullBanner,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      'Prices',
+                      AppHelper.returnText(context, 'Prices', "الأسعار"),
                       style: Theme.of(context)
                           .textTheme
                           .titleMedium
@@ -615,11 +621,11 @@ size: AdSize.fullBanner,
                       height: 15,
                     ),
                     TextCardWidget(
-                      title: "Activity description",
+                      title: AppHelper.returnText(context, "Activity description", "وصف النشاط"),
                       text: args.description,
                     ),
                     TextCardWidget(
-                      title: "Important information",
+                      title: AppHelper.returnText(context, "Important information", "معلومات مهمة"),
                       text: args.importantInformation,
                     ),
                   ],
@@ -639,7 +645,7 @@ size: AdSize.fullBanner,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          'Location: ',
+                          AppHelper.returnText(context, 'Location', 'الموقع'),
                           style: Theme.of(context)
                               .textTheme
                               .titleMedium
@@ -734,7 +740,7 @@ size: AdSize.fullBanner,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          'Reviews',
+                          AppHelper.returnText(context, 'Reviews', "التعليقات"),
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
                         Padding(
@@ -765,7 +771,7 @@ size: AdSize.fullBanner,
                         //     children: [],
                         //   ),
                         Text(
-                          args.reviews.length.toString() + ' reviews',
+                          args.reviews.length.toString() + AppHelper.returnText(context, ' reviews', "تقييمات"),
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ],
@@ -788,7 +794,7 @@ size: AdSize.fullBanner,
                             //   borderRadius: BorderRadius.circular(8),
                             // ),
                             ),
-                        child: const Text('see reviews'),
+                        child: Text(AppHelper.returnText(context, 'see reviews', "التقيمات")),
                       ),
                     ),
                   ],
@@ -800,7 +806,7 @@ size: AdSize.fullBanner,
               ),
 
               LinkWidget(
-                  text: "! Report this listing ",
+                  text: AppHelper.returnText(context, "! Report this listing ", "! أبلاغ عن هذه القائمة"),
                   onPressed: () {
                     Navigator.pushNamed(context, ReportActivityScreen.router,
                         arguments: args.Id);
@@ -823,7 +829,7 @@ size: AdSize.fullBanner,
               Navigator.pushNamed(context, ContactOwnerScreen.router,
                   arguments: args);
             },
-            child: Text("Contact Owner"),
+            child: Text(AppHelper.returnText(context, "Contact", "تواصل مع المالك")),
             style: ElevatedButton.styleFrom(
               padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
             ),

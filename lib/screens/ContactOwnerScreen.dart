@@ -1,3 +1,4 @@
+import 'package:app/helpers/appHelper.dart';
 import 'package:app/helpers/colorsHelper.dart';
 import 'package:app/providers/activityProvider.dart';
 import 'package:app/providers/chatProvider.dart';
@@ -69,13 +70,14 @@ class ContactOwnerScreen extends StatelessWidget {
     return SafeScreen(
       padding: 0,
       child: Column(children: [
-        AppBarWidget(title: "Contact Owner"),
+        AppBarWidget(title: AppHelper.returnText(context, "Contact Owner", "راسل المالك")),
         SizedBox(
           height: 40,
         ),
         Container(
           padding: EdgeInsets.all(8),
           child: Column(children: [
+            Text(AppHelper.returnText(context, "Communicate with the owner of this activity in various ways. Important: read the terms and conditions", "تواصل مع صاحب هذا النشاط بطرق المختلفة. مهم : قراءة الشروط و الاحكام ")),
             ElevatedButton(
               onPressed: () async {
                 if (userProvider.currentUser == null) {
@@ -106,7 +108,7 @@ class ContactOwnerScreen extends StatelessWidget {
                 //   width: 200,
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Icon(
                         Icons.chat_bubble_outline_rounded,
                         // color: Colors.white,
@@ -115,7 +117,7 @@ class ContactOwnerScreen extends StatelessWidget {
                         width: 10,
                       ),
                       Text(
-                        " Trippoint Chat ",
+                        AppHelper.returnText(context, " Trippoint Chat ", "Trippoint محادثة في"),
                         // style: TextStyle(color: Colors.white),
                       ),
                     ]),
@@ -156,7 +158,7 @@ class ContactOwnerScreen extends StatelessWidget {
                     width: 10,
                   ),
                   Text(
-                    " Call ",
+                    AppHelper.returnText(context, " Call ", " اتصل "),
                     style: TextStyle(color: Colors.white),
                   ),
                 ]),
@@ -230,7 +232,7 @@ class ContactOwnerScreen extends StatelessWidget {
                         //   width: 200,
                         child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
+                            children:  [
                               Icon(
                                 Icons.chat_bubble_outline_rounded,
                                 color: Colors.white,
@@ -239,7 +241,7 @@ class ContactOwnerScreen extends StatelessWidget {
                                 width: 10,
                               ),
                               Text(
-                                " Instagram ",
+                                AppHelper.returnText(context, " Instagram ", " انستجرام " ),
                                 style: TextStyle(color: Colors.white),
                               ),
                             ]),
@@ -278,7 +280,7 @@ class ContactOwnerScreen extends StatelessWidget {
                       //   width: 200,
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
+                          children:  [
                             Icon(
                               FontAwesomeIcons.instagram,
                               color: Colors.white,
@@ -287,7 +289,7 @@ class ContactOwnerScreen extends StatelessWidget {
                               width: 10,
                             ),
                             Text(
-                              " Instagram ",
+                                AppHelper.returnText(context, " Instagram ", " انستجرام " ),
                               style: TextStyle(color: Colors.white),
                             ),
                           ]),

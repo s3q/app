@@ -35,6 +35,7 @@ import 'package:searchfield/searchfield.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:translator/translator.dart';
 import 'package:uuid/uuid.dart';
+import "package:localization/localization.dart";
 
 enum BestTutorSite { Days, Dates }
 
@@ -99,12 +100,12 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
 
   Map weekDays = {
     "sunday": false,
-    "moday": false,
+    "monday": false,
     "tuesday": false,
-    "wenday": false,
+    "wednesday": false,
     "thursday": false,
-    "firsday": false,
-    "starday": false,
+    "friday": false,
+    "saturday": false,
   };
 
   @override
@@ -133,7 +134,6 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
   void bookmarkMainPhoto(value) {
     _uploadedImagesPath.value.remove(value);
     _uploadedImagesPath.value.insertAll(0, value);
-    print("Home");
   }
 
   Future _submit(BuildContext context) async {
@@ -322,8 +322,8 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
     if (userProvider.currentUser?.isProAccount == false &&
         userProvider.proCurrentUser == null) {
       return SafeScreen(
-          child: const Center(
-        child: Text("you should have been loging in"),
+          child: Center(
+        child: Text(AppHelper.returnText(context, "You should have been logging in", "كان يجب أن تقوم بتسجيل الدخول")),
       ));
     } else if (userProvider.currentUser?.isProAccount == false ||
         userProvider.proCurrentUser == null) {
@@ -346,7 +346,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
       child: Column(
         children: [
           AppBarWidget(
-            title: "Add Activity",
+            title: AppHelper.returnText(context, "Add Activity", "إضافة نشاط"),
           ),
           Expanded(
             child: ListView(
@@ -391,12 +391,17 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                               InputTextFieldWidget(
                                 text: data["title"],
                                 labelText: "Title",
-                                helperText: "Give your activity title.",
+                                helperText: AppHelper.returnText(context, "Give your activity a title.", "ضع نشاطك عنوانًا."),
                                 validator: (val) {
                                   if (val == null)
-                                    return "Use 3 characters or more for a title";
+                                                          return AppHelper.returnText(context, "Use 3 characters or more for the title", "استخدم 3 أحرف أو أكثر للعنوان") ;
+
                                   if (val.trim() == "" || val.length < 3)
-                                    return "Use 3 characters or more for a title";
+                                                          return AppHelper.returnText(context, "Use 3 characters or more for the title", "استخدم 3 أحرف أو أكثر للعنوان") ;
+                                  
+                                  if (val.length > 100)
+                                                                                            return AppHelper.returnText(context, "The title is too long", "العنوان طويل جدًا") ;
+
                                   //   if (val.contains(r'[A-Za-z]')) {
                                   //     return "The name should only consist of letters";
                                   //   }
@@ -409,13 +414,14 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                               const SizedBox(
                                 height: 15,
                               ),
+                            
                               SearchField(
                                 suggestions: _categories
-                                    .map((e) => SearchFieldListItem(e))
+                                    .map((e) => SearchFieldListItem(e.toString().tr()))
                                     .toList(),
                                 suggestionState: Suggestion.expand,
                                 textInputAction: TextInputAction.next,
-                                hint: 'Choose category',
+                                hint: AppHelper.returnText(context, 'Choose category', "اختر التصنيف"),
                                 hasOverlay: true,
                                 searchStyle: const TextStyle(
                                   fontSize: 18,
@@ -423,7 +429,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                 ),
                                 validator: (x) {
                                   if (!_categories.contains(x) || x!.isEmpty) {
-                                    return 'Please Enter a valid Category';
+                                    return AppHelper.returnText(context, 'Please Enter category from the list', "الرجاء إدخال فئة من القائمة");
                                   }
                                 },
                                 onSubmit: (p0) {
@@ -450,14 +456,18 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                 },
                               ),
                               const SizedBox(
-                                height: 20,
+                                height: 25,
                               ),
-
-                              Row(
+                              Text(AppHelper.returnText(context, "You can add more than one price to your activity that suits your customers more.", "يمكنك إضافة أكثر من سعر إلى نشاطك بما يناسب عملائك أكثر.")),
+                             
+                             const SizedBox(
+                                height: 5,
+                              ),
+                               Row(
                                 children: [
                                   Expanded(
                                     child: InputTextFieldWidget(
-                                      labelText: "\$",
+                                      labelText: "OMR: *",
                                       validator: (val) {
                                         bool empty = true;
                                         print(prices.values);
@@ -472,7 +482,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                           empty = false;
                                         }
                                         if (empty) {
-                                          return "One price at least";
+                                          return AppHelper.returnText(context, "One price at least", "سعر واحد على الأقل") ;
                                         }
                                         //   if (val.contains(r'[A-Za-z]')) {
                                         //     return "The name should only consist of letters";
@@ -492,14 +502,14 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                   Expanded(
                                     flex: 2,
                                     child: InputTextFieldWidget(
-                                      labelText: "Price",
+                                      labelText: AppHelper.returnText(context, "Price: *", "السعر: *"),
                                       validator: (val) {
                                         if (prices["1"]?["price"] != null) {
                                           if (val == null)
-                                            return "Type the price";
+                                            return AppHelper.returnText(context, "Type the price", "اكتب السعر");
                                           if (val.trim() == "" ||
                                               val.length < 1)
-                                            return "Type the price";
+                                            return AppHelper.returnText(context, "Type the price", "اكتب السعر");
                                         }
                                         //   if (val.contains(r'[A-Za-z]')) {
                                         //     return "The name should only consist of letters";
@@ -527,7 +537,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                 children: [
                                   Expanded(
                                     child: InputTextFieldWidget(
-                                      labelText: "\$",
+                                      labelText:  "OMR: ",
                                       validator: (val) {
                                         //   if (val.contains(r'[A-Za-z]')) {
                                         //     return "The name should only consist of letters";
@@ -549,14 +559,16 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                   Expanded(
                                     flex: 2,
                                     child: InputTextFieldWidget(
-                                      labelText: "Price",
+                                      labelText:  AppHelper.returnText(context, "Price:", "السعر:"),
                                       validator: (val) {
                                         if (prices["2"]?["price"] != null) {
                                           if (val == null)
-                                            return "Type the price";
+                                                                                        return AppHelper.returnText(context, "Type the price", "اكتب السعر");
+
                                           if (val.trim() == "" ||
                                               val.length < 1)
-                                            return "Type the price";
+                                                                                        return AppHelper.returnText(context, "Type the price", "اكتب السعر");
+
                                         }
                                         return null;
                                       },
@@ -581,7 +593,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                 children: [
                                   Expanded(
                                     child: InputTextFieldWidget(
-                                      labelText: "\$",
+                                      labelText:  "OMR:",
                                       validator: (val) {
                                         //   if (val.contains(r'[A-Za-z]')) {
                                         //     return "The name should only consist of letters";
@@ -603,14 +615,16 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                   Expanded(
                                     flex: 2,
                                     child: InputTextFieldWidget(
-                                      labelText: "Price",
+                                      labelText:  AppHelper.returnText(context, "Price:", "السعر:"),
                                       validator: (val) {
                                         if (prices["3"]?["price"] != null) {
                                           if (val == null)
-                                            return "Type the price";
+                                                                                        return AppHelper.returnText(context, "Type the price", "اكتب السعر");
+
                                           if (val.trim() == "" ||
                                               val.length < 1)
-                                            return "Type the price";
+                                                                                        return AppHelper.returnText(context, "Type the price", "اكتب السعر");
+
                                         }
                                         return null;
                                       },
@@ -636,11 +650,11 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                               ),
                               InputTextFieldWidget(
                                 text: data["priceNote"],
-                                labelText: "Price Notes",
+                                labelText:  AppHelper.returnText(context, "Price Notes: ", "ملاحظات السعر:"),
                                 minLines: 4,
-                                helperText: "Add the prices for your activity.",
+                                helperText:  AppHelper.returnText(context, "You can add a description that explains the prices more.","بامكانك اضافة وصف يوضح الاسعار أكثر. "),
                                 validator: (val) {
-                                  if (val.length > 50) return "too long";
+                                  if (val.length > 200) return AppHelper.returnText(context, "The text is too long", "النص طويل جدا");
 
                                   return null;
                                 },
@@ -657,14 +671,15 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                 labelText: "Description",
                                 minLines: 4,
                                 helperText:
-                                    "Add more details about the activitiy",
+                                    AppHelper.returnText(context, "Add more details about the activity.", "أضف المزيد من التفاصيل حول النشاط ."),
                                 validator: (val) {
                                   if (val == null)
-                                    return "Use 10 characters or more for description";
+                                    return AppHelper.returnText(context, "Use 10 characters or more for description", "استخدم 10 أحرف أو أكثر للوصف");
                                   if (val.trim() == "" || val.length < 10)
-                                    return "Use 10 characters or more for description";
+                                    return AppHelper.returnText(context, "Use 10 characters or more for description", "استخدم 10 أحرف أو أكثر للوصف");
 
-                                  if (val.length > 100) return "too long";
+                                  if (val.length > 300)                             return AppHelper.returnText(context, "The text is too long", "النص طويل جدا");
+ 
 
                                   return null;
                                 },
@@ -681,30 +696,30 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                 minLines: 4,
                                 helperText: "Add important information",
                                 validator: (val) {
-                                  if (val == null)
-                                    return "Use 10 characters or more for important information";
-                                  if (val.trim() == "" || val.length < 10)
-                                    return "Use 10 characters or more for important information";
+                                //   if (val == null)
+                                //     return AppHelper.returnText(context, "Use 10 characters or more for important information", "استخدم 10 أحرف أو أكثر في المعلومات مهمة");
+                                //   if (val.trim() == "" || val.length < 10)
+                                //     return AppHelper.returnText(context, "Use 10 characters or more for important information", "استخدم 10 أحرف أو أكثر في المعلومات مهمة");
 
-                                  if (val.length > 100) return "too long";
+                                  if (val.length > 300)  return AppHelper.returnText(context, "The text is too long", "النص طويل جدا");;
 
                                   return null;
                                 },
                                 onSaved: (val) {
-                                  data["importantInformation"] = val?.trim();
+                                  data["importantInformation"] = val?.trim() ?? "";
                                 },
                               ),
                               SizedBox(
                                 height: 15,
                               ),
                               InputTextFieldWidget(
-                                labelText: "address",
+                                labelText: AppHelper.returnText(context, "Address: *", "عنوان: *") ,
                                 text: data["address"],
                                 validator: (val) {
                                   if (val == null)
-                                    return "Use 2 characters or more for address";
+                                    return AppHelper.returnText(context, "Use 2 characters or more for address", "استخدم حرفين أو أكثر للعنوان");
                                   if (val.trim() == "" || val.length < 2)
-                                    return "Use 2 characters or more for address";
+                                    return AppHelper.returnText(context, "Use 2 characters or more for address", "استخدم حرفين أو أكثر للعنوان");
 
                                   return null;
                                 },
@@ -719,7 +734,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                               ),
                               OutlinedButton.icon(
                                 icon: Icon(Icons.location_on_outlined),
-                                label: Text("Add the activity location"),
+                                label: Text(AppHelper.returnText(context, "Add the activity location: *", "أضف موقع النشاط: *")),
                                 onPressed: () async {
                                   final latlanArg = await Navigator.pushNamed(
                                           context, PickLocationSceen.router)
@@ -734,21 +749,21 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                               const SizedBox(
                                 height: 20,
                               ),
-                              const Text(
-                                "Choose how you would like to be contacted by customers",
+                               Text(
+                                AppHelper.returnText(context,  "Choose how you would like to be contacted by customers: *", "اختر الطريقة التي تود أن يتواصل بها العملاء معك: *"),
                               ),
                               const SizedBox(
                                 height: 10,
                               ),
                               CheckboxWidget(
-                                  label: "Trippoint Chat",
+                                  label: AppHelper.returnText(context, "Trippoint Chat", "Trippoint محادثات"),
                                   isCheck: _checkboxChatT,
                                   onChanged: (isChecked) {
                                     print(isChecked);
                                     _checkboxChatT = isChecked;
                                   }),
                               CheckboxWidget(
-                                  label: "Whatsapp",
+                                  label:  AppHelper.returnText(context, "Whatsapp", "واتساب"),
                                   isCheck: _checkboxChatW.value,
                                   onChanged: (isChecked) {
                                     print(isChecked);
@@ -761,10 +776,10 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                     enabled: value as bool,
                                     keyboardType: TextInputType.number,
                                     text: data["phoneNumberWhatsapp"],
-                                    labelText: "Phone Number",
+                                    labelText: AppHelper.returnText(context, "Phone Number: ", "رقم الهاتف: "),
                                     //   labelStyle:,
                                     helperText:
-                                        "Add Your Phone Number to recive massages on whatsapp.",
+                                        AppHelper.returnText(context, "Add Your Phone Number to receive messages on whatsapp.", "أضف رقم هاتفك لتلقي الرسائل على الواتس اب."),
                                     validator: (val) {
                                       // AppHelper.checkPhoneValidation(
                                       //     context, val);
@@ -780,7 +795,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                 },
                               ),
                               CheckboxWidget(
-                                  label: "Call",
+                                  label: AppHelper.returnText(context, "Calls", "المكالمات"),
                                   isCheck: _checkboxChatC.value,
                                   onChanged: (isChecked) {
                                     _checkboxChatC.value =
@@ -797,14 +812,14 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                     labelText: "Phone Number",
                                     //   labelStyle:,
                                     helperText:
-                                        "Add Your Phone Number to recive calls.",
+                                        AppHelper.returnText(context, "Add Your Phone Number to receive calls.", "أضف رقم هاتفك لتلقي المكالمات."),
 
                                     validator: (val) {
                                       if (_checkboxChatC.value) {
                                         AppHelper.checkPhoneValidation(
                                             context, val);
                                         if (val?.length != 8) {
-                                          return "invalid phone number";
+                                          return  AppHelper.returnText(context, "Invalid phone number, try again", "رقم الهاتف غير صالح ، حاول مرة أخرى");
                                         }
                                       }
                                     },
@@ -868,12 +883,14 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                               const SizedBox(
                                 height: 20,
                               ),
+                                                             Text(AppHelper.returnText(context, "What are the allowed age for this activity? (Optional)", "ما هو العمر المسموح به لهذا النشاط؟ (اختياري)")),
+
                               Row(
                                 children: [
                                   Expanded(
                                     child: InputTextFieldWidget(
                                       keyboardType: TextInputType.number,
-                                      labelText: "Max Age",
+                                      labelText:  AppHelper.returnText(context, "Maximum Age: ", "الحد الأقصى للعمر: "),
                                       onSaved: (val) {
                                         try {
                                           assert(val.toString().trim() != "");
@@ -889,7 +906,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                   Expanded(
                                     child: InputTextFieldWidget(
                                       keyboardType: TextInputType.number,
-                                      labelText: "Min Age",
+                                      labelText: AppHelper.returnText(context, "Minimum Age: ", "الحد الإدنى للعمر: "),
                                       onSaved: (val) {
                                         try {
                                           assert(val.toString().trim() != "");
@@ -905,7 +922,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                 height: 20,
                               ),
 
-                              const Text("Who Activity for ?"),
+                               Text(AppHelper.returnText(context, "Who this activity for ? (Optional)", "لمن هذا النشاط؟ (اختياري)")),
                               Row(
                                 children: [
                                   const SizedBox(
@@ -913,7 +930,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                   ),
                                   Expanded(
                                     child: CheckboxWidget(
-                                        label: "man",
+                                        label: AppHelper.returnText(context, "Men Only", "الرجال فقط"),
                                         isCheck:
                                             genderSuitability["man"] ?? false,
                                         onChanged: (isChecked) {
@@ -926,7 +943,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                   ),
                                   Expanded(
                                     child: CheckboxWidget(
-                                        label: "woman",
+                                        label:  AppHelper.returnText(context, "Women Only", "النساء فقط"),
                                         isCheck:
                                             genderSuitability["woman"] ?? false,
                                         onChanged: (isChecked) {
@@ -942,7 +959,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                 height: 20,
                               ),
                               CheckboxWidget(
-                                  label: "Does activity accept group booking",
+                                  label: AppHelper.returnText(context, "Do you have group bookings like for families ?", "هل لديك حجوزات جماعية مثل العائلات؟"),
                                   isCheck: _checkboxOp_GOA,
                                   onChanged: (isChecked) {
                                     print(isChecked);
@@ -987,7 +1004,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                   child: Column(
                                     children: [
                                       Text(
-                                        "By clicking create activity you agree to our ",
+                                        AppHelper.returnText(context, "By clicking create activity you agree to our ", "بالنقر فوق إنشاء نشاط ، فإنك توافق على"),
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodySmall,
@@ -1034,7 +1051,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                 onPressed: () async {
                                   await _submit(context);
                                 },
-                                child: const Text("Create Activity"),
+                                child: Text("Create Activity".tr()),
                               ),
                             ],
                           ),
